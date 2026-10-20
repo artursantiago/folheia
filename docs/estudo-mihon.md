@@ -1,6 +1,6 @@
 # Folheia — Estudo do Mihon
 
-> 20/10/2026. O Artur usa o Mihon, um leitor de mangá open source para Android, e pediu um estudo do leitor, das telas, do sistema de fontes/extensões e do desempenho. Este documento é a referência completa. O `estudo-referencias.md` §13 traz só um resumo.
+> 20/10/2026. O §8 traz a lista de candidatos para triagem. O Artur usa o Mihon, um leitor de mangá open source para Android, e pediu um estudo do leitor, das telas, do sistema de fontes/extensões e do desempenho. Este documento é a referência completa. O `estudo-referencias.md` §13 traz só um resumo.
 
 **Como foi feito (clean room):**
 
@@ -401,6 +401,80 @@ O Artur quer algo parecido para estudo e uso pessoal: **site estático e custo z
 - **Termos de uso:** os ToS de cada site continuam valendo.
 - **Manutenção:** os sites mudam toda semana, e é por isso que o keiyoushi precisa de CI e comunidade.
 
+### 5.5 Explicado sem jargão: por que o site é difícil e como cada caminho funciona
+
+**O problema (CORS).**
+
+- Quando uma página da web tenta ler dados de **outro site**, o navegador só entrega a resposta se esse outro site disser "pode" (o cabeçalho `Access-Control-Allow-Origin`). É uma proteção: sem ela, qualquer página que você abrisse poderia ler o seu e-mail ou o seu banco usando a sua sessão.
+- Os sites de mangá não dizem "pode". Então o Folheia, rodando em `artursantiago.github.io`, até consegue **mostrar** uma imagem deles numa `<img>`, mas não consegue **ler** a página HTML para descobrir quais capítulos e imagens existem.
+- Além disso, muitos sites exigem cabeçalhos como `Referer` ("vim do próprio site"), e o navegador proíbe a página de mudar esses cabeçalhos.
+
+**Por que o app não tem esse problema.**
+
+- CORS é regra **do navegador**. Um app nativo faz a requisição como um programa qualquer, igual ao `curl`. O Mihon é um app Android, então lê qualquer site e põe os cabeçalhos que quiser.
+- O app Folheia feito com Capacitor tem o mesmo poder: o `CapacitorHttp` troca o `fetch` da página por uma requisição nativa.
+
+**Então todo caminho para o site estático é "alguém de fora do navegador faz a requisição por nós".** Muda só quem é esse alguém.
+
+1. **Suwayomi no Mac (+ Tailscale para o iPad).**
+   - **O que é:** um programa (Java) que você roda no Mac. Ele instala as **mesmas extensões do Mihon** e faz o papel do app: visita os sites, lê os capítulos e baixa as imagens.
+   - **Como o Folheia conversa com ele:** pelo **OPDS**, um formato padrão de "catálogo de livros" (um feed com listas, busca e links). O Suwayomi já libera o CORS para qualquer origem.
+   - **Por que o Tailscale:**
+     - O site do Folheia é HTTPS. O navegador não deixa uma página HTTPS falar com `http://192.168.0.10` (conteúdo misto).
+     - O Tailscale é uma rede privada entre os seus aparelhos, gratuita no plano pessoal. O recurso **Serve** dá ao Mac um endereço `https://seu-mac.tailnet.ts.net` com certificado válido.
+     - Resultado: o iPad acessa o Suwayomi de qualquer lugar, com HTTPS, sem abrir porta no roteador.
+   - **Para que serve:** testar e usar todas as fontes **sem escrever nenhuma**. O Folheia só precisa ser um bom cliente OPDS, e esse mesmo cliente serve para Komga e Kavita.
+   - **Limites:**
+     - o Mac precisa estar ligado;
+     - é mais um programa para manter (Java);
+     - os sites veem o IP da sua casa, o que é bom, porque o Cloudflare desconfia menos.
+2. **Userscript no Safari.**
+   - **O que é:** "Userscripts" é um app gratuito que adiciona uma extensão ao Safari e roda pequenos scripts seus em sites escolhidos.
+   - **Por que funciona:** o script roda **como extensão**, e extensões têm permissão para ler outros sites. Ele ficaria ativo só no site do Folheia. A página pede por mensagem "busca essa URL com esses cabeçalhos", e o script devolve o conteúdo.
+   - **Para que serve:** testar fontes no iPad e no Mac **sem servidor e sem app**, só com um script de ~40 linhas.
+   - **Limites:**
+     - é um pedaço fora do site, instalado à mão em cada aparelho;
+     - ainda não testamos se ele manda os cookies do Safari, o que ajudaria com o Cloudflare;
+     - no Chrome do Android existe o equivalente (Tampermonkey e outros), mas lá o app nativo é melhor.
+3. **Proxy próprio no Cloudflare Workers.**
+   - **O que é:** um pedacinho de código nosso que roda nos servidores da Cloudflare. O Folheia pede "busca essa URL" ao proxy, o proxy busca no site e devolve com o CORS liberado.
+   - **Custo:** grátis até 100 mil requisições por dia, bem mais que o uso pessoal.
+   - **Fechado só para você:** um token secreto, a conferência de que o pedido vem do site do Folheia e uma lista de domínios permitidos, para não virar proxy aberto.
+   - **Limites:**
+     - deixa de ser 100% estático: é um servidor, mesmo que gratuito e nosso;
+     - as consultas passam pela Cloudflare;
+     - muitos sites de mangá ficam atrás da própria Cloudflare e **bloqueiam pedidos vindos de Workers** ou de IPs de datacenter.
+4. **Proxy local no Mac.** É a mesma ideia do item 3, mas como um script de ~50 linhas rodando no Mac (Deno ou Node). Usa o IP da sua casa. Do iPad, só pelo Tailscale. Na prática, o Suwayomi é uma versão pronta e muito mais completa disso.
+
+### 5.6 Site estático × app Android
+
+**Direção atual (20/10/2026):** o app nativo será **só Android**, instalado por APK, sem loja. O Artur não pretende pagar a conta de desenvolvedor da Apple.
+
+**Como seria testar no iPhone/iPad sem pagar** (fica registrado):
+
+- Com uma **conta Apple gratuita** no Xcode, dá para instalar o app no próprio aparelho por cabo. Mas ele **expira em 7 dias** (é preciso reinstalar), com no máximo 3 apps.
+- O **AltStore** e o **SideStore** automatizam essa reinstalação semanal.
+- Funciona, mas é chato. **No iPad, o caminho continua sendo o site/PWA.**
+
+**Consequência importante.** O aparelho principal de leitura e de testes de desempenho é o **iPad**, que vai usar o **site**. Fontes que só funcionam no app Android não aparecem no iPad. No iPad, as fontes dependem dos caminhos de §5.5 (Suwayomi + Tailscale, userscript ou proxy).
+
+|                         | Site estático (iPad, Mac, qualquer navegador)                                                                     | App Android (APK)                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Rede**                | Só hosts com CORS, ou por um intermediário (§5.5)                                                                 | Nativa, sem CORS, com qualquer cabeçalho                                |
+| **Cloudflare**          | Só via Suwayomi, que usa o IP de casa (e opcionalmente o FlareSolverr)                                            | WebView interno que compartilha cookies com o HTTP nativo, como o Mihon |
+| **Fontes possíveis**    | OPDS (Komga, Kavita, Calibre-web, Suwayomi); Internet Archive (IIIF); fontes JS **se** houver userscript ou proxy | OPDS; fontes JS rodando direto                                          |
+| **Instalação**          | Já existe (PWA)                                                                                                   | APK pelo GitHub Releases, instalado à mão                               |
+| **Custo**               | 0                                                                                                                 | 0                                                                       |
+| **Regras do CLAUDE.md** | Regra 2 (servidores do usuário); "100% estático" só se houver proxy                                               | Regra 2; código de fontes isolado                                       |
+
+**Leitura disso:**
+
+- O **cliente OPDS** é a única peça que funciona igual nos dois mundos. Por isso faz sentido como primeiro passo.
+- As **fontes JS** fazem mais sentido quando o app Android existir.
+- No iPad, o Suwayomi entrega o equivalente.
+
+**Opção descartada: carregar as extensões do Mihon direto no app Android.** Seria preciso um plugin nativo em Kotlin que imitasse o ambiente do Mihon (é o que o Suwayomi faz no servidor). Seria trabalho grande, preso ao formato deles, e exigiria reproduzir a API deles, o que esbarra na regra de clean room. Se o objetivo é ter essas fontes, o Suwayomi já resolve.
+
 ## 6. Desempenho: Mihon × Folheia
 
 Comparação do caminho de uma página até a tela, feita com o código do Folheia depois dos commits `dff57d5` e `c5006e6`.
@@ -516,3 +590,136 @@ Nisso estamos à frente do Mihon, que não lê `Manga`, `DoublePage` nem `FrontC
 | Rótulo só ao segurar                          | **Não**: no iPad, mostrar rótulos sempre (acessibilidade)                                        | não        |
 | Atualizações e calendário                     | Só se as fontes (§5) existirem                                                                   | depende    |
 | Rastreadores com OAuth                        | Fere a privacidade                                                                               | não        |
+
+## 8. Candidatos para o Folheia (para triagem)
+
+Lista viva dos pontos deste estudo que podem entrar no app. **Nada aqui está decidido.**
+
+- **Triagem:** o Artur dá a nota e decide **se** entra e **como** entra. A coluna "Decisão" fica para isso.
+- **Depois de decidido:** o item vai para o backlog do `plano-mvp.md` §8, na seção certa, para ser sabatinado antes de implementar.
+- **Novos candidatos** vindos de outros estudos podem entrar aqui também.
+
+**Escalas:**
+
+- **Esforço:** P (pequeno), M (médio), G (grande).
+- **Impacto:** baixo, médio, alto. É um palpite; a triagem pode mudar.
+
+### 8.1 Leitor
+
+| ID  | Candidato                                                                                                  | Ref. | Esforço | Impacto | Decisão |
+| --- | ---------------------------------------------------------------------------------------------------------- | ---- | ------- | ------- | ------- |
+| L1  | Progresso gravado só quando a leitura para numa página, com gravação garantida ao sair                     | §2.4 | P       | médio   |         |
+| L2  | Dica visual das zonas de toque na primeira leitura (componente Ex-libris, respeita reduced-motion)         | §2.2 | P       | médio   |         |
+| L3  | "Zoom e percorrer" spreads largos em tela de uma página (iPad em pé), como alternativa a dividir           | §2.3 | M       | alto    |         |
+| L4  | Pareamento de página dupla: paridade recomeça depois de página sozinha; só parear proporções parecidas     | §2.3 | P       | médio   |         |
+| L5  | Ajustes por livro (direção, modo, escala) sobre os globais, com aviso curto ao abrir                       | §2.1 | M       | médio   |         |
+| L6  | Fundo automático pela cor da borda da página (modo "só o livro")                                           | §2.3 | P       | baixo   |         |
+| L7  | Cortar margens brancas e pretas de PDFs escaneados (desligado no modo duplo)                               | §2.3 | M       | médio   |         |
+| L8  | Slider de páginas que se inverte em RTL + indicador "n / total" discreto                                   | §2.4 | P       | médio   |         |
+| L9  | Brilho, sépia e inverter com pré-visualização ao vivo (camada própria, sem CSS `filter` no livro ampliado) | §2.4 | M       | baixo   |         |
+| L10 | Toque longo na página: usar como capa, salvar, compartilhar (no PDF, fora da camada de texto)              | §2.4 | M       | baixo   |         |
+| L11 | Layouts de toque alternativos (L, Kindle, bordas) e inversão                                               | §2.2 | M       | baixo   |         |
+| L12 | Modo de rolagem vertical (webtoon) com faixas, só as visíveis desenhadas, altura reservada                 | §2.3 | G       | médio   |         |
+
+O L8 coincide com o slider do item B5, que já está sendo feito em outra sessão (20/10/2026).
+
+### 8.2 Desempenho
+
+Os detalhes e a ordem estão em §6.5. O P0 decide o resto.
+
+| ID  | Candidato                                                                          | Esforço | Impacto                | Decisão |
+| --- | ---------------------------------------------------------------------------------- | ------- | ---------------------- | ------- |
+| P0  | Medir antes no `#/lab` (e o iPad sempre em HTTPS)                                  | P       | decide os demais       |         |
+| P1  | Plano antes de retomar a fila; planejar pelo destino das viradas enfileiradas      | P       | médio                  |         |
+| P2  | Janela quente em `ImageBitmap` exibida em canvas; comprimir só o que sai da janela | M       | alto                   |         |
+| P3  | CBZ sem recompressão (Blob original + `createImageBitmap` reduzido em worker)      | M       | alto                   |         |
+| P4  | HQ em PDF: decodificar uma vez a imagem única da página para nítida, prévia e zoom | M       | alto                   |         |
+| P5  | Despejo do cache por distância; páginas da virada presas                           | P       | médio                  |         |
+| P6  | Não limpar a página visível do PDF.js durante o zoom                               | P       | médio                  |         |
+| P7  | `enableHWA` A/B                                                                    | P       | ?                      |         |
+| P8  | Trabalho em worker continua durante a virada                                       | M       | médio-alto             |         |
+| P9  | Tiles de zoom em grade, reaproveitados                                             | M-G     | médio                  |         |
+| P10 | Leitor de PDF próprio que passa o JPEG embutido direto                             | G       | muito alto (HQ em PDF) |         |
+
+### 8.3 Interface e biblioteca
+
+> **Cuidado: isto é um redesign grande.** Trazer a organização do Mihon (acervo, estantes, ficha, registro) muda a tela inicial, a navegação e o papel do "Recentes". **Antes de qualquer item abaixo**, é preciso um **estudo de interface próprio** (o I0):
+>
+> - fluxos;
+> - protótipo na linguagem Ex-libris, revisando o protótipo aprovado;
+> - o que muda no iPad, no celular e no app Android.
+>
+> Os itens abaixo são entradas para esse estudo, não tarefas.
+
+| ID  | Candidato                                                                                     | Ref.       | Esforço | Impacto | Decisão |
+| --- | --------------------------------------------------------------------------------------------- | ---------- | ------- | ------- | ------- |
+| I0  | **Estudo de interface e redesign** da biblioteca pessoal (pré-requisito dos demais)           | §3, §7     | M       | alto    |         |
+| I1  | Acervo como tela inicial ("Meus livros"), substituindo o papel do "Recentes"                  | §3.2       | G       | alto    |         |
+| I2  | Estantes (um livro em várias; "Por catalogar"; remanejar em lote com caixas de três estados)  | §3.2       | M       | alto    |         |
+| I3  | Exibição: grade de capas, lista e fichário; colunas por orientação                            | §3.2       | M       | médio   |         |
+| I4  | Selos na capa (progresso, novo, concluído, formato)                                           | §3.2       | P       | médio   |         |
+| I5  | Ficha catalográfica do livro (metadados, nº de tombo, estantes, notas; tocar no autor filtra) | §3.3       | M       | alto    |         |
+| I6  | Marcadores de página com miniatura (lacuna do Mihon) e filtro "com marcadores"                | §3.5       | M       | alto    |         |
+| I7  | Registro de leitura (agrupado por dia, retoma ao tocar, tempo de leitura)                     | §3.4       | M       | médio   |         |
+| I8  | Desfazer (remover livro, estante, marcador) e estados vazios no tom da biblioteca             | §3.6       | P       | médio   |         |
+| I9  | iPad: trilho lateral de navegação e dois painéis (acervo + ficha)                             | §3.1, §3.3 | M       | médio   |         |
+| I10 | Busca no acervo (simples primeiro; campos tipo `autor:` depois)                               | §3.2       | P-M     | médio   |         |
+| I11 | Série como agrupamento opcional (do `ComicInfo.xml` Series + Number, ou à mão)                | §7         | M       | médio   |         |
+| I12 | Escolher uma página como capa                                                                 | §3.3       | P       | baixo   |         |
+| I13 | Aviso de exemplar repetido ao adicionar                                                       | §3.3       | P       | baixo   |         |
+| I14 | Leitura sem registro (modo anônimo)                                                           | §3.4       | P       | baixo   |         |
+| I15 | Estatísticas ("relatório da biblioteca")                                                      | §3.4       | M       | baixo   |         |
+| I16 | Exportar e importar o acervo em JSON (sem os arquivos); essencial antes do app                | §3.4       | M       | médio   |         |
+
+### 8.4 Fontes e catálogos
+
+Por onde passa a rede: §5.5 e §5.6. "Web" é o site (iPad); "Android" é o app.
+
+| ID  | Candidato                                                                                                      | Web                                | Android       | Esforço | Decisão |
+| --- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------- | ------- | ------- |
+| F1  | Interface de catálogo (`CatalogSource`) separada da `PageSource`; um capítulo vira uma `PageSource` de imagens | sim                                | sim           | M       |         |
+| F2  | Cliente OPDS 1.2/2.0 + streaming de páginas (OPDS-PSE): Komga, Kavita, Calibre-web, Suwayomi                   | sim (o servidor libera o CORS)     | sim           | M       |         |
+| F3  | Guia: Suwayomi no Mac + Tailscale Serve, para ter as fontes do Mihon no iPad                                   | sim                                | sim           | P (doc) |         |
+| F4  | Internet Archive via IIIF (só itens de domínio público)                                                        | sim                                | sim           | M       |         |
+| F5  | Fontes JS isoladas (QuickJS-WASM), com índice assinado (Ed25519) num repositório próprio                       | só com userscript ou proxy (F6/F7) | sim           | G       |         |
+| F6  | Userscript de rede para o Safari                                                                               | sim                                | —             | P       |         |
+| F7  | Proxy próprio no Cloudflare Workers (token + lista de domínios)                                                | sim                                | desnecessário | P       |         |
+| F8  | No app: `CapacitorHttp` + WebView interno para o Cloudflare (cookies compartilhados)                           | —                                  | sim           | M       |         |
+
+Mudanças de regra no `CLAUDE.md` que esses itens exigem: §5.4.
+
+### 8.5 Plataforma e repositórios
+
+| ID  | Candidato                                                                                 | Esforço | Decisão |
+| --- | ----------------------------------------------------------------------------------------- | ------- | ------- |
+| O1  | App nativo **só Android** (APK pelo GitHub Releases, sem loja); iPad continua no site/PWA | —       |         |
+| O2  | Organização dos repositórios: monorepo × organização com vários repositórios (abaixo)     | P       |         |
+
+**O2: monorepo ou organização?**
+
+- **Hoje:** um repositório, `folheia`, com o site e os motores.
+- **O que entra de novo com os planos:**
+  - o app Android (Capacitor);
+  - talvez um pacote com os tipos e o SDK das fontes;
+  - as fontes públicas legítimas (OPDS, Internet Archive);
+  - as fontes pessoais.
+- **A favor do monorepo**, para tudo que é público:
+  - **IA:** um só contexto, um `CLAUDE.md`, mudanças atômicas entre o app, o SDK e as fontes. Uma mudança na interface de fonte e nas fontes que a usam sai num commit só.
+  - **Capacitor:** a pasta `android/` normalmente mora **no mesmo repositório** do site, porque o app empacota o mesmo build.
+  - **Uma configuração para tudo:** lint, testes, CI e regras.
+  - **Quando dividir em pacotes:** quando surgir o segundo pacote (por exemplo, o SDK das fontes), usar **npm workspaces** (`packages/`, `apps/`), sem ferramenta extra.
+- **O que precisa ficar separado:** as **fontes pessoais**. Elas não podem morar no repositório público (MIT, com o seu nome) nem ser linkadas pelo site. Pode ser:
+  - um repositório à parte, que serve só o índice e os bundles (público mas sem link, porque GitHub Pages de repositório privado exige plano pago);
+  - ou um arquivo importado localmente.
+
+  É a mesma separação que o Mihon faz (app oficial, extensões da comunidade).
+
+- **Organização no GitHub:**
+  - **O que dá:** um nome mais bonito (`folheia.github.io`) e espaço para os repositórios, sem custo.
+  - **Cuidado:** mudar o endereço do site **muda a origem**, e o navegador trata a nova como outro site. O que está guardado localmente (Recentes, progresso, PWA instalado) **fica na origem antiga**.
+  - **Se for criar:** antes de a biblioteca ter dados que importam, ou com o exportar/importar (I16) pronto.
+  - O base path já é configurável, então o código não precisa mudar.
+- **Recomendação:**
+  - **monorepo** no repositório atual, com workspaces quando houver o segundo pacote;
+  - **um repositório separado só para as fontes pessoais**;
+  - organização é opcional e estética. Se quiser, que seja cedo.
