@@ -446,10 +446,37 @@ Os candidatos estão em **`estudo-mihon.md` §8**, aguardando a triagem do Artur
   - **não:** L6, L7 e L11;
 - desempenho: P0–P11. **P0 medido em 20/10/2026**, e a ordem dos próximos passos está na seção A2;
 - interface e biblioteca: I0–I16. **Triados em 20/10/2026** e virados na seção C2;
-- fontes e catálogos: F1–F8;
+- fontes e catálogos: F1–F8. **A rede (F6/F7) foi estudada em 20/10/2026**: ver a seção E4 e o `estudo-extensao.md`. A triagem vai junto da D2 (`pauta-decisoes.md`);
 - plataforma e repositórios: O1–O2.
 
 O que for aprovado entra nas seções certas deste backlog.
+
+### E4. Ponte de rede e fontes (estudo de 20/10/2026)
+
+Estudo e prova de conceito em **`estudo-extensao.md`**, com o PR #1 em rascunho no branch `claude/extension-bridge-poc-6ec4b9`. Lá ficam a extensão e o userscript (`extension/`), a interface `Network` (`src/platform/`) e os testes no `#/lab`. O que entra e quando está na D5 (`pauta-decisoes.md`): a `Network` refeita nas fundações, a extensão depois de Catálogos e da D2.
+
+**O que já se sabe:**
+
+- **Chrome e Firefox**, com a nossa extensão: leem as fontes e põem `Referer`/`User-Agent`, inclusive nas `<img>`. 9 de 12 fontes famosas do Mihon funcionam.
+- **iPad (Safari):** funciona pelo app Userscripts (grátis) ou por uma extensão Safari (precisa do Xcode). Mas o Safari **nunca** deixa definir o `Referer`, então as fontes que o exigem nas imagens não funcionam no iPad.
+- **Capas em qualquer ambiente:** um catálogo de metadados (AniList, MangaDex), com a capa tipográfica como reserva.
+
+**Próximos passos, em ordem (cada um sabatinado antes):**
+
+1. **Decidir a regra 2 do `CLAUDE.md`** (D2). A sugestão de texto está no §11 do estudo, e isso libera os itens seguintes.
+2. **Aproveitar as peças do PR** como a D5 decidir: o protocolo, a `Network` e os testes de ponta a ponta no Chrome e no Firefox.
+3. **Interface `CatalogSource` + cliente OPDS** (F1/F2 do `estudo-mihon.md` §8.4), usando a `Network`. É a parte que funciona igual em todo lugar.
+4. **Capas por catálogo de metadados** (AniList), com a capa tipográfica como reserva. Liga com as capas da biblioteca (C2).
+5. **Extensão para o Firefox**, assinada como unlisted no AMO, com teste no Firefox de verdade e no Firefox Android.
+6. **Userscript no iPad Air real** (passo a passo no §10.4 do estudo).
+7. **Limite de requisições e cache por site** na camada de fontes, para o IP de casa não ser bloqueado.
+
+**O endereço do site está fixo na extensão.** A mudança para `folheia-app` já entrou no branch. Se o endereço mudar de novo, mudam juntos:
+
+- `FOLHEIA_MATCHES` em `extension/src/patterns.ts` e `isFolheiaPage()` em `extension/src/protocol.ts`;
+- o `@match` e o `@namespace` do userscript, gerados por `scripts/build-extension.mjs`;
+- o `gecko.id` do Firefox, que precisa ser decidido antes de assinar no AMO, porque depois não muda;
+- os testes de ponta a ponta que usam o endereço do site.
 
 ### G. Se houver demanda
 
