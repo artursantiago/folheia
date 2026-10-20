@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { createBudget, currentEnvironment } from '../../render/budget';
 import { PageRenderer, refKey, type PageRef } from '../../render/PageRenderer';
 import { openPdf, type PdfSource } from '../../sources/pdf/PdfSource';
-import { Button, IconButton, Overline, TextField } from '../components';
+import { Button, IconButton, Overline, Switch, TextField } from '../components';
 import styles from './Lab.module.css';
+import { measureP0, summarizeP0 } from './labP0';
 
 type Loaded = { source: PdfSource; renderer: PageRenderer; openedIn: number };
 
@@ -31,6 +32,8 @@ export default function Lab() {
   const [url, setUrl] = useState('fixtures/generated/heavy.pdf');
   const [firstPreviewMs, setFirstPreviewMs] = useState<number>();
   const [firstSharpMs, setFirstSharpMs] = useState<number>();
+  const [imageDecoder, setImageDecoder] = useState(true);
+  const [p0, setP0] = useState<string>();
   const version = useRendererVersion(loaded?.renderer);
   useSyncExternalStore(
     (cb) => {
@@ -49,10 +52,12 @@ export default function Lab() {
     setLoaded(undefined);
     setFirstPreviewMs(undefined);
     setFirstSharpMs(undefined);
+    setP0(undefined);
     const started = performance.now();
     try {
       const source = await openPdf(input, {
         onPassword: async () => window.prompt('Senha do PDF'),
+        imageDecoder,
       });
       const renderer = new PageRenderer(source, budget);
       const unsubscribe = renderer.subscribe(() => {
@@ -100,6 +105,29 @@ export default function Lab() {
     return () => window.removeEventListener('keydown', onKey);
   }, [pageCount]);
 
+  async function runP0() {
+    if (!loaded) return;
+    const from = spread * 2;
+    const pages = [0, 1, 2, 3, 4].map((i) => from + i).filter((p) => p < pageCount);
+    // The renderer shares PDF.js' worker: let it finish, then keep it quiet.
+    setP0('esperando a fila esvaziar…');
+    const { renderer, source } = loaded;
+    for (let i = 0; i < 300 && renderer.stats().queued > 0; i++)
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    renderer.pause();
+    setP0(`medindo 0/${pages.length}…`);
+    try {
+      const result = await measureP0(source, pages, (done) =>
+        setP0(`medindo ${done}/${pages.length}…`),
+      );
+      setP0(JSON.stringify({ summary: summarizeP0(result), raw: result }, null, 2));
+    } catch (err) {
+      setP0(`erro: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      renderer.resume();
+    }
+  }
+
   const stats = loaded?.renderer.stats();
   const mb = (bytes = 0) => (bytes / 1048576).toFixed(1);
 
@@ -123,6 +151,12 @@ export default function Lab() {
           className={styles.url}
         />
         <Button onClick={() => void open({ url })}>Abrir URL</Button>
+        <Switch
+          label="ImageDecoder"
+          description="Desligado, o PDF.js decodifica JPEG em JS (como fora de HTTPS)"
+          checked={imageDecoder}
+          onChange={setImageDecoder}
+        />
       </header>
 
       {error && <p role="alert">{error}</p>}
@@ -186,6 +220,14 @@ export default function Lab() {
               cache
             </dd>
           </dl>
+          <section className={styles.p0}>
+            <Button onClick={() => void runP0()}>Medir P0 (5 páginas a partir daqui)</Button>
+            {p0 && (
+              <pre className={styles.mono} data-testid="p0">
+                {p0}
+              </pre>
+            )}
+          </section>
         </>
       )}
     </main>
