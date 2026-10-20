@@ -87,6 +87,32 @@ function el(className: string, parent?: HTMLElement): HTMLElement {
 }
 
 /**
+ * The stretch of the leaf's free edge (x = w, leaf coordinates) that lies
+ * beyond the fold, i.e. is already turned over; undefined when none is.
+ */
+function foldedFreeEdge(fold: Fold, w: number, h: number): [Point, Point] | undefined {
+  if (!fold.folded.length) return undefined;
+  const { origin, normal } = fold;
+  // Points (w, y) with (p - origin) · normal > 0 are folded.
+  const base = (w - origin.x) * normal.x;
+  let from = 0;
+  let to = h;
+  if (Math.abs(normal.y) < 1e-6) {
+    if (base <= 0) return undefined;
+  } else {
+    const cross = origin.y - base / normal.y;
+    if (normal.y > 0) from = Math.max(from, cross);
+    else to = Math.min(to, cross);
+  }
+  return to - from > 0.5
+    ? [
+        { x: w, y: from },
+        { x: w, y: to },
+      ]
+    : undefined;
+}
+
+/**
  * Our own 2D page-turn: a corner fold drawn with clip-path, a reflected back
  * side and gradient shadows, driven by a single control point (the corner).
  * Animations move that point by themselves; dragging moves it with the finger.
@@ -709,20 +735,32 @@ export class Flip2D implements FlipEngine {
       strength,
     );
     if (els.castBack) {
-      // Once over the other page, the leaf's free edge (local x = 0 of the back
-      // side) shades it: wide while the leaf is high, tight and gone as it lands.
-      const progress = turnProgress(fold.point, w);
-      const a = apply(backMatrix, { x: 0, y: 0 });
-      const b = apply(backMatrix, { x: 0, y: h });
-      const inward = apply(backMatrix, { x: 1, y: 0 });
-      const left = this.slotX(this.rtl ? 'right' : 'left');
-      this.placeStrip(
-        els.castBack.strip,
-        { x: (a.x + b.x) / 2 - left, y: (a.y + b.y) / 2 },
-        { x: a.x - inward.x, y: a.y - inward.y },
-        0.4 + 0.9 * (1 - progress),
-        strength,
-      );
+      // Once over the other page, the leaf's free edge shades it: wide while the
+      // leaf is high, tight and gone as it lands. Only the part of that edge
+      // already folded over exists, so the shadow runs along that part alone.
+      const edge = foldedFreeEdge(fold, w, h);
+      if (edge) {
+        const toBook = (p: Point): Point => {
+          const r = apply(fold.reflection, p);
+          return { x: spineX + s * r.x, y: r.y };
+        };
+        const a = toBook(edge[0]);
+        const b = toBook(edge[1]);
+        const mid = (edge[0].y + edge[1].y) / 2;
+        const m = toBook({ x: w, y: mid });
+        const inside = toBook({ x: w - 1, y: mid });
+        const left = this.slotX(this.rtl ? 'right' : 'left');
+        this.placeStrip(
+          els.castBack.strip,
+          { x: m.x - left, y: m.y },
+          { x: m.x - inside.x, y: m.y - inside.y },
+          0.4 + 0.9 * (1 - turnProgress(fold.point, w)),
+          strength,
+          Math.hypot(b.x - a.x, b.y - a.y),
+        );
+      } else {
+        els.castBack.strip.style.opacity = '0';
+      }
     }
     this.placeStrip(
       els.frontShade,
@@ -741,9 +779,14 @@ export class Flip2D implements FlipEngine {
   }
 
   /** A gradient band along the fold line, fading in the direction of `normal`. */
-  private placeStrip(strip: HTMLElement, origin: Point, normal: Point, depth = 1, opacity = 1) {
-    const { width, height } = this.size;
-    const length = 2 * Math.hypot(width, height);
+  private placeStrip(
+    strip: HTMLElement,
+    origin: Point,
+    normal: Point,
+    depth = 1,
+    opacity = 1,
+    length = 2 * Math.hypot(this.size.width, this.size.height),
+  ) {
     const thickness = SHADOW_PX * depth;
     const len = Math.hypot(normal.x, normal.y) || 1;
     const n = { x: normal.x / len, y: normal.y / len };
