@@ -29,7 +29,7 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
    - PDF.js runs in a Web Worker and uses range requests. CBZ is read with random access, never the whole ZIP in memory.
 5. **Visual identity is a feature.** The default theme is "Ex-libris" (library language: catalog cards, accession numbers, perforated borders, typewriter numerals). Light uses the Ateliê palette, dark uses the Sebo-à-noite palette.
    - Every screen is built only from our own components in `src/ui/components/`.
-   - Colors, fonts, sizes, spacing, radii and motion come only from the tokens in `src/theme/`. Stylelint enforces this.
+   - Colors, fonts, sizes, spacing, radii and motion come only from the tokens in `src/theme/`. Stylelint enforces this for colors, font families, font sizes and radii; for spacing and motion it's on you.
    - New UI must appear in the live style guide at `#/estilo`.
    - Do not add a logo or icon until Artur asks for one.
 6. **i18n.** No hard-coded UI strings. Every string goes in the typed dictionaries in `src/i18n/` (pt-BR and en).

@@ -9,6 +9,7 @@ export default {
     ],
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
     'custom-property-empty-line-before': null,
+    'import-notation': 'string',
     'color-no-hex': true,
     'color-named': 'never',
     'function-disallowed-list': [
@@ -24,6 +25,8 @@ export default {
     ],
     'declaration-property-value-allowed-list': {
       'font-family': ['/^var\\(--/', 'inherit'],
+      'font-size': ['/^var\\(--/', 'inherit', '100%', '1em'],
+      'border-radius': ['/^var\\(--/', '0', '50%', 'inherit'],
     },
   },
   overrides: [

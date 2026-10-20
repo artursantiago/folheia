@@ -1,37 +1,103 @@
-/* Ex-libris theme tokens. The full design system lands in the next step;
-   these are the base values every component reads. */
+/*
+ * Ex-libris theme: the default Folheia identity.
+ * Light = "Ateliê" (paper, ink, terracotta stamp). Dark = "Sebo à noite"
+ * (night blue, reading-lamp glow, brass). Every value used by components
+ * lives here; see docs/identidade-visual.md.
+ *
+ * Colors use light-dark(), so the active scheme comes from `color-scheme`:
+ * <html data-theme="light|dark"> forces one; no attribute follows the system.
+ * Any element can carry data-theme to preview the other scheme (style guide).
+ */
+
 :root {
   color-scheme: light dark;
+}
 
-  --color-paper: #f3ede1;
-  --color-card: #fbf7ef;
-  --color-ink: #2b2420;
-  --color-ink-muted: #5f5045;
-  --color-accent: #a9481f;
+[data-theme='light'] {
+  color-scheme: light;
+}
 
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+:root,
+[data-theme] {
+  /* Color */
+  --color-paper: light-dark(#f3ede1, #12161d);
+  --color-card: light-dark(#fbf7ef, #1e242e);
+  --color-ink: light-dark(#2b2420, #ede3cf);
+  --color-ink-muted: light-dark(#5f5045, #a9b1bf);
+  --color-accent: light-dark(#a9481f, #e2a84b);
+  --color-on-accent: light-dark(#fbf7ef, #12161d);
+  --color-support: light-dark(#3e5641, #8db39a);
+  --color-rule: light-dark(#ddd1be, #323a47);
+  --color-perforation: light-dark(#8c7b6b, #6e7788);
+  --color-veil: light-dark(rgb(43 36 32 / 38%), rgb(6 8 12 / 62%));
+  --color-shadow: light-dark(rgb(43 36 32 / 22%), rgb(0 0 0 / 60%));
+  --color-lamp-core: light-dark(#f3ede1, #252e3b);
+  --color-lamp-mid: light-dark(#f3ede1, #1a2029);
+  --color-page: #fbf8f1;
+  --color-page-line: #cfc5b5;
+  --color-page-ink: #3a322b;
+  --color-page-fold: rgb(40 30 20 / 32%);
+
+  /* Type */
   --font-display: 'Young Serif', georgia, serif;
   --font-ui: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2.125rem;
+  --text-4xl: 3.25rem;
+  --leading-tight: 1.08;
+  --leading-snug: 1.2;
+  --leading-normal: 1.45;
+  --tracking-label: 0.08em;
+  --tracking-stamp: 0.1em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
 
+  /* Space and size */
+  --space-1: 0.25rem;
   --space-2: 0.5rem;
+  --space-3: 0.75rem;
   --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
   --space-8: 2rem;
-}
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --size-touch: 44px;
+  --size-icon: 20px;
+  --size-icon-sm: 16px;
+  --rule-step: 28px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-paper: #12161d;
-    --color-card: #1e242e;
-    --color-ink: #ede3cf;
-    --color-ink-muted: #a9b1bf;
-    --color-accent: #e2a84b;
-  }
-}
+  /* Shape */
+  --radius-control: 3px;
+  --radius-card: 4px;
+  --radius-round: 999px;
+  --border-width: 1.5px;
+  --border-hair: 1px;
+  --stamp-tilt: -3deg;
 
-html,
-body {
-  margin: 0;
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-ui);
+  /* Elevation */
+  --shadow-card: 0 1px 0 var(--color-rule), 0 18px 36px -24px var(--color-shadow);
+  --shadow-float: 0 16px 32px -18px var(--color-shadow);
+  --shadow-popover: 0 24px 48px -20px var(--color-shadow), 0 0 0 1px var(--color-rule);
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 400ms;
+  --duration-flip: 600ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.25, 1);
 }
