@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fixtures": "node scripts/make-fixture-pdf.mjs && node scripts/make-fixture-pdf.mjs --pages 24 --spreads --out fixtures/generated/spreads.pdf",
+    "fixtures": "node scripts/make-fixture-pdf.mjs && node scripts/make-fixture-pdf.mjs --pages 24 --spreads --out fixtures/generated/spreads.pdf && node scripts/make-text-pdf.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
