@@ -1,4 +1,4 @@
-import { createBudget, isAppleTouchDevice, previewSize, sharpSize } from './budget';
+import { createBudget, isAppleTouchDevice, previewSize, scaleStep, sharpSize } from './budget';
 
 const ipad = { maxTouchPoints: 5, platform: 'MacIntel', userAgent: 'Mozilla/5.0 (Macintosh)' };
 const mac = { maxTouchPoints: 0, platform: 'MacIntel', userAgent: 'Mozilla/5.0 (Macintosh)' };
@@ -28,6 +28,22 @@ describe('render budget', () => {
     const size = sharpSize({ width: 600, height: 800 }, { width: 2000, height: 2667 }, 2, budget);
     expect(size.width * size.height).toBeLessThanOrEqual(budget.maxCanvasPixels);
     expect(size.width / size.height).toBeCloseTo(0.75, 2);
+  });
+
+  it('rounds sharp widths up to a fixed ladder', () => {
+    expect(scaleStep(100)).toBe(256);
+    expect(scaleStep(600)).toBe(625);
+    expect(scaleStep(625)).toBe(625);
+    expect(scaleStep(626)).toBe(781);
+    expect(scaleStep(600, 2)).toBe(1024);
+    const size = sharpSize(
+      { width: 600, height: 800 },
+      { width: 300, height: 400 },
+      2,
+      createBudget(mac),
+      1.25,
+    );
+    expect(size).toEqual({ width: 625, height: 833 });
   });
 
   it('sizes previews by their long side', () => {

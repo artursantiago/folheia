@@ -1,6 +1,12 @@
 import type { PageRegion, PageSize, PageSource } from '../sources/types';
-import { previewSize, sharpSize, type PixelSize, type RenderBudget } from './budget';
-import { encodeCanvas } from './encode';
+import {
+  previewSize,
+  SCALE_STEP,
+  sharpSize,
+  type PixelSize,
+  type RenderBudget,
+} from './budget';
+import { encodeCanvas, scaleCanvas, type EncodedImage } from './encode';
 import { PageCache, type CachedImage } from './PageCache';
 import { RenderQueue } from './RenderQueue';
 
@@ -19,21 +25,30 @@ export interface PageImage extends CachedImage {
 export interface FocusPlan {
   /** On screen now: highest priority, never evicted. */
   visible: PageRef[];
-  /** Where the reader is heading (next spread): rendered sharp right after. */
+  /** Where the reader is heading (next spreads, nearest first): rendered sharp right after. */
   ahead: PageRef[];
   /** Where the reader came from: sharp, lower priority. */
   behind: PageRef[];
-  /** Nearby pages that only need a preview. */
+  /** Nearby pages that only need a preview, the ones ahead first. */
   nearby: PageRef[];
 }
 
 const PREVIEW_QUALITY = 0.7;
 const SHARP_QUALITY = 0.86;
-/** Sizes are bucketed so small resizes don't trigger re-renders. */
-const SIZE_STEP = 64;
+/**
+ * A separate preview only pays off when it renders much faster than the sharp
+ * page. In image-heavy files (comics, scans) both pay for decoding the full
+ * embedded image, so there the sharp render makes the preview too.
+ */
+const PREVIEW_PAYS_RATIO = 0.6;
 
 export function refKey(ref: PageRef): string {
   return ref.half ? `${ref.page}${ref.half === 'left' ? 'L' : 'R'}` : `${ref.page}`;
+}
+
+/** Sharp cache keys are `<ref>@<width>`; each page keeps at most one. */
+function sharpPrefix(ref: PageRef) {
+  return `${refKey(ref)}@`;
 }
 
 function regionOf(ref: PageRef): PageRegion | undefined {
@@ -55,13 +70,17 @@ export class PageRenderer {
   private listeners = new Set<Listener>();
   private failures = new Set<string>();
   private display: PixelSize = { width: 400, height: 560 };
+  /** Refs on screen: their sharp images are never evicted. */
   private pinned = new Set<string>();
   private destroyed = false;
+  /** Running average of how long the source takes per tier, in ms. */
+  private cost: Record<Tier, number> = { preview: 0, sharp: 0 };
 
   constructor(
     private readonly source: PageSource,
     private readonly budget: RenderBudget,
     private readonly pixelRatio: () => number = () => window.devicePixelRatio || 1,
+    private readonly scaleStep = SCALE_STEP,
   ) {
     this.previews = new PageCache(Math.round(budget.maxCacheBytes / 4));
     this.sharp = new PageCache(budget.maxCacheBytes);
@@ -77,8 +96,7 @@ export class PageRenderer {
 
   /** CSS-pixel size of one page slot on screen. */
   setDisplaySize(size: PixelSize) {
-    const bucket = (n: number) => Math.max(SIZE_STEP, Math.ceil(n / SIZE_STEP) * SIZE_STEP);
-    this.display = { width: bucket(size.width), height: bucket(size.height) };
+    this.display = { width: size.width, height: size.height };
   }
 
   subscribe(listener: Listener) {
@@ -89,7 +107,7 @@ export class PageRenderer {
   /** Sharp image if ready, else the preview, else nothing yet. */
   getImage(ref: PageRef): PageImage | undefined {
     const key = refKey(ref);
-    const sharp = this.sharp.peek(this.sharpKey(ref));
+    const sharp = this.sharp.findByPrefix(sharpPrefix(ref));
     if (sharp) return { ...sharp, tier: 'sharp' };
     const preview = this.previews.peek(key);
     return preview ? { ...preview, tier: 'preview' } : undefined;
@@ -103,28 +121,30 @@ export class PageRenderer {
   focus(plan: FocusPlan) {
     const wantedSharp = new Set<string>();
     const wantedPreview = new Set<string>();
-    this.pinned = new Set(plan.visible.map((ref) => this.sharpKey(ref)));
+    this.pinned = new Set(plan.visible.map(refKey));
 
+    // Pages that get a sharp render only need their own preview job when previews are cheap.
+    const previewFirst = this.previewsPay;
     plan.visible.forEach((ref, i) => {
-      this.requestPreview(ref, i, wantedPreview);
+      if (previewFirst) this.requestPreview(ref, i, wantedPreview);
       this.requestSharp(ref, 10 + i, wantedSharp);
     });
     plan.ahead.forEach((ref, i) => {
-      this.requestPreview(ref, 20 + i, wantedPreview);
+      if (previewFirst) this.requestPreview(ref, 20 + i, wantedPreview);
       this.requestSharp(ref, 30 + i, wantedSharp);
     });
-    plan.behind.forEach((ref, i) => {
-      this.requestPreview(ref, 40 + i, wantedPreview);
-      this.requestSharp(ref, 50 + i, wantedSharp);
-    });
-    plan.nearby.forEach((ref, i) => this.requestPreview(ref, 60 + i, wantedPreview));
+    if (previewFirst)
+      plan.behind.forEach((ref, i) => this.requestPreview(ref, 40 + i, wantedPreview));
+    // Cheap previews of the pages ahead come before the sharp page behind.
+    plan.nearby.forEach((ref, i) => this.requestPreview(ref, 45 + i, wantedPreview));
+    plan.behind.forEach((ref, i) => this.requestSharp(ref, 70 + i, wantedSharp));
 
     // Sharp images far from the reader are dropped right away; previews stay
     // (they are tiny and double as thumbnails) until their own budget is hit.
     this.queue.retain(
       (key) => wantedSharp.has(key) || wantedPreview.has(key) || key.startsWith('thumb:'),
     );
-    this.sharp.retain((key) => wantedSharp.has(key));
+    this.sharp.retain((key) => wantedSharp.has(key.slice(0, key.indexOf('@'))));
   }
 
   /** Preview-size image for the thumbnail panel; low priority. */
@@ -203,6 +223,8 @@ export class PageRenderer {
       sharpBytes: this.sharp.totalBytes,
       sharpCount: this.sharp.count,
       queued: this.queue.size,
+      previewMs: Math.round(this.cost.preview),
+      sharpMs: Math.round(this.cost.sharp),
     };
   }
 
@@ -215,8 +237,18 @@ export class PageRenderer {
     this.listeners.clear();
   }
 
-  private sharpKey(ref: PageRef) {
-    return `${refKey(ref)}@${this.display.width}x${this.display.height}`;
+  private get previewsPay() {
+    const { preview, sharp } = this.cost;
+    return !preview || !sharp || preview < sharp * PREVIEW_PAYS_RATIO;
+  }
+
+  /** Device-pixel size a sharp render of `ref` needs right now (on the scale ladder). */
+  private sharpTarget(ref: PageRef): PixelSize {
+    const page = this.sizeOf(ref);
+    // Fit the page inside the slot, then apply the pixel-ratio and canvas limits.
+    const fit = Math.min(this.display.width / page.width, this.display.height / page.height);
+    const shown = { width: page.width * fit, height: page.height * fit };
+    return sharpSize(page, shown, this.pixelRatio(), this.budget, this.scaleStep);
   }
 
   private requestPreview(ref: PageRef, priority: number, wanted: Set<string>) {
@@ -226,42 +258,65 @@ export class PageRenderer {
     this.queue.schedule({ key, priority, run: (signal) => this.renderPreview(ref, signal) });
   }
 
+  /**
+   * Never worse: a sharp image at least as big as needed is reused as is
+   * (one per page), and a smaller one stays on screen until its successor lands.
+   */
   private requestSharp(ref: PageRef, priority: number, wanted: Set<string>) {
-    const key = this.sharpKey(ref);
+    const prefix = sharpPrefix(ref);
+    wanted.add(refKey(ref));
+    const size = this.sharpTarget(ref);
+    const existing = this.sharp.findByPrefix(prefix);
+    if (existing && existing.width >= size.width) {
+      this.sharp.get(existing.key);
+      return;
+    }
+    if (this.failures.has(refKey(ref))) return;
+    const key = `${prefix}${size.width}`;
     wanted.add(key);
-    if (this.sharp.get(key) || this.failures.has(refKey(ref))) return;
-    const display = this.display;
-    this.queue.schedule({
-      key,
-      priority,
-      run: (signal) => this.renderSharp(ref, key, display, signal),
-    });
+    this.queue.schedule({ key, priority, run: (signal) => this.renderSharp(ref, size, signal) });
   }
 
   private async renderPreview(ref: PageRef, signal: AbortSignal) {
     const size = previewSize(this.sizeOf(ref), this.budget);
-    await this.renderInto(ref, size, PREVIEW_QUALITY, signal, (image) =>
-      this.previews.set(refKey(ref), image.blob, image.width, image.height),
-    );
+    await this.renderInto(ref, size, 'preview', signal, {
+      store: (image) => this.previews.set(refKey(ref), image.blob, image.width, image.height),
+    });
   }
 
-  private async renderSharp(ref: PageRef, key: string, display: PixelSize, signal: AbortSignal) {
-    const page = this.sizeOf(ref);
-    // Fit the page inside the slot, then apply the pixel-ratio and canvas limits.
-    const fit = Math.min(display.width / page.width, display.height / page.height);
-    const shown = { width: page.width * fit, height: page.height * fit };
-    const size = sharpSize(page, shown, this.pixelRatio(), this.budget);
-    await this.renderInto(ref, size, SHARP_QUALITY, signal, (image) =>
-      this.sharp.set(key, image.blob, image.width, image.height, this.pinned),
-    );
+  private async renderSharp(ref: PageRef, size: PixelSize, signal: AbortSignal) {
+    const key = refKey(ref);
+    const prefix = sharpPrefix(ref);
+    await this.renderInto(ref, size, 'sharp', signal, {
+      // Shrinking the sharp page is far cheaper than rendering a preview.
+      derive: async (canvas) => {
+        if (this.previews.peek(key)) return;
+        const small = scaleCanvas(canvas, previewSize(this.sizeOf(ref), this.budget));
+        const preview = await encodeCanvas(small, PREVIEW_QUALITY);
+        if (!signal.aborted && !this.destroyed)
+          this.previews.set(key, preview.blob, preview.width, preview.height);
+      },
+      store: (image) => {
+        // Replaces the smaller version this page had, if any.
+        this.sharp.retain((k) => !k.startsWith(prefix));
+        const pinned = new Set(
+          this.sharp.keys().filter((k) => this.pinned.has(k.slice(0, k.indexOf('@')))),
+        );
+        this.sharp.set(`${prefix}${size.width}`, image.blob, image.width, image.height, pinned);
+      },
+    });
   }
 
   private async renderInto(
     ref: PageRef,
     size: PixelSize,
-    quality: number,
+    tier: Tier,
     signal: AbortSignal,
-    store: (image: { blob: Blob; width: number; height: number }) => void,
+    steps: {
+      /** Runs on the rendered canvas before it is compressed (and released). */
+      derive?: (canvas: HTMLCanvasElement) => Promise<void>;
+      store: (image: EncodedImage) => void;
+    },
   ) {
     const region = regionOf(ref);
     // For a half page, render the full sheet width so the half lands at `size`.
@@ -269,14 +324,18 @@ export class PageRenderer {
       ? { width: size.width * 2, height: size.height, region }
       : { width: size.width, height: size.height };
     try {
+      const started = performance.now();
       const canvas = await this.source.render(ref.page, target, signal);
       if (signal.aborted || this.destroyed) {
         canvas.width = canvas.height = 0;
         return;
       }
-      const image = await encodeCanvas(canvas, quality);
+      const took = performance.now() - started;
+      this.cost[tier] = this.cost[tier] ? this.cost[tier] * 0.7 + took * 0.3 : took;
+      await steps.derive?.(canvas);
+      const image = await encodeCanvas(canvas, tier === 'sharp' ? SHARP_QUALITY : PREVIEW_QUALITY);
       if (signal.aborted || this.destroyed) return;
-      store(image);
+      steps.store(image);
       this.emit(refKey(ref));
     } catch (error) {
       if (signal.aborted || this.destroyed) return;

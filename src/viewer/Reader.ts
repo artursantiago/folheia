@@ -19,6 +19,9 @@ import type { LayoutPreference } from '../storage/preferences';
 
 export type { LayoutPreference };
 
+/** How many pages each way get a preview ready for quick leafing. */
+const PREVIEW_PAGES = 6;
+
 export interface ReaderOptions {
   layout: LayoutPreference;
   coverAlone: boolean;
@@ -459,16 +462,32 @@ export class Reader {
     return pages.map((p) => this.book.pages[p]?.ref).filter((ref): ref is PageRef => !!ref);
   }
 
-  /** Re-plans rendering around the current spread. */
+  /**
+   * Re-plans rendering around the current spread: sharp for this spread, the
+   * next two and the previous one; previews for about six pages each way.
+   */
   private plan() {
     const s = this.flip.spread;
+    const ahead = [...this.refs(s + 1), ...this.refs(s + 2)];
+    const behind = this.refs(s - 1);
     this.renderer.focus({
       visible: this.refs(s),
-      ahead: this.refs(s + 1),
-      behind: this.refs(s - 1),
-      nearby: [...this.refs(s + 2), ...this.refs(s - 2), ...this.refs(s + 3)],
+      ahead,
+      behind,
+      nearby: [
+        ...this.previewRefs(s + 3, 1, PREVIEW_PAGES - ahead.length),
+        ...this.previewRefs(s - 2, -1, PREVIEW_PAGES - behind.length),
+      ],
     });
     this.queueRefresh();
+  }
+
+  /** Up to `count` refs from spread `start` outward, in `step` direction. */
+  private previewRefs(start: number, step: 1 | -1, count: number): PageRef[] {
+    const refs: PageRef[] = [];
+    for (let s = start; refs.length < count && s >= 0 && s < this.book.spreads.length; s += step)
+      refs.push(...this.refs(s));
+    return refs;
   }
 
   private queueRefresh() {

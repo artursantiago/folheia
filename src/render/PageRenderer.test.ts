@@ -8,6 +8,7 @@ vi.mock('./encode', () => ({
     width: canvas.width,
     height: canvas.height,
   }),
+  scaleCanvas: (_canvas: unknown, size: { width: number; height: number }) => ({ ...size }),
 }));
 
 let urlCounter = 0;
@@ -45,9 +46,9 @@ describe('PageRenderer', () => {
     await vi.waitFor(() => expect(calls).toHaveLength(4));
     expect(calls.map((c) => [c.page, c.target.width])).toEqual([
       [4, 270],
-      [4, 640],
+      [4, 625],
       [5, 270],
-      [5, 640],
+      [5, 625],
     ]);
     expect(renderer.getImage({ page: 4 })?.tier).toBe('sharp');
   });
@@ -59,6 +60,50 @@ describe('PageRenderer', () => {
     await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.tier).toBe('sharp'));
     renderer.focus({ visible: [{ page: 8 }], ahead: [], behind: [], nearby: [] });
     expect(renderer.getImage({ page: 0 })?.tier).toBe('preview');
+  });
+
+  it('never makes a page worse: a big enough sharp image is reused after a resize', async () => {
+    const { source, calls } = fakeSource();
+    const renderer = new PageRenderer(source, desktop, () => 2);
+    const focus = () =>
+      renderer.focus({ visible: [{ page: 0 }], ahead: [], behind: [], nearby: [] });
+    renderer.setDisplaySize({ width: 300, height: 400 });
+    focus();
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.tier).toBe('sharp'));
+    const rendered = calls.length;
+
+    // A little smaller (e.g. immersive mode toggled): the 625 px render still serves.
+    renderer.setDisplaySize({ width: 280, height: 380 });
+    focus();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(calls).toHaveLength(rendered);
+
+    // Bigger: the next rung replaces the old image, which stays up meanwhile.
+    renderer.setDisplaySize({ width: 360, height: 480 });
+    focus();
+    expect(renderer.getImage({ page: 0 })?.width).toBe(625);
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.width).toBe(781));
+    expect(renderer.stats().sharpCount).toBe(1);
+  });
+
+  it('skips separate previews when they cost as much as sharp pages (comics)', async () => {
+    const { source, calls } = fakeSource();
+    const render = source.render;
+    // Like a scanned comic: decoding the page image dominates, whatever the output size.
+    source.render = async (page, target, signal) => {
+      await new Promise((resolve) => setTimeout(resolve, 15));
+      return render(page, target, signal);
+    };
+    const renderer = new PageRenderer(source, desktop, () => 1);
+    renderer.focus({ visible: [{ page: 0 }], ahead: [], behind: [], nearby: [] });
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.tier).toBe('sharp'));
+    calls.length = 0;
+
+    renderer.focus({ visible: [{ page: 4 }], ahead: [{ page: 5 }], behind: [], nearby: [] });
+    await vi.waitFor(() => expect(renderer.getImage({ page: 5 })?.tier).toBe('sharp'));
+    // One render per page; the preview comes from shrinking the sharp one.
+    expect(calls.map((c) => c.page)).toEqual([4, 5]);
+    expect(renderer.stats().previewCount).toBe(3);
   });
 
   it('renders half pages from the full sheet with a region', async () => {

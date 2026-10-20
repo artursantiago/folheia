@@ -72,6 +72,16 @@ export class PageCache {
     this.urls.revoke(entry.url);
   }
 
+  /** First entry whose key starts with `prefix` (without touching its recency). */
+  findByPrefix(prefix: string): CachedImage | undefined {
+    for (const [key, entry] of this.entries) if (key.startsWith(prefix)) return entry;
+    return undefined;
+  }
+
+  keys() {
+    return [...this.entries.keys()];
+  }
+
   /** Drops entries the caller no longer wants, regardless of budget. */
   retain(keep: (key: string) => boolean) {
     for (const key of [...this.entries.keys()]) if (!keep(key)) this.delete(key);

@@ -34,3 +34,19 @@ export async function encodeCanvas(
   canvas.height = 0;
   return { blob, width, height };
 }
+
+/** A smaller copy of a rendered canvas (the original is left untouched). */
+export function scaleCanvas(
+  canvas: HTMLCanvasElement,
+  size: { width: number; height: number },
+): HTMLCanvasElement {
+  const small = document.createElement('canvas');
+  small.width = size.width;
+  small.height = size.height;
+  const context = small.getContext('2d');
+  if (context) {
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(canvas, 0, 0, size.width, size.height);
+  }
+  return small;
+}
