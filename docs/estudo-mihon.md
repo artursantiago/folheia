@@ -773,26 +773,28 @@ Os detalhes e a ordem estão em §6.5. O P0 já foi medido (20/10/2026); os núm
 > - o que muda no iPad, no celular e no app Android.
 >
 > Os itens abaixo são entradas para esse estudo, não tarefas.
+>
+> **Triados em 20/10/2026** na sabatina do `estudo-interface.md`, que tem as decisões completas. As etapas (0–5) estão no §7 de lá. Nada começa antes da revisão conjunta dos estudos.
 
-| ID  | Candidato                                                                                                              | Ref.       | Esforço | Impacto | Decisão |
-| --- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | ------- | ------- | ------- |
-| I0  | **Estudo de interface e redesign** da biblioteca pessoal (pré-requisito dos demais). Proposta em `estudo-interface.md` | §3, §7     | M       | alto    |         |
-| I1  | Acervo como tela inicial ("Meus livros"), substituindo o papel do "Recentes"                                           | §3.2       | G       | alto    |         |
-| I2  | Estantes (um livro em várias; "Por catalogar"; remanejar em lote com caixas de três estados)                           | §3.2       | M       | alto    |         |
-| I3  | Exibição: grade de capas, lista e fichário; colunas por orientação                                                     | §3.2       | M       | médio   |         |
-| I4  | Selos na capa (progresso, novo, concluído, formato)                                                                    | §3.2       | P       | médio   |         |
-| I5  | Ficha catalográfica do livro (metadados, nº de tombo, estantes, notas; tocar no autor filtra)                          | §3.3       | M       | alto    |         |
-| I6  | Marcadores de página com miniatura (lacuna do Mihon) e filtro "com marcadores"                                         | §3.5       | M       | alto    |         |
-| I7  | Registro de leitura (agrupado por dia, retoma ao tocar, tempo de leitura)                                              | §3.4       | M       | médio   |         |
-| I8  | Desfazer (remover livro, estante, marcador) e estados vazios no tom da biblioteca                                      | §3.6       | P       | médio   |         |
-| I9  | iPad: trilho lateral de navegação e dois painéis (acervo + ficha)                                                      | §3.1, §3.3 | M       | médio   |         |
-| I10 | Busca no acervo (simples primeiro; campos tipo `autor:` depois)                                                        | §3.2       | P-M     | médio   |         |
-| I11 | Série como agrupamento opcional (do `ComicInfo.xml` Series + Number, ou à mão)                                         | §7         | M       | médio   |         |
-| I12 | Escolher uma página como capa                                                                                          | §3.3       | P       | baixo   |         |
-| I13 | Aviso de exemplar repetido ao adicionar                                                                                | §3.3       | P       | baixo   |         |
-| I14 | Leitura sem registro (modo anônimo)                                                                                    | §3.4       | P       | baixo   |         |
-| I15 | Estatísticas ("relatório da biblioteca")                                                                               | §3.4       | M       | baixo   |         |
-| I16 | Exportar e importar o acervo em JSON (sem os arquivos); essencial antes do app                                         | §3.4       | M       | médio   |         |
+| ID  | Candidato                                                                                                              | Ref.       | Esforço | Impacto | Decisão                                                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | ------- | ------- | --------------------------------------------------------- |
+| I0  | **Estudo de interface e redesign** da biblioteca pessoal (pré-requisito dos demais). Proposta em `estudo-interface.md` | §3, §7     | M       | alto    | **Feito** (20/10/2026): `estudo-interface.md`, sabatinado |
+| I1  | Acervo como tela inicial ("Meus livros"), substituindo o papel do "Recentes"                                           | §3.2       | G       | alto    | **Sim**, etapa 2; substitui o C6                          |
+| I2  | Estantes (um livro em várias; "Por catalogar"; remanejar em lote com caixas de três estados)                           | §3.2       | M       | alto    | **Sim**, etapa 3; sem estantes, sem abas                  |
+| I3  | Exibição: grade de capas, lista e fichário; colunas por orientação                                                     | §3.2       | M       | médio   | **Sim**, etapa 3; padrão capas                            |
+| I4  | Selos na capa (progresso, novo, concluído, formato)                                                                    | §3.2       | P       | médio   | **Sim**, etapa 2; tombo fora da capa                      |
+| I5  | Ficha catalográfica do livro (metadados, nº de tombo, estantes, notas; tocar no autor filtra)                          | §3.3       | M       | alto    | **Sim**, etapas 2–3; página, painel ou diálogo            |
+| I6  | Marcadores de página com miniatura (lacuna do Mihon) e filtro "com marcadores"                                         | §3.5       | M       | alto    | **Sim**, etapa 4; fita + `B`                              |
+| I7  | Registro de leitura (agrupado por dia, retoma ao tocar, tempo de leitura)                                              | §3.4       | M       | médio   | **Sim**, etapa 4, como "Leituras"; **sem tempo**          |
+| I8  | Desfazer (remover livro, estante, marcador) e estados vazios no tom da biblioteca                                      | §3.6       | P       | médio   | **Sim**, etapas 2–3                                       |
+| I9  | iPad: trilho lateral de navegação e dois painéis (acervo + ficha)                                                      | §3.1, §3.3 | M       | médio   | **Sim**: trilho ≥ 600px (1); dois painéis ≥ 1024px (5)    |
+| I10 | Busca no acervo (simples primeiro; campos tipo `autor:` depois)                                                        | §3.2       | P-M     | médio   | **Sim**, simples, etapa 3; campos no backlog              |
+| I11 | Série como agrupamento opcional (do `ComicInfo.xml` Series + Number, ou à mão)                                         | §7         | M       | médio   | **Só o dado** (etapa 3); pilha no backlog                 |
+| I12 | Escolher uma página como capa                                                                                          | §3.3       | P       | baixo   | **Sim**, etapa 3                                          |
+| I13 | Aviso de exemplar repetido ao adicionar                                                                                | §3.3       | P       | baixo   | **Automático**: mesma impressão digital                   |
+| I14 | Leitura sem registro (modo anônimo)                                                                                    | §3.4       | P       | baixo   | **Sim**, modo global, etapa 4                             |
+| I15 | Estatísticas ("relatório da biblioteca")                                                                               | §3.4       | M       | baixo   | **Não**: backlog "se houver vontade"                      |
+| I16 | Exportar e importar o acervo em JSON (sem os arquivos); essencial antes do app                                         | §3.4       | M       | médio   | **Sim**, etapa 1                                          |
 
 ### 8.4 Fontes e catálogos
 

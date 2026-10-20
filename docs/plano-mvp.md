@@ -228,22 +228,42 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
 
 ### C. Tela inicial (prioridade média)
 
-6. **"Recentes" como conteúdo principal do início.** Os livros abertos ficam guardados no aparelho e aparecem primeiro. Isso substitui o antigo item "biblioteca local + estante de lombadas"; a estante continua uma opção de visual.
-   - **Capas:**
-     - gerar a capa a partir da 1ª página do próprio arquivo, guardada localmente;
-     - sem página utilizável, usar a capa tipográfica de hoje (título, ornamento, autor), que o Artur aprovou;
-     - _Decidir:_ buscar capa na internet (ex.: Open Library) ou não. Isso faz requisições externas e conflita com a privacidade, então precisa de decisão explícita.
-   - _Decidir:_
-     - o que guardar (só metadados e a capa, ou o arquivo inteiro para reabrir sem escolher de novo);
-     - quanto espaço usar;
-     - como remover um livro;
-     - o que fazer quando o arquivo original não existe mais.
-   - _Técnica:_ IndexedDB/OPFS na web, atrás da camada `platform/` (ver item 19).
+6. ~~**"Recentes" como conteúdo principal do início.**~~ **Substituído em 20/10/2026** pela biblioteca pessoal (seção C2, abaixo). As perguntas que estavam abertas aqui foram respondidas na sabatina do `estudo-interface.md`: copiar o arquivo por padrão, sem cota fixa; remover com desfazer; o livro sem arquivo fica no acervo como "exemplar ausente"; a capa sai da 1ª página e, sem ela, usa a capa tipográfica.
+   - _Ainda aberto:_ buscar capa na internet (ex.: Open Library). Isso faz requisições externas e conflita com a privacidade, então precisa de decisão explícita.
 7. **Exemplos com menos destaque.** O carrossel "Do acervo · obras em domínio público" está grande demais para o papel dele. A ideia é um acesso secundário, como um link ou botão "Ver exemplos" que abre só essa parte. O visual do carrossel em si ficou bom.
+   - **Decidido (20/10/2026):** os exemplos vão para a seção **Catálogos** na etapa 2 da biblioteca (C2).
 8. **Menos menções a "PDF e CBZ".** O texto aparece no cabeçalho, na frase de abertura e na área de soltar, além do README e da descrição do repositório. O certo é dizer uma vez, num lugar discreto, principalmente o "CBZ".
 9. **Carimbos com menos ênfase.** O estilo do carimbo (`Stamp`) agradou e combina com a identidade, mas "Seu arquivo não sai deste aparelho" e "Domínio público" estão em destaque demais; privacidade não é o foco do app.
    - Manter o componente.
    - Rever onde ele aparece. Por exemplo: privacidade só no "Sobre" ou numa linha pequena; "domínio público" só na ficha do livro.
+   - **Decidido (20/10/2026):** os carimbos vão para o "Sobre", em Mais, na etapa 2 da biblioteca (C2).
+
+### C2. Biblioteca pessoal (decidida em 20/10/2026)
+
+O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do Mihon. O estudo e todas as decisões estão em **`estudo-interface.md`** (seções Acervo, Leituras, Catálogos e Mais). **Nada começa antes da revisão conjunta dos estudos que o Artur vai fazer.** Cada etapa passa por sabatina própria antes de ser implementada.
+
+- **Etapa 0, protótipo v2:** as telas novas na linguagem Ex-libris (`estudo-interface.md` §8). Nenhum código. Anda em paralelo com a etapa 1.
+- **Etapa 1, fundações:**
+  - armazenamento assíncrono (IndexedDB) + migração do `localStorage`;
+  - cópia dos arquivos no OPFS;
+  - identidade do livro (CBZ pelo diretório central do ZIP) e tombo;
+  - rotas com histórico (Voltar);
+  - interfaces de abrir, guardar e buscar em `platform/`;
+  - tokens de corte de tela (600px e 1024px);
+  - exportar/importar o acervo em JSON.
+
+  A mudança para a organização `folheia-app` vem **antes** desta etapa ir para a `main` (§9).
+
+- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Catálogos (exemplos) e Mais. Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer e o "⋯" do leitor no celular. Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
+- **Etapa 3, organização:** estantes, seleção em lote, as três exibições (capas é o padrão), ordenar (última leitura é o padrão), filtrar, buscar, série, notas e capa escolhida.
+- **Etapa 4, Leituras e marcadores:** a seção Leituras (sem tempo de leitura), os marcadores de página (fita + `B`) e a leitura sem registro (modo global). Independente da etapa 3.
+- **Etapa 5, tablet:** dois painéis (acervo + ficha) a partir de 1024px.
+- **Fora das etapas, se houver vontade:**
+  - estatísticas ("relatório da biblioteca");
+  - pilha de volumes de uma série na grade;
+  - busca com campos (`autor:`, `serie:`);
+  - seção própria para marcadores;
+  - OPDS e fontes, como itens próprios (`estudo-mihon.md` §8.4).
 
 ### D. Identidade (prioridade média)
 
@@ -281,6 +301,7 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
     - A tela inicial precisa virar a **biblioteca pessoal** ("meus livros"), não só um site para abrir um arquivo.
     - Os dados do app (biblioteca, progresso) provavelmente vão para **SQLite** no aparelho (ex.: `@capacitor-community/sqlite`, MIT) e os arquivos para o Filesystem. A camada `src/platform/` já isola armazenamento, abrir arquivo e compartilhar.
     - Inclui splash e ícones nativos (itens 10 e 11).
+    - **Biblioteca no Android (20/10/2026, `estudo-interface.md`):** a tendência é uma **pasta da biblioteca**, que o app lê sem copiar, como a fonte local do Mihon. O empacotamento (Capacitor ou TWA) e onde ficam os dados se decidem na fase do app.
 
 ### E2. Ideias vindas do Internet Archive
 
@@ -293,7 +314,7 @@ Os candidatos estão em **`estudo-mihon.md` §8**, aguardando a triagem do Artur
 
 - leitor: L1–L12;
 - desempenho: P0–P10, ligado ao item A3;
-- interface e biblioteca: I0–I16. É um **redesign grande**; começa por um estudo de interface próprio, o I0;
+- interface e biblioteca: I0–I16. **Triados em 20/10/2026** e virados na seção C2;
 - fontes e catálogos: F1–F8;
 - plataforma e repositórios: O1–O2.
 
@@ -309,3 +330,4 @@ O que for aprovado entra nas seções certas deste backlog.
 
 - Criar o repositório **público** `artursantiago/folheia` com `gh` e fazer o push.
 - Ativar o GitHub Pages com a fonte "GitHub Actions".
+- **Mudar o repositório para a organização `folheia-app`** (decidido em 20/10/2026, `estudo-interface.md`): depois da revisão conjunta dos estudos e **antes** de a etapa 1 da biblioteca (C2) ir para a `main`, para o acervo já nascer na origem nova. Só com nenhuma outra sessão trabalhando no repositório. Na hora, conferir se o GitHub Pages redireciona o endereço antigo e reinstalar o PWA do iPad.
