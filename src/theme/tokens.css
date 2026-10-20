@@ -37,6 +37,12 @@
   --color-shadow: light-dark(rgb(43 36 32 / 22%), rgb(0 0 0 / 60%));
   --color-lamp-core: light-dark(#f3ede1, #252e3b);
   --color-lamp-mid: light-dark(#f3ede1, #1a2029);
+  --color-binding-terracotta: #b4532a;
+  --color-binding-green: #3e5641;
+  --color-binding-blue: #2e4a5a;
+  --color-binding-violet: #6f5585;
+  --color-binding-ink: #f6efe2;
+  --color-binding-gold: #f2c46b;
   --color-page: #fbf8f1;
   --color-page-line: #cfc5b5;
   --color-page-ink: #3a322b;
@@ -83,6 +89,7 @@
   /* Shape */
   --radius-control: 3px;
   --radius-card: 4px;
+  --radius-spine: 2px;
   --radius-round: 999px;
   --border-width: 1.5px;
   --border-hair: 1px;

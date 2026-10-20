@@ -26,7 +26,7 @@ export default {
     'declaration-property-value-allowed-list': {
       'font-family': ['/^var\\(--/', 'inherit'],
       'font-size': ['/^var\\(--/', '/^clamp\\(var\\(--/', 'inherit', '100%', '1em'],
-      'border-radius': ['/^var\\(--/', '0', '50%', 'inherit'],
+      'border-radius': ['/^(var\\(--[a-z-]+\\)\\s*)+$/', '0', '50%', 'inherit'],
     },
   },
   overrides: [

@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect } from 'react';
+import { exampleForUrl } from '../examples';
 import { preferences } from '../storage/preferences';
 import { applyTheme } from '../theme/applyTheme';
+import { useI18n } from './hooks/useI18n';
 import { useStore } from './hooks/useStore';
 import { route } from './router';
 import { closeBook, openBook, session } from './session';
@@ -15,7 +17,8 @@ const Lab = lazy(() => import('./pages/Lab'));
 /** Opens ?file=https://… once on startup. */
 function openFromQuery() {
   const file = new URLSearchParams(window.location.search).get('file');
-  if (file && isAcceptableUrl(file)) void openBook({ kind: 'url', url: file });
+  if (file && isAcceptableUrl(file))
+    void openBook({ kind: 'url', url: file, example: exampleForUrl(file) });
 }
 
 function clearBookFromAddress() {
@@ -27,6 +30,7 @@ function clearBookFromAddress() {
 
 export function App() {
   const { theme } = useStore(preferences);
+  const { t } = useI18n();
   const current = useStore(route);
   const state = useStore(session);
 
@@ -41,6 +45,9 @@ export function App() {
       </Suspense>
     );
   }
+
+  const example =
+    state.status === 'open' && state.request.kind === 'url' ? state.request.example : undefined;
 
   const back = () => {
     clearBookFromAddress();
@@ -62,9 +69,21 @@ export function App() {
       {state.status === 'open' && (
         <ReaderScreen
           source={state.source}
-          metadata={state.metadata}
+          metadata={
+            example
+              ? {
+                  ...state.metadata,
+                  title: example.title,
+                  author: example.author,
+                  date: String(example.year),
+                }
+              : state.metadata
+          }
           name={state.name}
           request={state.request}
+          credit={
+            example ? { source: example.source, license: t('license.publicDomain') } : undefined
+          }
           onClose={back}
         />
       )}

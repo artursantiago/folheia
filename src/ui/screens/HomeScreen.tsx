@@ -14,6 +14,7 @@ import { useDarkScheme } from '../hooks/useDarkScheme';
 import { useI18n } from '../hooks/useI18n';
 import { useStore } from '../hooks/useStore';
 import { openBook } from '../session';
+import { Collection } from '../home/Collection';
 import styles from './HomeScreen.module.css';
 
 export function isAcceptableUrl(value: string): boolean {
@@ -172,6 +173,7 @@ export function HomeScreen() {
           )}
         </Card>
       </main>
+      <Collection onOpen={(book) => void openBook({ kind: 'url', url: book.url, example: book })} />
     </div>
   );
 }

@@ -138,4 +138,9 @@
   .hero {
     margin-top: var(--space-2);
   }
+
+  .bring {
+    line-height: var(--rule-step);
+    margin-bottom: var(--space-2);
+  }
 }

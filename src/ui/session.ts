@@ -1,8 +1,10 @@
 import { createStore } from '../lib/store';
 import { openPdf, type PdfInput } from '../sources/pdf/PdfSource';
+import type { ExampleBook } from '../examples';
 import { SourceError, type BookMetadata, type PageSource } from '../sources/types';
 
-export type OpenRequest = { kind: 'file'; file: File } | { kind: 'url'; url: string };
+export type OpenRequest =
+  { kind: 'file'; file: File } | { kind: 'url'; url: string; example?: ExampleBook | undefined };
 
 export interface PasswordRequest {
   name: string;
@@ -27,6 +29,7 @@ export const passwordRequest = createStore<PasswordRequest | undefined>(undefine
 
 export function nameOf(request: OpenRequest): string {
   if (request.kind === 'file') return request.file.name;
+  if (request.example) return request.example.title;
   try {
     const path = new URL(request.url).pathname;
     return decodeURIComponent(path.split('/').filter(Boolean).pop() ?? request.url);
