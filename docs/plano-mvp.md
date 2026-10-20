@@ -259,6 +259,21 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 - **Leitura em voz alta** com a Web Speech API, que roda no aparelho, a partir da camada de texto do PDF.
 - **Grade de miniaturas como modo de visualização** do livro, além da gaveta atual.
 
+### E3. Ideias vindas do Mihon
+
+Ver `estudo-referencias.md` §13 (ideias de leitor de mangá).
+
+- **Páginas da virada protegidas no cache:** não expulsar as páginas de uma virada em andamento e expulsar primeiro a mais distante (ajuda A3).
+- **Progresso gravado só quando a leitura para** numa página, com gravação garantida ao sair.
+- **Dica visual das zonas de toque** na primeira leitura.
+- **"Zoom e percorrer"** spreads largos em tela de uma página (iPad em pé), como alternativa a dividir.
+- **Pareamento de página dupla:** recomeçar a paridade depois de página sozinha e só parear proporções parecidas.
+- **Ajustes por livro** (direção, modo, escala) sobre os globais.
+- **Fundo automático** pela cor da borda da página (modo "só o livro").
+- **Cortar margens** de PDFs escaneados.
+- **Cliente OPDS** para o servidor pessoal do usuário (Komga, Kavita, Calibre-web), com a URL adicionada por ele. Exige que o servidor libere CORS na web; no Capacitor, não.
+- **Fora de escopo:** extensões e fontes de scanlation no estilo Mihon (CORS, jurídico, segurança).
+
 ### G. Se houver demanda
 
 20. GoatCounter (métricas sem cookies).
