@@ -406,7 +406,7 @@ O Artur quer algo parecido para estudo e uso pessoal: **site estático e custo z
 **O problema (CORS).**
 
 - Quando uma página da web tenta ler dados de **outro site**, o navegador só entrega a resposta se esse outro site disser "pode" (o cabeçalho `Access-Control-Allow-Origin`). É uma proteção: sem ela, qualquer página que você abrisse poderia ler o seu e-mail ou o seu banco usando a sua sessão.
-- Os sites de mangá não dizem "pode". Então o Folheia, rodando em `artursantiago.github.io`, até consegue **mostrar** uma imagem deles numa `<img>`, mas não consegue **ler** a página HTML para descobrir quais capítulos e imagens existem.
+- Os sites de mangá não dizem "pode". Então o Folheia, rodando em `folheia-app.github.io`, até consegue **mostrar** uma imagem deles numa `<img>`, mas não consegue **ler** a página HTML para descobrir quais capítulos e imagens existem.
 - Além disso, muitos sites exigem cabeçalhos como `Referer` ("vim do próprio site"), e o navegador proíbe a página de mudar esses cabeçalhos.
 
 **Por que o app não tem esse problema.**

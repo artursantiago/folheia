@@ -2,7 +2,7 @@
 
 **Leitor de PDF e HQ (CBZ) em formato de livro, com efeito de virar página.** Gratuito, open source e 100% no navegador: **seu arquivo nunca sai do seu aparelho.**
 
-🔗 **Site:** <https://artursantiago.github.io/folheia/>
+🔗 **Site:** <https://folheia-app.github.io/folheia/>
 🇬🇧 [English summary](README.en.md)
 
 > MVP no ar. Veja o [plano](docs/plano-mvp.md) para o que já existe e o que vem depois.
@@ -14,7 +14,7 @@ O Folheia abre um PDF ou CBZ e mostra o conteúdo como um livro de verdade: pág
 - **Privado:** sem servidor, sem conta, sem métricas e sem scripts de terceiros. Todo o processamento roda no seu navegador.
 - **Leve com arquivos pesados:** só as páginas perto da atual são renderizadas; as distantes são descartadas da memória.
 - **Instalável:** funciona como app (PWA) e abre arquivos locais sem internet.
-- **Por link:** `https://artursantiago.github.io/folheia/?file=https://exemplo.org/livro.pdf` abre um arquivo publicado na web, desde que o servidor dele permita (CORS).
+- **Por link:** `https://folheia-app.github.io/folheia/?file=https://exemplo.org/livro.pdf` abre um arquivo publicado na web, desde que o servidor dele permita (CORS).
 
 ## Como rodar localmente
 

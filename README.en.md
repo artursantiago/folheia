@@ -2,7 +2,7 @@
 
 **A PDF and comic book (CBZ) reader that looks and feels like a real book, page-turn effect included.** Free, open source and 100% in the browser: **your file never leaves your device.**
 
-🔗 **Live:** <https://artursantiago.github.io/folheia/>
+🔗 **Live:** <https://folheia-app.github.io/folheia/>
 🇧🇷 [Leia em português](README.md) (main documentation)
 
 > Work in progress. The MVP is being built in stages; see the [plan (in Portuguese)](docs/plano-mvp.md).
