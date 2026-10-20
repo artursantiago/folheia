@@ -261,18 +261,55 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 
 ### E3. Ideias vindas do Mihon
 
-Ver `estudo-referencias.md` §13 (ideias de leitor de mangá).
+Ver `estudo-mihon.md` (estudo completo, 20/10/2026).
 
-- **Páginas da virada protegidas no cache:** não expulsar as páginas de uma virada em andamento e expulsar primeiro a mais distante (ajuda A3).
-- **Progresso gravado só quando a leitura para** numa página, com gravação garantida ao sair.
+**Leitor** (`estudo-mihon.md` §2):
+
+- **Progresso gravado só quando a leitura para** numa página, com gravação garantida ao sair (`pagehide`/`visibilitychange`).
 - **Dica visual das zonas de toque** na primeira leitura.
 - **"Zoom e percorrer"** spreads largos em tela de uma página (iPad em pé), como alternativa a dividir.
 - **Pareamento de página dupla:** recomeçar a paridade depois de página sozinha e só parear proporções parecidas.
 - **Ajustes por livro** (direção, modo, escala) sobre os globais.
 - **Fundo automático** pela cor da borda da página (modo "só o livro").
 - **Cortar margens** de PDFs escaneados.
-- **Cliente OPDS** para o servidor pessoal do usuário (Komga, Kavita, Calibre-web), com a URL adicionada por ele. Exige que o servidor libere CORS na web; no Capacitor, não.
-- **Fora de escopo:** extensões e fontes de scanlation no estilo Mihon (CORS, jurídico, segurança).
+
+**Desempenho** (`estudo-mihon.md` §6). Liga-se ao item A3; os experimentos P0–P10 têm a ordem sugerida lá. Os principais:
+
+- **Achados rápidos:**
+  - calcular o plano **antes** de retomar a fila no fim da virada;
+  - planejar pelo destino das viradas enfileiradas;
+  - despejar o cache pela **distância**, com as páginas da virada presas.
+- **CBZ sem recompressão:** o Blob original é o cache frio, e `createImageBitmap` reduzido num worker.
+- **Janela quente em `ImageBitmap`** exibida em canvas, comprimindo só o que sai da janela.
+- **HQ em PDF:** decodificar uma vez a imagem única da página e tirar dela a nítida, a prévia e o zoom.
+- Medir o iPad **em HTTPS**, porque o `ImageDecoder` só existe em contexto seguro.
+
+**Biblioteca pessoal** (`estudo-mihon.md` §3 e §7). Evolui o item C6 e a biblioteca do item 19:
+
+- **Acervo** como tela inicial.
+- **Estantes:** um livro em várias; remanejar em lote.
+- **Exibição:** grade, lista ou fichário, com colunas por orientação.
+- **Selos de progresso** na capa.
+- **Ficha catalográfica** do livro: metadados, nº de tombo, notas; tocar no autor filtra.
+- **Marcadores de página**, que o Mihon não tem.
+- **Registro de leitura**, com tempo, agrupado por dia.
+- **Desfazer** e estados vazios no tom da biblioteca.
+- **Layout do iPad:** trilho lateral e dois painéis.
+- **Depois:**
+  - escolher uma página como capa;
+  - aviso de exemplar repetido;
+  - leitura sem registro;
+  - estatísticas;
+  - exportar e importar o acervo em JSON.
+
+**Fontes e catálogos** (`estudo-mihon.md` §4 e §5). **Decisão pendente do Artur**, porque cada etapa muda regras do `CLAUDE.md`:
+
+1. **Interface de catálogo + cliente OPDS** (Komga, Kavita, Calibre-web, Suwayomi), com Internet Archive via IIIF.
+   - Com o **Suwayomi no Mac + Tailscale**, isso já dá acesso às fontes do Mihon sem escrever nenhuma.
+   - O site continua estático.
+   - Muda a regra 2 para aceitar servidores adicionados pelo usuário.
+2. **Fontes JS isoladas** (QuickJS-WASM), com índice assinado (Ed25519) num repositório próprio, separado do público.
+3. **Rede de verdade:** HTTP nativo do Capacitor e WebView para o Cloudflare. Na web, um userscript ou um proxy próprio opcional (Cloudflare Worker).
 
 ### G. Se houver demanda
 

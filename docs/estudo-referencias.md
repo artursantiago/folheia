@@ -459,212 +459,29 @@ Desta vez li o código-fonte do BookReader (repositório público, licença AGPL
 
 ## 13) Mihon: leitor de mangá para Android (20/10/2026)
 
-O Artur usa o Mihon e pediu um estudo do app: o leitor, as telas e o sistema de fontes/extensões. O repositório é público, com licença **Apache-2.0**. Dois agentes de estudo leram um clone raso e temporário, sem rodar o build, e escreveram notas com as próprias palavras. Este resumo foi feito a partir dessas notas. Nenhum código, nome interno ou asset do Mihon entra no Folheia. Os caminhos citados servem só como evidência.
+O estudo completo está em **`estudo-mihon.md`**: o leitor, as telas, as fontes e extensões, as opções para ter fontes no Folheia e a comparação de desempenho. Os pontos principais:
 
-O Mihon é o sucessor do **Tachiyomi**, que encerrou o desenvolvimento em janeiro de 2024 depois de pressão jurídica da Kakao Entertainment. Ele é um app Android em Kotlin e **não lê PDF**: não há nenhuma menção a PDF no código. Lê pastas de imagens, ZIP/CBZ, RAR/CBR, 7z, TAR e as imagens de EPUB.
-
-### 13.1 Telas
-
-- **Biblioteca.** Grade (compacta, confortável, só capas) ou lista, com categorias em abas.
-  - Selos de "não lidos", "baixado", "local" e idioma.
-  - Um botão "continuar lendo" em cada capa.
-  - Filtros de três estados (sim, não, tanto faz) e muitas ordenações.
-  - O que agrada é abrir direto no que importa: capas grandes e um toque para retomar.
-- **Ficha da obra.** Capa, autor, status, sinopse que expande e lista de capítulos com filtros, seleção múltipla e "marcar anteriores como lidos". Um botão flutuante **Começar/Continuar** e um aviso quando faltam capítulos.
-- **Atualizações** e **Histórico**, agrupados por "hoje / ontem / data".
-- **Explorar.** Fontes, extensões, migração entre fontes e busca global.
-- **Mais.** Modo anônimo, fila de downloads, estatísticas, ajustes **com busca**, backup e restauração granulares e uma introdução em passos.
-
-### 13.2 Modos de leitura
-
-São cinco modos:
-
-- paginado da esquerda para a direita;
-- paginado da direita para a esquerda (o **padrão**, porque o foco é mangá);
-- paginado vertical;
-- **webtoon**: uma tira contínua sem espaço entre as páginas;
-- contínuo vertical com espaço entre as páginas.
-
-Cada modo é a combinação de duas propriedades independentes: a direção (horizontal ou vertical) e o tipo (paginado ou contínuo).
-
-- **Global e por obra.** Há um padrão global e um valor por obra, que pode ser "Padrão". Trocar o modo pelo leitor muda só a obra atual. Ao abrir, um aviso curto mostra o modo que está valendo.
-- **Visualizador experimental.** Uma versão nova do leitor traz página dupla (nunca, sempre, ou só na horizontal) e transições escolhíveis (virar página, cubo, fade...).
-
-### 13.3 Zonas de toque: ações lógicas e físicas
-
-A ideia mais útil do leitor.
-
-**Dois tipos de ação.**
-
-- **Lógicas:** "próxima" e "anterior", que seguem a direção de leitura.
-- **Físicas:** "esquerda" e "direita", que não mudam com a direção.
-
-No modo paginado, as zonas são físicas. Por isso o mesmo desenho funciona em LTR e em RTL sem nenhuma inversão manual. No teclado, as setas são físicas.
-
-**Layouts.** Cada layout é uma lista de retângulos numa grade 3×3, em coordenadas de 0 a 1. Tocar fora deles abre o menu.
-
-- **Em "L"**, o padrão no vertical.
-- **Estilo Kindle.**
-- **Bordas**, para usar com uma mão.
-- **Esquerda/direita**, o padrão no paginado.
-- **Desligado.**
-
-Todos podem ser espelhados na horizontal ou na vertical.
-
-**Dica visual.**
-
-- Na primeira leitura, e sempre que o layout muda, uma camada pinta cada zona com uma cor translúcida e escreve "Anterior", "Próxima" ou "Menu".
-- O primeiro toque faz a camada sumir num fade.
-- Uma opção a mostra de novo ao abrir.
-
-O Folheia já segue a regra das setas físicas (`ReaderScreen.tsx`). Falta a dica visual.
-
-### 13.4 Páginas
-
-- **Spread em tela de uma página.** Três opções:
-  - dividir em duas páginas;
-  - girar 90°;
-  - **"zoom e percorrer"**: a página anima até caber na altura, começando pelo lado da direção de leitura, e o toque de "próxima" **anda pela imagem** antes de virar.
-
-  O Folheia já divide. O "zoom e percorrer" seria uma alternativa melhor para o iPad em pé.
-
-- **Pareamento da página dupla:**
-  - a capa fica sozinha;
-  - uma página larga (proporção acima de ~1,2) fica sozinha, e a **paridade recomeça** logo depois dela;
-  - duas páginas só formam par se tiverem proporções parecidas;
-  - para o progresso, conta a última página do spread.
-
-  Reforça a regra do branco virtual que já temos.
-
-- **Cortar bordas** brancas ou pretas, com um botão próprio na barra. É desligado no modo duplo, para não desalinhar a dobra.
-- **Fundo automático.** Amostra os cantos e as bordas da página e escolhe entre a cor sólida da borda, preto ou branco, para a página "sangrar" no fundo.
-- **Memória.**
-  - O leitor paginado clássico guarda 1 página de cada lado.
-  - O experimental guarda 3 à frente e 2 atrás, e na hora de liberar espaço tira primeiro a página **mais distante** da atual.
-  - A imagem **no meio de uma virada fica protegida** e só é liberada no fim da animação.
-- **Tiras longas (webtoon).**
-  - A imagem é decodificada uma vez, em escala reduzida, e cortada em faixas horizontais de alguns MB.
-  - Só as faixas visíveis são desenhadas.
-  - Uma página pesada que sai da tela libera as faixas mas mantém a altura, para o layout não pular.
-  - Só uma decodificação pesada roda por vez.
-  - É a mesma regra do nosso limite de ~5 MP por canvas: nunca uma textura gigante.
-- **Fim de capítulo.** Uma "página" de transição, "Terminado: X / Próximo: Y", que avisa quando há capítulos faltando.
-
-### 13.5 Controles e progresso
-
-- **Barras de cima e de baixo** entram em ~150–200 ms. A de baixo tem só quatro ícones e um **slider de páginas que se inverte em RTL**.
-- **Indicador "10 / 69"** discreto quando o menu está fechado.
-- **Ajustes rápidos** numa folha com abas. Na aba de filtros (brilho, sobreposição de cor, cinza, inverter), **o escurecimento some** para a pessoa ver o efeito ao vivo.
-- **Toque longo na página:** usar como capa, copiar, compartilhar e salvar.
-- **Progresso.**
-  - É gravado **só quando a leitura para numa página**, com um pequeno atraso, e não a cada virada.
-  - Chegar à última página marca como lido na hora.
-  - O que estiver pendente é gravado ao sair.
-  - O histórico guarda também o tempo de leitura.
-- **Modo anônimo:** não registra nada no histórico.
-
-### 13.6 Fontes e extensões: como funciona
-
-**O contrato de uma fonte.** Uma "fonte" é um objeto com nome, idioma e algumas operações:
-
-- listar populares e recentes;
-- buscar com filtros (a fonte declara os filtros e o app desenha a UI);
-- obter os detalhes da obra e a lista de capítulos;
-- obter a lista de páginas de um capítulo, cada uma com a URL da imagem.
-
-A fonte web padrão transforma cada operação em "montar a requisição" e "ler o HTML/JSON da resposta". O app então baixa as imagens e as mostra no mesmo leitor dos arquivos locais.
-
-**O que é uma extensão.**
-
-- É um **APK Android em Kotlin** que o app carrega em tempo de execução.
-- Ela usa as bibliotecas do app (cliente HTTP, parser de HTML).
-- Cada site tem a sua extensão. Famílias de sites que usam o mesmo motor compartilham um "tema".
-
-**Quem escreve as extensões.** **A comunidade, não a equipe do Mihon.**
-
-- O app vem **sem nenhum repositório**. O usuário cola a URL de um índice (JSON).
-- Uma extensão só carrega se a assinatura do APK bater com a chave publicada no índice, ou se o usuário confiar nela manualmente.
-- O maior repositório comunitário (keiyoushi) tem hoje ~1.440 extensões e ~2.430 fontes, quase todas de sites de scanlation.
-- Ficar sem repositório embutido é a proteção jurídica do projeto depois do caso Tachiyomi. Esse mesmo modelo de extensões em APK também deixa o app fora da Play Store.
-
-**Rede e WebView.**
-
-- **Cookies compartilhados.** O cliente HTTP usa os **mesmos cookies do WebView do sistema**.
-- **Para que serve o WebView.** "Abrir no WebView" serve para três coisas: fazer login no site, resolver à mão um desafio do Cloudflare e ver a página original. O que se ganha ali (cookie de sessão, liberação do Cloudflare) vale na hora para a extensão.
-- **Cloudflare automático.** Quando aparece um desafio do Cloudflare, o app tenta resolver sozinho com um WebView invisível.
-- **Limite de requisições.** As extensões usam limite de requisições por host para o IP não ser banido.
-
-**Downloads.**
-
-- Cada capítulo vira uma pasta ou um **CBZ** com um `ComicInfo.xml` gerado.
-- O arquivo é escrito com nome temporário e renomeado no fim.
-- O que foi baixado passa a ser lido pela fonte local.
-
-**Rastreadores.**
-
-- AniList, MyAnimeList etc. só sincronizam o progresso; não fornecem conteúdo.
-- Os "rastreadores avançados" (Komga, Kavita) devolvem o progresso ao **servidor pessoal** do usuário.
-- **Servidores pessoais.** O acesso ao Komga ou ao Kavita é sempre por extensão. O Mihon **não tem OPDS nativo**.
-
-### 13.7 Mangá, webtoon e fontes no Folheia
-
-**Mangá encaixa.** Um volume de mangá em CBZ ou PDF é um livro paginado com leitura da direita para a esquerda, e o Folheia já tem isso:
-
-- RTL pelos ajustes, por `?dir=rtl`, pelo campo `Direction` do PDF e pelo `Manga=YesAndRightToLeft` do `ComicInfo.xml`;
-- spreads e páginas em branco virtuais.
-
-Nesse ponto o Folheia já está mais completo que o Mihon, que nem lê `Manga`, `DoublePage` ou `FrontCover` do ComicInfo. O que falta para o mangá ficar bom vem das ideias de 13.3 a 13.5: dica de zonas, ajustes por livro, pareamento mais esperto e "zoom e percorrer". O tema "mangá" já está no backlog (item 17).
-
-**Webtoon não é flipbook, mas cabe como modo.** A rolagem vertical já está no backlog (item 15). O Mihon mostra como fazer sem estourar a memória: faixas, só as visíveis desenhadas e a altura reservada. Fica para depois; não é o centro do app.
-
-**Fontes no estilo Mihon não cabem.**
-
-- **CORS.** Os sites de scan não mandam CORS, então o navegador bloqueia o `fetch`. Muitos CDNs exigem `Referer`, que o JS não pode definir. A única saída seria um proxy, e isso quebra o "100% estático" e a privacidade.
-- **Cloudflare.** No navegador não existe o truque do WebView com cookies compartilhados. Dois sites de HQ em domínio público testados já responderam com o desafio.
-- **Jurídico.** O ecossistema real é de obras licenciadas sem autorização. Foi isso que derrubou o Tachiyomi. Para um repositório público com o nome do Artur, é risco sem retorno.
-- **Segurança.** Plugins em JS de terceiros na nossa origem teriam acesso ao IndexedDB (arquivos e progresso) e à rede.
-- **Capacitor.** Num app Capacitor, o HTTP nativo ignora CORS. Isso tornaria fontes **tecnicamente** possíveis, mas os problemas jurídicos continuam, e as lojas recusam apps que carregam código remoto.
-
-**O que cabe: OPDS para o servidor do próprio usuário.**
-
-- **O que é OPDS.** Um padrão aberto de catálogo, um feed com busca e links para os arquivos. Komga, Kavita e Calibre-web falam OPDS.
-- **Regra de privacidade.** Se o usuário adiciona a URL do próprio servidor, ela é uma "URL fornecida pelo usuário", como o `?file=`.
-- **Leitura.** O livro abriria pelo nosso leitor por range, sem baixar o arquivo todo. Com o **OPDS-PSE**, uma extensão do OPDS para enviar página por página, daria até para pedir uma imagem por vez.
-- **Limite.** O Komga vem com CORS fechado (`KOMGA_CORS_ALLOWEDORIGINS`), então a UI precisaria explicar como liberar a origem do Folheia. No app Capacitor esse problema some.
-- **Catálogos públicos.** O OPDS do Project Gutenberg e do Standard Ebooks entrega EPUB de texto, fora do nosso escopo. O Internet Archive tem CORS na busca, mas não nos arquivos.
-
-### 13.8 Lições para o Folheia
-
-**Alta prioridade**
-
-1. **Proteger da expulsão do LRU** as páginas de uma virada em andamento. Escolher para sair a página mais distante da atual. Ataca o "vazio na virada" (A3).
-2. **Gravar o progresso só quando a leitura para numa página.** Com atraso curto, gravação imediata na última página e gravação garantida em `pagehide`/`visibilitychange`.
-3. **Dica visual das zonas de toque** na primeira leitura, como componente Ex-libris, respeitando `prefers-reduced-motion`.
-4. **"Zoom e percorrer" para spreads largos** em tela de uma página (iPad em pé), como alternativa a dividir.
-5. **Regras de pareamento:** a paridade recomeça depois de qualquer página que fica sozinha; duas páginas só formam par se tiverem proporções parecidas.
-
-**Média prioridade**
-
-6. **Ajustes por livro** (direção, modo, escala) com "Padrão" explícito e um aviso curto ao abrir. Combina com os Recentes (C6).
-7. **Slider de páginas que se inverte em RTL** e indicador "n / total" discreto (B5).
-8. **Fundo automático pela cor da borda**, amostrada da prévia, para o modo "só o livro" (B5).
-9. **Cortar margens** de PDFs escaneados, desligado no modo duplo.
-10. **Ajustes de brilho/cor com pré-visualização ao vivo.** Usar camada escura e filtro só na camada da página; nunca CSS `filter` no livro ampliado.
-11. **Cliente OPDS para o servidor pessoal do usuário** (Komga/Kavita/Calibre-web). Também cobre o equivalente do "rastreador avançado": devolver o progresso ao servidor.
-
-**Baixa prioridade**
-
-12. **Toque longo:** "usar como capa" (para os Recentes), salvar e compartilhar a página. No PDF, só fora da camada de texto.
-13. **Layouts de toque alternativos** e inversão.
-14. **Modo anônimo** (não entrar nos Recentes).
-15. **Backup/restauração** do progresso em JSON.
-16. **Ficha de fim de livro** ("próximo da série") quando existir biblioteca com séries.
-
-**Não**
-
-- Extensões ou plugins executáveis.
-- Fontes de scanlation ou agregadores.
-- Proxy CORS.
-- Rastreadores com OAuth (MAL/AniList).
-- Transições cubo/esfera.
-- Ler o ZIP em sequência para achar uma página (o Mihon faz assim; o Folheia lê com acesso aleatório).
+- **Leitor:**
+  - ações "lógicas" (próxima/anterior) separadas das "físicas" (esquerda/direita);
+  - dica visual das zonas de toque;
+  - "zoom e percorrer" para spreads largos;
+  - páginas em virada protegidas no cache;
+  - progresso gravado só quando a leitura para.
+- **Telas:**
+  - biblioteca com categorias (que no Folheia viram estantes);
+  - ficha da obra;
+  - histórico com tempo de leitura;
+  - trilho lateral e dois painéis no tablet.
+  - O Mihon **não tem marcadores de página**, uma lacuna que o Folheia pode preencher.
+- **Fontes:**
+  - as extensões são APKs da comunidade;
+  - o app vem sem repositório e confia pela assinatura.
+  - Na web, os sites de scan não mandam CORS. Os caminhos possíveis são:
+    - o **Suwayomi** (roda as extensões do Mihon e fala OPDS);
+    - o HTTP nativo do Capacitor;
+    - um userscript;
+    - um proxy próprio.
+- **Desempenho:**
+  - o Mihon decodifica a imagem original direto no tamanho da tela, sem recomprimir;
+  - o Folheia recomprime até no CBZ.
+  - A lista de experimentos P0–P10 está no §6 do estudo.

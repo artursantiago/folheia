@@ -4,6 +4,7 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
 
 - Product plan and every scope decision: `docs/plano-mvp.md` (source of truth; update it when a decision changes).
 - Clean-room study of the references: `docs/estudo-referencias.md`.
+- Mihon study (reader, screens, sources/extensions, performance): `docs/estudo-mihon.md`.
 - Visual identity: `docs/identidade-visual.md`.
 - **Approved screen prototype** (Ex-libris, 15 screens, light/dark): https://claude.ai/artifact/1YDBDe53B3ef4MnUi4Vigr (private; opens for Artur). A copy of the source lives in `docs/prototipo/` (`folheia.css` + one `.dc.html` per screen). It's the visual reference for every screen; read it before building or changing UI. It's a mockup, not production code: rebuild it with our tokens and components; don't copy its markup.
 
