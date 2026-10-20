@@ -26,8 +26,7 @@ export default defineConfig({
             manifest: {
               name: 'Folheia',
               short_name: 'Folheia',
-              description:
-                'Leitor de PDF e CBZ em formato de livro. Seu arquivo não sai do seu aparelho.',
+              description: 'Leia livros, HQs e mangás folheando, como no papel.',
               lang: 'pt-BR',
               start_url: './',
               scope: './',

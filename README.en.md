@@ -1,19 +1,25 @@
+<p align="center"><img src="public/icons/icon-192.png" width="96" height="96" alt="Folheia"></p>
+
 # Folheia
 
-**A PDF and comic book (CBZ) reader that looks and feels like a real book, page-turn effect included.** Free, open source and 100% in the browser: **your file never leaves your device.**
+**Read books, comics and manga by leafing through them, like on paper.**
 
 🔗 **Live:** <https://folheia-app.github.io/folheia/>
 🇧🇷 [Leia em português](README.md) (main documentation)
 
-> Work in progress. The MVP is being built in stages; see the [plan (in Portuguese)](docs/plano-mvp.md).
+## What it is
 
-## Highlights
+Folheia is your reading collection: books, comics, manga and magazines in one place, read page by page. Double-page spreads on wide screens, a single page on phones, a corner fold that follows your finger, zoom, thumbnails, outline and right-to-left reading for manga. Built for iPads and big, image-heavy files.
 
-- Double-page spreads on wide screens, single page on phones, corner fold that follows your finger, zoom, thumbnails, outline and right-to-left reading (manga).
-- Built for iPads and big, image-heavy files: only pages near the current one are rendered, and the rest are released from memory.
-- No server, no account, no analytics, no third-party scripts.
-- Installable (PWA) and works offline for local files.
-- Open a published file with `?file=https://example.org/book.pdf` (the host must allow CORS).
+> A personal, experimental project, in progress. The [roadmap (in Portuguese)](docs/roteiro.md) covers what's next: a personal library with shelves, page bookmarks and catalogs.
+
+## How it works
+
+- **Formats:** PDF and CBZ (or a ZIP of images). Not CBR or CB7 yet.
+- **On your device:** everything runs in the browser. No server, no account, no analytics, no third-party scripts; your file never leaves your device.
+- **Light on heavy files:** only pages near the current one are rendered; the rest are released from memory.
+- **Installable:** works as an app (PWA) and opens local files offline.
+- **By link:** `?file=https://example.org/book.pdf` opens a published file, if its host allows it (CORS).
 
 ## Run locally
 

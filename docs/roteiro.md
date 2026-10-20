@@ -50,13 +50,13 @@ Os pontos que decidem a ordem:
 
 ## 3. Decisões que destravam o resto
 
-| #   | Decisão                                                                                                              | Destrava                                    |
-| --- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| D1  | **Revisão conjunta dos estudos** (o "quando começar" da biblioteca)                                                  | Etapa 1 da biblioteca                       |
-| D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                          | Frente 4, a parte de capas da etapa 2, G20  |
-| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8, que ainda estão sem decisão     | A frente 5 e o desenho da frente 4          |
-| D4  | **Direção do ícone e do tom dos textos** (início da frente 2)                                                        | Protótipo v2, README, página da organização |
-| D5  | **O PR #1:** mesclar em partes (a `Network` nas fundações, a extensão depois) ou fechar e refazer a partir do estudo | Frente 4                                    |
+| #   | Decisão                                                                                                                                     | Destrava                                    |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| D1  | **Revisão conjunta dos estudos** (o "quando começar" da biblioteca)                                                                         | Etapa 1 da biblioteca                       |
+| D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                                                 | Frente 4, a parte de capas da etapa 2, G20  |
+| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8, que ainda estão sem decisão                            | A frente 5 e o desenho da frente 4          |
+| D4  | ✅ **Direção do ícone e do tom dos textos** (início da frente 2). Decidida em 20/10/2026: monograma F e os textos de `identidade-visual.md` | Protótipo v2, README, página da organização |
+| D5  | **O PR #1:** mesclar em partes (a `Network` nas fundações, a extensão depois) ou fechar e refazer a partir do estudo                        | Frente 4                                    |
 
 ## 4. A ordem proposta
 

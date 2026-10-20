@@ -4,7 +4,11 @@
 
 ## 1. Produto
 
-Leitor de **PDF e CBZ** em formato de livro (flipbook), 100% gratuito, estático, hospedado no GitHub Pages. Todo o processamento roda no navegador; **o arquivo do usuário nunca sai do aparelho**. Licença **MIT**.
+**Leia livros, HQs e mangás folheando, como no papel.**
+
+O Folheia é um **acervo de leitura pessoal**: livros, quadrinhos, mangás e revistas num lugar só, lidos folheando, página a página. Virar a página é o jeito Folheia de ler, não o produto em si. A partir de 20/10/2026 o app deixa de ser "um leitor de PDF e CBZ em flipbook" e passa a ser esse acervo (ver `estudo-interface.md` e `roteiro.md`).
+
+100% gratuito, estático, hospedado no GitHub Pages. Todo o processamento roda no navegador; **o arquivo do usuário nunca sai do aparelho**. Licença **MIT**. Formatos hoje: PDF e CBZ (ou ZIP de imagens).
 
 - Nome: **Folheia** (livre no npm e no GitHub; sem marca conhecida com esse nome).
 - Repositório: `folheia-app/folheia` (público, na organização `folheia-app` desde 20/10/2026; antes `artursantiago/folheia`). Site: `https://folheia-app.github.io/folheia/`.
