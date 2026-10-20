@@ -5,7 +5,7 @@
 🔗 **Site:** <https://artursantiago.github.io/folheia/>
 🇬🇧 [English summary](README.en.md)
 
-> Projeto em desenvolvimento. O MVP está sendo construído em etapas; veja o [plano](docs/plano-mvp.md).
+> MVP no ar. Veja o [plano](docs/plano-mvp.md) para o que já existe e o que vem depois.
 
 ## O que é
 
@@ -34,6 +34,8 @@ npm run dev
 | `npm run lint`      | ESLint, Stylelint (tokens do tema) e Prettier    |
 | `npm run typecheck` | Checagem de tipos do TypeScript                  |
 | `npm test`          | Testes unitários (Vitest)                        |
+| `npm run fixtures`  | Gera arquivos de teste pesados (não vão pro Git) |
+| `npm run test:e2e`  | Testes no navegador (Playwright)                 |
 
 O deploy é automático: cada push na `main` passa pelo CI (lint, tipos, testes e build) e é publicado no GitHub Pages.
 

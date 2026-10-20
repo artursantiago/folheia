@@ -120,6 +120,8 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 
 ## 7. Etapas (commits pequenos, deploy a cada push na `main`)
 
+> **Status (20/10/2026):** etapas 1 a 11 concluídas e publicadas. Falta a 12: o teste no iPad Air M1 real (os testes automatizados com WebKit e iPad/iPhone emulados passam). Ajustes feitos durante a implementação estão em §10.
+
 1. **Fundação:** Vite + TS, lint, testes, LICENSE MIT, README PT + EN, `docs/`, CI + deploy no GitHub Pages via Actions → criar o repositório público, push, confirmar o site no ar.
 2. **Identidade e design system:** tokens, fontes, componentes base, guia de estilo `#/estilo`, `docs/identidade-visual.md` e protótipos das telas-chave → **sua aprovação** antes de seguir para a UI.
 3. **Motor de páginas PDF:** PdfSource em worker, fila, cache, prévia → nítida, orçamento de memória e geradores de PDF de teste.
@@ -132,6 +134,15 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 10. **CBZ:** CbzSource + ComicInfo + detecção de CBR/CB7.
 11. **PWA.**
 12. **Verificação de desempenho:** Playwright nos 3 motores + teste no iPad Air M1 (Web Inspector) contra as metas.
+
+## 10. Ajustes feitos durante a implementação
+
+- **Capas do carrossel tipográficas** (cor, título, autor, ornamento desenhados por nós), em vez de geradas a partir do PDF: assim a tela inicial não faz nenhuma requisição externa. O PDF do Commons só é baixado quando o livro é aberto.
+- **Toque e clique viram a página só nas bordas** (30% de cada lado); o meio fica para duplo toque (zoom) e para selecionar texto com o mouse. Com o mouse, o arraste de virada começa perto das bordas; no toque, em qualquer lugar.
+- **Ícone do app provisório** (uma ficha catalográfica em branco, sem letra nem símbolo), até existir um logo.
+- **Fontes Liberation do PDF.js não são publicadas** (licença GPL); o PDF.js usa as fontes do sistema para fontes padrão não embutidas.
+- **Range requests próprios para URLs**: servidores como o Wikimedia não expõem `Accept-Ranges` via CORS; sem isso, o PDF.js baixava o arquivo inteiro (Peter Pan: ~2 MB baixados para abrir, em vez de 30 MB).
+- **Viradas rápidas se acumulam**: três toques seguidos viram três páginas.
 
 ## 8. Backlog (por prioridade aproximada)
 
