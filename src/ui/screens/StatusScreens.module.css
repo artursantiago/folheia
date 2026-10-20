@@ -2,7 +2,10 @@
   display: grid;
   place-items: center;
   min-height: 100dvh;
-  padding: var(--space-6);
+  padding: calc(var(--space-6) + env(safe-area-inset-top))
+    calc(var(--space-6) + env(safe-area-inset-right))
+    calc(var(--space-6) + env(safe-area-inset-bottom))
+    calc(var(--space-6) + env(safe-area-inset-left));
 }
 
 .card {

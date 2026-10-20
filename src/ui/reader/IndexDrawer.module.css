@@ -4,6 +4,9 @@
   bottom: 0;
   left: 0;
   z-index: 3;
+
+  /* The drawer reaches the screen edges: keep its content out of the system bars. */
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) env(safe-area-inset-left);
   box-shadow: var(--shadow-popover);
   animation: slide-in var(--duration-base) var(--ease-out);
 }
