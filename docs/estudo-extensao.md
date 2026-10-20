@@ -2,7 +2,7 @@
 
 > 20/10/2026. Estudo de viabilidade e prova de conceito (POC) de uma **ponte de rede**: uma extensão de navegador ou um userscript que faz requisições entre origens **a pedido do site do Folheia**, sem CORS e com `Referer`/`User-Agent` próprios, para servir às futuras fontes de catálogo. Continua o `estudo-mihon.md` §5.1, §5.5, §5.6 e §8.4 (F6).
 >
-> **Como foi feito:** documentação oficial (links em cada seção e no §12), issues e READMEs dos próprios projetos, e testes de verdade: a extensão carregada no Chromium pelo Playwright e requisições reais à API do MangaDex, ao Internet Archive e a outras fontes (§9). Nada de código de terceiros entrou no repositório; o código das extensões do Mihon (keiyoushi, Apache-2.0) foi lido por um agente separado só para saber quais URLs e cabeçalhos cada site usa.
+> **Como foi feito:** documentação oficial (links em cada seção e no §13), issues e READMEs dos próprios projetos, e testes de verdade: a extensão carregada no Chromium pelo Playwright e requisições reais à API do MangaDex, ao Internet Archive e a outras fontes (§9). Nada de código de terceiros entrou no repositório; o código das extensões do Mihon (keiyoushi, Apache-2.0) foi lido por um agente separado só para saber quais URLs e cabeçalhos cada site usa.
 
 ## 1. Resumo
 
@@ -391,7 +391,28 @@ Primeiro, gerar os arquivos: `npm run build:extension`. Para testar com o `npm r
 - **Publicar** na Edge Add-ons, no AMO listado ou na Chrome Web Store: isso expõe o nome do projeto numa loja. Decisão do Artur.
 - **Fontes de scan** (§9): o mecanismo funciona, mas o conteúdo e os termos de uso são dos sites (`estudo-mihon` §5.4). O repositório público deve continuar só com o mecanismo e fontes legítimas.
 
-## 12. Fontes
+## 12. Estado em 20/10/2026 e próximos passos
+
+**Testado:**
+
+| Ambiente                                | Como                                   | Leitura de sites sem CORS | `User-Agent` | `Referer`                    |
+| --------------------------------------- | -------------------------------------- | ------------------------- | ------------ | ---------------------------- |
+| Chrome (Mac)                            | e2e automático + 12 fontes ao vivo     | sim                       | sim          | sim (ponte e `<img>`)        |
+| Firefox (Mac, o do Playwright)          | e2e automático + 3 URLs ao vivo        | sim                       | sim          | sim (ponte e `<img>`)        |
+| Safari do iPad (simulador), extensão    | `#/lab`, eco local + amostra de fontes | sim                       | sim          | **não** (só consegue apagar) |
+| Safari do iPad (simulador), Userscripts | `#/lab`, eco local + amostra de fontes | sim (~7 MB/s)             | sim          | **não**                      |
+
+**Ainda não testado:**
+
+- Edge;
+- o Firefox de verdade (o do Playwright é modificado);
+- o Firefox para Android;
+- o iPad Air real, com o Userscripts 1.8.6 da App Store;
+- se o Safari envia os cookies de um site em que você está logado.
+
+**Próximos passos:** estão no `plano-mvp.md` §8, seção E4, que é onde fica o backlog. Lá também está o que muda na migração do repositório para uma organização.
+
+## 13. Fontes
 
 - Userscripts (quoid): [README](https://github.com/quoid/userscripts) · [#212](https://github.com/quoid/userscripts/issues/212) · [#252](https://github.com/quoid/userscripts/issues/252) · [#260](https://github.com/quoid/userscripts/issues/260) · [#420](https://github.com/quoid/userscripts/issues/420) · [#465](https://github.com/quoid/userscripts/issues/465) · [#897](https://github.com/quoid/userscripts/issues/897)
 - Apple: [Packaging](https://developer.apple.com/documentation/safariservices/packaging-a-web-extension-for-safari) · [Running](https://developer.apple.com/documentation/safariservices/running-your-safari-web-extension) · [Distributing](https://developer.apple.com/documentation/safariservices/distributing-your-safari-web-extension) · [Contas](https://developer.apple.com/help/account/basics/about-your-developer-account)
