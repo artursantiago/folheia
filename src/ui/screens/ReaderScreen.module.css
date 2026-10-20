@@ -157,3 +157,43 @@
     display: none;
   }
 }
+
+.zoomLevel {
+  justify-content: center;
+  width: 52px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.zoomPill {
+  position: absolute;
+  top: 76px;
+  left: var(--space-4);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-float);
+}
+
+.zoomPercent {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.fit {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  cursor: pointer;
+}
+
+.fit:hover {
+  background: var(--color-paper);
+}

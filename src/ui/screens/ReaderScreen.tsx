@@ -158,6 +158,10 @@ export function ReaderScreen({
         ' ': () => reader.next(),
         Home: () => reader.first(),
         End: () => reader.last(),
+        '+': () => reader.zoomIn(),
+        '=': () => reader.zoomIn(),
+        '-': () => reader.zoomOut(),
+        '0': () => reader.zoomReset(),
       };
       const action = actions[event.key];
       if (action) {
@@ -255,6 +259,15 @@ export function ReaderScreen({
 
       <main className={styles.stage} ref={stageRef} aria-label={t('reader.book')} />
 
+      {state && state.zoom > 1 && (
+        <div className={styles.zoomPill}>
+          <span className={styles.zoomPercent}>{Math.round(state.zoom * 100)}%</span>
+          <button type="button" className={styles.fit} onClick={() => reader?.zoomReset()}>
+            {t('reader.fit')}
+          </button>
+        </div>
+      )}
+
       {reader && panel === 'index' && (
         <IndexDrawer
           reader={reader}
@@ -324,6 +337,24 @@ export function ReaderScreen({
               label={t('reader.last')}
               disabled={state.atEnd}
               onClick={() => reader?.last()}
+              className={styles.wideOnly}
+            />
+            <ReaderBarSeparator />
+            <IconButton
+              icon="zoomOut"
+              label={t('reader.zoomOut')}
+              disabled={state.zoom <= 1}
+              onClick={() => reader?.zoomOut()}
+              className={styles.wideOnly}
+            />
+            <span className={`${styles.zoomLevel} ${styles.wideOnly}`} aria-live="polite">
+              {Math.round(state.zoom * 100)}%
+            </span>
+            <IconButton
+              icon="zoomIn"
+              label={t('reader.zoomIn')}
+              disabled={state.zoom >= 4}
+              onClick={() => reader?.zoomIn()}
               className={styles.wideOnly}
             />
             <ReaderBarSeparator />

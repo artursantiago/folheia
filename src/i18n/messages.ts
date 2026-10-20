@@ -52,6 +52,10 @@ const pt = {
   'reader.here': 'aqui',
   'reader.settings': 'Ajustes',
   'reader.bookCard': 'Ficha do livro',
+  'reader.zoomIn': 'Aumentar zoom',
+  'reader.zoomOut': 'Diminuir zoom',
+  'reader.fit': 'Ajustar à tela',
+  'reader.zoomLevel': 'Zoom {percent}%',
   'reader.spreadsSplit': 'Páginas duplas detectadas e separadas',
 
   'settings.title': 'Ajustes de leitura',
@@ -174,6 +178,10 @@ const en: Messages = {
   'reader.here': 'here',
   'reader.settings': 'Settings',
   'reader.bookCard': 'Book card',
+  'reader.zoomIn': 'Zoom in',
+  'reader.zoomOut': 'Zoom out',
+  'reader.fit': 'Fit to screen',
+  'reader.zoomLevel': 'Zoom {percent}%',
   'reader.spreadsSplit': 'Double pages detected and split',
 
   'settings.title': 'Reading settings',

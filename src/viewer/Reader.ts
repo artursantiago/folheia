@@ -13,6 +13,7 @@ import type { FlipEngine, FlipHost } from '../flip/types';
 import type { RenderBudget } from '../render/budget';
 import { PageRenderer, type PageRef } from '../render/PageRenderer';
 import type { PageSize, PageSource, ReadingDirection } from '../sources/types';
+import { ZoomController } from './ZoomController';
 
 import type { LayoutPreference } from '../storage/preferences';
 
@@ -41,6 +42,8 @@ export interface ReaderState {
   atEnd: boolean;
   /** Embedded two-page sheets were detected and split. */
   splitSpreads: boolean;
+  /** 1 = fit; up to 4. */
+  zoom: number;
 }
 
 export interface ReaderConfig {
@@ -68,6 +71,7 @@ export class Reader {
   private splitSpreads: boolean;
   private viewport: PageSize = { width: 0, height: 0 };
   private resizeObserver: ResizeObserver;
+  private zoomer: ZoomController;
   private disposers: (() => void)[] = [];
   private refreshQueued = false;
 
@@ -91,6 +95,7 @@ export class Reader {
     this.disposers.push(
       this.renderer.subscribe(() => this.queueRefresh()),
       this.flip.onChange((spread) => {
+        this.zoomer.reset();
         this.state.set(this.snapshot(spread, this.flip.isFlipping));
         this.plan();
       }),
@@ -100,6 +105,18 @@ export class Reader {
         this.state.set((s) => ({ ...s, flipping }));
       }),
     );
+
+    this.zoomer = new ZoomController(container, {
+      apply: (scale, x, y) => {
+        this.flip.setZoom(scale, x, y);
+        this.flip.clearTiles();
+        this.renderer.clearTiles();
+        this.flip.setInteractive(scale === 1);
+        if (this.state.get().zoom !== scale) this.state.set((s) => ({ ...s, zoom: scale }));
+      },
+      settle: () => this.renderTiles(),
+      takeOver: () => this.flip.cancelGesture(),
+    });
 
     this.resizeObserver = new ResizeObserver(() => this.onResize());
     this.resizeObserver.observe(container);
@@ -124,6 +141,18 @@ export class Reader {
 
   goToPage(page: number) {
     void this.flip.goTo(spreadForLabel(this.book, page));
+  }
+
+  zoomIn() {
+    this.zoomer.zoomIn();
+  }
+
+  zoomOut() {
+    this.zoomer.zoomOut();
+  }
+
+  zoomReset() {
+    this.zoomer.reset();
   }
 
   setOptions(patch: Partial<ReaderOptions>) {
@@ -177,6 +206,7 @@ export class Reader {
   }
 
   destroy() {
+    this.zoomer.destroy();
     this.resizeObserver.disconnect();
     this.disposers.forEach((dispose) => dispose());
     this.flip.destroy();
@@ -255,7 +285,38 @@ export class Reader {
     };
   }
 
+  /** Renders the visible part of each zoomed page at screen resolution. */
+  private renderTiles() {
+    if (!this.zoomer.zoomed) return;
+    const stage = this.config.container.getBoundingClientRect();
+    const ratio = Math.min(window.devicePixelRatio || 1, this.config.budget.maxPixelRatio);
+    for (const page of this.visiblePages()) {
+      const ref = this.book.pages[page]?.ref;
+      const rect = this.flip.pageRect(page);
+      if (!ref || !rect || !rect.width || !rect.height) continue;
+      const left = Math.max(rect.left, stage.left);
+      const top = Math.max(rect.top, stage.top);
+      const right = Math.min(rect.right, stage.right);
+      const bottom = Math.min(rect.bottom, stage.bottom);
+      if (right <= left || bottom <= top) continue;
+      const region = {
+        x: (left - rect.left) / rect.width,
+        y: (top - rect.top) / rect.height,
+        width: (right - left) / rect.width,
+        height: (bottom - top) / rect.height,
+      };
+      const tile = {
+        width: Math.round((right - left) * ratio),
+        height: Math.round((bottom - top) * ratio),
+      };
+      this.renderer.renderTile(ref, region, tile, (url) => {
+        if (this.zoomer.zoomed) this.flip.showTile(page, url, region);
+      });
+    }
+  }
+
   private onResize() {
+    this.zoomer?.reset();
     const { container } = this.config;
     this.viewport = { width: container.clientWidth, height: container.clientHeight };
     const mode = this.resolveMode();
@@ -319,6 +380,7 @@ export class Reader {
       atStart: spread === 0,
       atEnd: spread === book.spreads.length - 1,
       splitSpreads: this.splitSpreads,
+      zoom: this.zoomer?.scale ?? 1,
     };
   }
 }
