@@ -16,6 +16,8 @@ const SHADOW_PX = 46;
 const TAP_SLOP = 6;
 const PEEK_ZONE = 90;
 const PEEK_LIFT = 34;
+/** Taps only turn pages near the outer edges; the middle is left for zoom gestures. */
+const TAP_EDGE = 0.3;
 
 type Side = 'left' | 'right';
 
@@ -77,6 +79,7 @@ function el(className: string, parent?: HTMLElement): HTMLElement {
  */
 export class Flip2D implements FlipEngine {
   private stage: HTMLElement;
+  private zoomLayer: HTMLElement;
   private book: HTMLElement;
   private host: FlipHost | undefined;
   private size: PageSlotSize = { width: 400, height: 560 };
@@ -93,7 +96,8 @@ export class Flip2D implements FlipEngine {
 
   constructor(container: HTMLElement) {
     this.stage = el('fx-stage', container);
-    this.book = el('fx-book', this.stage);
+    this.zoomLayer = el('fx-zoom', this.stage);
+    this.book = el('fx-book', this.zoomLayer);
     this.stage.addEventListener('pointerdown', this.onPointerDown);
     this.stage.addEventListener('pointermove', this.onPointerMove);
     this.stage.addEventListener('pointerup', this.onPointerUp);
@@ -178,8 +182,55 @@ export class Flip2D implements FlipEngine {
     this.finishTurn(forward);
   }
 
+  /** Pans and scales the whole book (zoom). Scale 1 with no offset is the resting view. */
+  setZoom(scale: number, x: number, y: number) {
+    this.zoomLayer.style.transform =
+      scale === 1 && x === 0 && y === 0 ? '' : `translate(${x}px, ${y}px) scale(${scale})`;
+  }
+
+  /** Screen rectangle of a logical page currently on screen. */
+  pageRect(page: number): DOMRect | undefined {
+    return this.book
+      .querySelector<HTMLElement>(`.fx-page[data-page="${page}"]`)
+      ?.getBoundingClientRect();
+  }
+
+  /** Lays a sharper image over part of a page (zoomed-in area). */
+  showTile(
+    page: number,
+    url: string,
+    region: { x: number; y: number; width: number; height: number },
+  ) {
+    const node = this.book.querySelector<HTMLElement>(`.fx-page[data-page="${page}"]`);
+    if (!node) return;
+    let tile = node.querySelector<HTMLImageElement>('img.fx-tile');
+    if (!tile) {
+      tile = document.createElement('img');
+      tile.className = 'fx-tile';
+      tile.alt = '';
+      tile.draggable = false;
+      node.appendChild(tile);
+    }
+    tile.style.left = `${region.x * 100}%`;
+    tile.style.top = `${region.y * 100}%`;
+    tile.style.width = `${region.width * 100}%`;
+    tile.style.height = `${region.height * 100}%`;
+    tile.src = url;
+  }
+
+  /** Another gesture (pinch, pan) took over: drop any drag and settle the page. */
+  cancelGesture() {
+    this.drag = undefined;
+    this.endPeek();
+    if (this.turn && !this.turn.raf) this.finishTurn(false);
+  }
+
+  clearTiles() {
+    this.book.querySelectorAll('img.fx-tile').forEach((tile) => tile.remove());
+  }
+
   refreshImages() {
-    for (const node of this.book.querySelectorAll<HTMLElement>('[data-page]')) {
+    for (const node of this.book.querySelectorAll<HTMLElement>('.fx-page[data-page]')) {
       this.fillPage(node, Number(node.dataset.page));
     }
   }
@@ -246,6 +297,10 @@ export class Flip2D implements FlipEngine {
       this.book.appendChild(node);
     }
     this.book.style.transform = this.centerShift(this.current);
+    const placement = this.placement(this.current);
+    const lone = this.double && placement.length === 1 ? placement[0]?.side : undefined;
+    if (lone === 'left' || lone === 'right') this.book.dataset.lone = lone;
+    else delete this.book.dataset.lone;
   }
 
   /** In double mode a lone cover slides to the middle, like a closed book. */
@@ -275,11 +330,11 @@ export class Flip2D implements FlipEngine {
     if (!host) return;
     if (host.isBlank(page)) {
       node.setAttribute('data-blank', '');
-      node.querySelector('img')?.remove();
+      node.querySelector('img:not(.fx-tile)')?.remove();
       return;
     }
     const url = host.imageOf(page);
-    let img = node.querySelector('img');
+    let img = node.querySelector<HTMLImageElement>('img:not(.fx-tile)');
     if (!url) {
       node.setAttribute('data-loading', '');
       return;
@@ -312,7 +367,7 @@ export class Flip2D implements FlipEngine {
     old.style.left = `${this.book.offsetLeft}px`;
     old.style.top = `${this.book.offsetTop}px`;
     old.style.pointerEvents = 'none';
-    this.stage.appendChild(old);
+    this.zoomLayer.appendChild(old);
     const duration = this.reducedMotion ? 160 : 260;
     const fade = old.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: 'ease-out' });
     fade.onfinish = () => old.remove();
@@ -355,6 +410,7 @@ export class Flip2D implements FlipEngine {
     // Static layer: what stays put during the turn.
     this.book.replaceChildren();
     this.book.style.transform = 'translateX(0)';
+    delete this.book.dataset.lone;
     if (this.double) {
       const staticBack = this.pageOnSide(from, backSide);
       if (staticBack !== undefined) this.book.appendChild(this.pageElement(staticBack, backSide));
@@ -597,8 +653,9 @@ export class Flip2D implements FlipEngine {
       // A tap: right side moves forward in LTR, backward in RTL.
       if (event.type === 'pointercancel') return;
       const rect = this.book.getBoundingClientRect();
-      const onRight = event.clientX >= rect.left + rect.width / 2;
-      const forward = onRight !== this.rtl;
+      const x = (event.clientX - rect.left) / rect.width;
+      if (x > TAP_EDGE && x < 1 - TAP_EDGE) return;
+      const forward = x >= 0.5 !== this.rtl;
       if (forward) this.next();
       else this.prev();
       return;

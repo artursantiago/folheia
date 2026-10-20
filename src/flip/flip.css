@@ -13,10 +13,34 @@
   -webkit-user-select: none;
 }
 
+.fx-zoom {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-origin: 0 0;
+}
+
 .fx-book {
   position: relative;
   transition: transform var(--duration-slow) var(--ease-in-out);
-  filter: drop-shadow(0 22px 26px var(--color-shadow));
+}
+
+/* A plain box-shadow behind the pages: much cheaper than a filter when zoomed. */
+.fx-book::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 22px 36px -14px var(--color-shadow);
+  pointer-events: none;
+}
+
+.fx-book[data-lone='right']::before {
+  left: 50%;
+}
+
+.fx-book[data-lone='left']::before {
+  right: 50%;
 }
 
 .fx-book[data-single] {
@@ -38,6 +62,14 @@
   pointer-events: none;
   /* stylelint-disable-next-line property-no-unknown -- WebKit-only */
   -webkit-user-drag: none;
+}
+
+.fx-page img.fx-tile {
+  position: absolute;
+  z-index: 1;
+  width: auto;
+  height: auto;
+  object-fit: fill;
 }
 
 .fx-page[data-blank] {

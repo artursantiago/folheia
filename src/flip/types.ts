@@ -30,6 +30,15 @@ export interface FlipEngine {
   /** Call when new page images are available. */
   refreshImages(): void;
   setInteractive(enabled: boolean): void;
+  setZoom(scale: number, x: number, y: number): void;
+  pageRect(page: number): DOMRect | undefined;
+  showTile(
+    page: number,
+    url: string,
+    region: { x: number; y: number; width: number; height: number },
+  ): void;
+  clearTiles(): void;
+  cancelGesture(): void;
   setHoverPeek(enabled: boolean): void;
   onChange(listener: (spread: number) => void): () => void;
   /** True while a page is moving (the render queue pauses meanwhile). */
