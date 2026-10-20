@@ -2,7 +2,14 @@
 // the bridge (extension/userscript) when it doesn't or when the request needs
 // headers a page can't set (Referer, User-Agent). The native app will get its
 // own implementation (native HTTP) behind the same interface.
-import { BridgeError, createBridgeClient, type BridgeClient, type BridgeInfo } from './bridge';
+import {
+  BridgeError,
+  createBridgeClient,
+  type BridgeClient,
+  type BridgeInfo,
+  type ImageHeaderResult,
+  type ImageHeaderRule,
+} from './bridge';
 import { FORBIDDEN_FETCH_HEADERS, type BridgeRequest } from '../../extension/src/protocol';
 
 export type NetworkRoute = 'auto' | 'fetch' | 'bridge';
@@ -57,6 +64,11 @@ export interface Network {
   bridge(): Promise<BridgeInfo | undefined>;
   /** Asks the bridge to show its approval screen for these origins. */
   requestAccess(origins: string[]): Promise<boolean>;
+  /**
+   * A Referer for the page's own `<img>` requests to these hosts, so covers
+   * from hotlink-protected CDNs can be shown without reading their bytes.
+   */
+  imageHeaders(rules: ImageHeaderRule[]): Promise<ImageHeaderResult>;
 }
 
 function toHeaders(entries: [string, string][]) {
@@ -180,5 +192,10 @@ export function createWebNetwork(client: BridgeClient = createBridgeClient()): N
     }
   }
 
-  return { request, bridge, requestAccess: (origins) => client.requestAccess(origins) };
+  return {
+    request,
+    bridge,
+    requestAccess: (origins) => client.requestAccess(origins),
+    imageHeaders: (rules) => client.imageHeaders(rules),
+  };
 }

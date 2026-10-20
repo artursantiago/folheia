@@ -7,12 +7,15 @@ import { patternForUrl, toPermissionPattern } from './patterns';
 import {
   FORBIDDEN_FETCH_HEADERS,
   LIMITS,
+  httpOrigin,
   PROTOCOL_VERSION,
   isFolheiaPage,
+  isHostname,
   validateRequest,
   type BridgeError,
   type BridgeInfo,
   type BridgeRequest,
+  type ImageHeaderResult,
 } from './protocol';
 import { api, engine, type DnrRule } from './webext';
 import { PORT_NAME, toBase64, type FromBackground, type ToBackground } from './wire';
@@ -77,9 +80,73 @@ api.runtime.onConnect.addListener((port) => {
       case 'fetch':
         void run(message.id, message.request, inFlight, send);
         break;
+      case 'image-headers':
+        void setImageHeaders(message.rules, new URL(url).hostname).then((result) =>
+          send({ type: 'image-headers', id: message.id, result }),
+        );
+        break;
     }
   });
 });
+
+/** Image Referer rules by host, for the browser session. */
+const imageRules = new Map<string, number>();
+
+/**
+ * Sets a Referer on the images a Folheia page loads from approved hosts.
+ * Only images, only that host, only when Folheia's page asks for them.
+ */
+async function setImageHeaders(rules: unknown, pageHost: string): Promise<ImageHeaderResult> {
+  const result: ImageHeaderResult = { applied: [], refused: [] };
+  const dnr = api.declarativeNetRequest;
+  if (!Array.isArray(rules)) return result;
+  await rulesReady;
+  for (const rule of rules.slice(0, 50) as { host?: unknown; referer?: unknown }[]) {
+    const { host, referer } = rule ?? {};
+    if (!isHostname(host)) continue;
+    if (typeof referer !== 'string' || !httpOrigin(referer)) {
+      result.refused.push({ host, code: 'bad-request' });
+      continue;
+    }
+    if (!dnr) {
+      result.refused.push({ host, code: 'unsupported' });
+      continue;
+    }
+    const approved = (await isAllowed(`https://${host}/`)) || (await isAllowed(`http://${host}/`));
+    if (!approved) {
+      result.refused.push({ host, code: 'not-allowed' });
+      continue;
+    }
+    const previous = imageRules.get(host);
+    const id = nextRuleId++;
+    try {
+      await dnr.updateSessionRules({
+        removeRuleIds: previous === undefined ? [] : [previous],
+        addRules: [
+          {
+            id,
+            priority: 1,
+            action: {
+              type: 'modifyHeaders',
+              requestHeaders: [{ header: 'referer', operation: 'set', value: referer }],
+            },
+            condition: {
+              requestDomains: [host],
+              initiatorDomains: [pageHost],
+              resourceTypes: ['image'],
+            },
+          },
+        ],
+      });
+      imageRules.set(host, id);
+      result.applied.push(host);
+    } catch {
+      // No initiatorDomains (older Safari): refuse rather than widen the rule.
+      result.refused.push({ host, code: 'unsupported' });
+    }
+  }
+  return result;
+}
 
 async function showApproval(origins: unknown): Promise<boolean> {
   if (!Array.isArray(origins)) return false;

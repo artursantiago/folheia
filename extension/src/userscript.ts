@@ -207,6 +207,17 @@ if (isFolheiaPage(location.href)) {
         // No approval screen here: the user edits ALLOWED_HOSTS.
         post({ type: 'access', id: message.id, shown: false });
         break;
+      case 'image-headers':
+        // GM APIs can't touch the page's own requests.
+        post({
+          type: 'image-headers',
+          id: message.id,
+          result: {
+            applied: [],
+            refused: message.rules.map(({ host }) => ({ host, code: 'unsupported' as const })),
+          },
+        });
+        break;
     }
   });
   post({ type: 'ready', info });

@@ -56,9 +56,13 @@ function manifest(browser) {
     default_locale: 'en',
     version: VERSION,
     permissions: ['declarativeNetRequestWithHostAccess'],
-    // Nothing granted up front: each destination is approved by the user.
-    // The dev build pre-approves 127.0.0.1, the e2e tests' "foreign site".
-    host_permissions: dev ? ['http://127.0.0.1/*', ...granted] : [],
+    // Destinations: none granted up front, the user approves each one. The
+    // Folheia pages themselves are listed because header rules on the page's
+    // own image requests need access to the initiator too. The dev build
+    // pre-approves 127.0.0.1, the e2e tests' "foreign site".
+    host_permissions: [
+      ...new Set([...matches, ...(dev ? ['http://127.0.0.1/*', ...granted] : [])]),
+    ],
     optional_host_permissions: ['https://*/*', 'http://*/*'],
     background:
       browser === 'firefox'

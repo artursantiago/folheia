@@ -99,13 +99,30 @@ export interface BridgeError {
   origin?: string;
 }
 
+/**
+ * A Referer for the images the page itself loads (`<img src>`) from one
+ * host: hotlink-protected CDNs refuse the page's own Referer. Lets the page
+ * show covers without moving their bytes through the bridge.
+ */
+export interface ImageHeaderRule {
+  /** Exact host the images come from ("webtoon-phinf.pstatic.net"). */
+  host: string;
+  referer: string;
+}
+
+export interface ImageHeaderResult {
+  applied: string[];
+  refused: { host: string; code: BridgeErrorCode }[];
+}
+
 /** Page → bridge. */
 export type PageMessage =
   | { type: 'hello'; id: string; protocol: number }
   | { type: 'fetch'; id: string; request: BridgeRequest }
   | { type: 'abort'; id: string }
   /** Asks the bridge to show its own approval screen for these origins. */
-  | { type: 'request-access'; id: string; origins: string[] };
+  | { type: 'request-access'; id: string; origins: string[] }
+  | { type: 'image-headers'; id: string; rules: ImageHeaderRule[] };
 
 /** Bridge → page. */
 export type BridgeMessage =
@@ -116,7 +133,8 @@ export type BridgeMessage =
   | { type: 'chunk'; id: string; data: ArrayBuffer }
   | { type: 'end'; id: string; timing: Timing }
   | { type: 'error'; id: string; error: BridgeError }
-  | { type: 'access'; id: string; shown: boolean };
+  | { type: 'access'; id: string; shown: boolean }
+  | { type: 'image-headers'; id: string; result: ImageHeaderResult };
 
 export type Envelope<T> = T & { channel: typeof CHANNEL; from: 'page' | 'bridge' };
 
@@ -194,4 +212,11 @@ export function validateRequest(request: unknown): BridgeError | undefined {
   )
     return bad(`Timeout must be between 1 and ${LIMITS.maxTimeoutMs} ms`);
   return undefined;
+}
+
+/** A plain hostname: letters, digits, dots and dashes, no wildcard, no port. */
+export function isHostname(value: unknown): value is string {
+  return (
+    typeof value === 'string' && value.length <= 253 && /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(value)
+  );
 }

@@ -1,5 +1,12 @@
 import { toPermissionPattern, patternForUrl } from './patterns';
-import { isBridgeMessage, isFolheiaPage, isPageMessage, validateRequest, wrap } from './protocol';
+import {
+  isBridgeMessage,
+  isFolheiaPage,
+  isHostname,
+  isPageMessage,
+  validateRequest,
+  wrap,
+} from './protocol';
 import { fromBase64, toBase64 } from './wire';
 
 describe('isFolheiaPage', () => {
@@ -81,5 +88,17 @@ describe('base64', () => {
   it('round-trips bytes', () => {
     const bytes = new Uint8Array(70_000).map((_, i) => (i * 31) % 256);
     expect(new Uint8Array(fromBase64(toBase64(bytes)))).toEqual(bytes);
+  });
+});
+
+describe('isHostname', () => {
+  it('takes plain hosts only, for image header rules', () => {
+    expect(isHostname('webtoon-phinf.pstatic.net')).toBe(true);
+    expect(isHostname('127.0.0.1')).toBe(true);
+    expect(isHostname('*.pstatic.net')).toBe(false);
+    expect(isHostname('localhost')).toBe(false);
+    expect(isHostname('example.org/path')).toBe(false);
+    expect(isHostname('example.org:8080')).toBe(false);
+    expect(isHostname(42)).toBe(false);
   });
 });

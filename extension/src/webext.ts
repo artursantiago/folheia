@@ -31,6 +31,8 @@ export interface DnrRule {
     urlFilter?: string;
     tabIds?: number[];
     resourceTypes?: string[];
+    requestDomains?: string[];
+    initiatorDomains?: string[];
   };
 }
 

@@ -10,12 +10,14 @@ import {
   type BridgeInfo,
   type BridgeMessage,
   type BridgeRequest,
+  type ImageHeaderResult,
+  type ImageHeaderRule,
   type PageMessage,
   type ResponseHead,
   type Timing,
 } from '../../extension/src/protocol';
 
-export type { BridgeInfo, BridgeRequest };
+export type { BridgeInfo, BridgeRequest, ImageHeaderResult, ImageHeaderRule };
 
 export class BridgeError extends Error {
   override readonly name = 'BridgeError';
@@ -47,6 +49,8 @@ export interface BridgeClient {
   fetch(request: BridgeRequest, options?: BridgeFetchOptions): Promise<BridgeResponse>;
   /** Opens the bridge's own approval screen; false when it has none. */
   requestAccess(origins: string[]): Promise<boolean>;
+  /** Asks for a Referer on the page's own `<img>` requests to these hosts. */
+  imageHeaders(rules: ImageHeaderRule[]): Promise<ImageHeaderResult>;
 }
 
 /** Same major protocol: the only kind of bridge the page talks to. */
@@ -182,5 +186,27 @@ export function createBridgeClient(): BridgeClient {
     });
   }
 
-  return { detect, fetch, requestAccess };
+  async function imageHeaders(rules: ImageHeaderRule[]): Promise<ImageHeaderResult> {
+    const none: ImageHeaderResult = {
+      applied: [],
+      refused: rules.map(({ host }) => ({ host, code: 'unsupported' })),
+    };
+    if (!(await detect())) return none;
+    const id = newId();
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        handlers.delete(id);
+        resolve(none);
+      }, 5_000);
+      handlers.set(id, (message) => {
+        if (message.type !== 'image-headers') return;
+        clearTimeout(timer);
+        handlers.delete(id);
+        resolve(message.result);
+      });
+      post({ type: 'image-headers', id, rules });
+    });
+  }
+
+  return { detect, fetch, requestAccess, imageHeaders };
 }

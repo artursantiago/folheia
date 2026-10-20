@@ -37,7 +37,12 @@ function connect(): Port {
       post({ type: 'chunk', id: message.id, data }, [data]);
       return;
     }
-    if (message.type === 'end' || message.type === 'error' || message.type === 'access')
+    if (
+      message.type === 'end' ||
+      message.type === 'error' ||
+      message.type === 'access' ||
+      message.type === 'image-headers'
+    )
       pending.delete(message.id);
     post(message);
   });
@@ -66,6 +71,10 @@ function forward(message: PageMessage) {
     case 'request-access':
       pending.add(message.id);
       connect().postMessage({ type: 'request-access', id: message.id, origins: message.origins });
+      break;
+    case 'image-headers':
+      pending.add(message.id);
+      connect().postMessage({ type: 'image-headers', id: message.id, rules: message.rules });
       break;
     case 'hello':
       post({ type: 'hello', id: message.id, info });
