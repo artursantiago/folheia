@@ -116,6 +116,9 @@ jobs:
           path: site
 
   deploy:
+    # `site` runs with always() because `release` is skipped on main; without
+    # the same here, that skip propagates and main never deploys.
+    if: always() && needs.site.result == 'success'
     needs: site
     runs-on: ubuntu-latest
     permissions:
