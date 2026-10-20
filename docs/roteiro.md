@@ -50,6 +50,8 @@ Os pontos que decidem a ordem:
 
 ## 3. Decisões que destravam o resto
 
+**Pré-propostas (20/10/2026):** D1, D2, D3 e D5 já têm recomendação em `pauta-decisoes.md`, para o Artur confirmar ou mudar. Também há rascunhos da spec das fundações (`spec-fundacoes.md`) e do pedido do protótipo v2 (`prototipo-v2-pedido.md`).
+
 | #   | Decisão                                                                                                                                     | Destrava                                    |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | D1  | **Revisão conjunta dos estudos** (o "quando começar" da biblioteca)                                                                         | Etapa 1 da biblioteca                       |
@@ -65,7 +67,7 @@ Os pontos que decidem a ordem:
 - **Versão 0.1.0** (20/10/2026): o leitor de hoje com os ganhos de desempenho, publicada antes do redesign. Dela em diante, a raiz do site é a versão estável e a `main` vai para a prévia em `/next/` (`versionamento.md`).
 
 - **Desempenho (frente 1):** os passos da A2, já em andamento.
-- **Decisões:** D1, D2, D3 e D4, cada uma numa conversa curta ou sabatina.
+- **Decisões:** D1, D2, D3 e D4, cada uma numa conversa curta ou sabatina. A ordem sugerida está em `pauta-decisoes.md`: D3 (leitor), D1 + D5, e por fim D2 com F1–F8.
 - **Identidade (frente 2), sem código:**
   - explorar o ícone;
   - revisar os textos (C8);
