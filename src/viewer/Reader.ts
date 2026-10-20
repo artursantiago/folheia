@@ -282,6 +282,7 @@ export class Reader {
         return ref ? this.renderer.getImage(ref)?.url : undefined;
       },
       pageLabel: (page) => this.config.pageLabel(book.pages[page]?.label ?? page + 1),
+      decorate: (page, node, slot) => this.decorate(page, node, slot),
     };
   }
 
@@ -313,6 +314,83 @@ export class Reader {
         if (this.zoomer.zoomed) this.flip.showTile(page, url, region);
       });
     }
+  }
+
+  /**
+   * Text layer and links over a resting page. They sit on the area where the
+   * image is actually drawn (it's letterboxed when proportions differ).
+   */
+  private decorate(page: number, node: HTMLElement, slot: PageSize): () => void {
+    const { source } = this.config;
+    const logical = this.book.pages[page];
+    const ref = logical?.ref;
+    const controller = new AbortController();
+    if (!ref || (!source.renderTextLayer && !source.getLinks)) return () => controller.abort();
+
+    const scale = Math.min(slot.width / logical.size.width, slot.height / logical.size.height);
+    const width = logical.size.width * scale;
+    const height = logical.size.height * scale;
+    const overlay = document.createElement('div');
+    overlay.className = 'fx-overlay';
+    overlay.style.left = `${(slot.width - width) / 2}px`;
+    overlay.style.top = `${(slot.height - height) / 2}px`;
+    overlay.style.width = `${width}px`;
+    overlay.style.height = `${height}px`;
+    // Half pages show one side of a wider sheet: lay the whole sheet out and clip.
+    const sheet = document.createElement('div');
+    sheet.className = 'fx-sheet';
+    sheet.style.width = ref.half ? '200%' : '100%';
+    sheet.style.left = ref.half === 'right' ? '-100%' : '0';
+    overlay.appendChild(sheet);
+    node.appendChild(overlay);
+    const sheetWidth = ref.half ? width * 2 : width;
+
+    // Wait a beat so a flurry of page turns doesn't parse text for every page.
+    const timer = window.setTimeout(() => {
+      if (source.renderTextLayer) {
+        const text = document.createElement('div');
+        text.className = 'fx-text';
+        sheet.appendChild(text);
+        void source
+          .renderTextLayer(ref.page, text, sheetWidth, controller.signal)
+          .catch(() => undefined);
+      }
+      void source.getLinks?.(ref.page).then(
+        (links) => {
+          if (controller.signal.aborted) return;
+          for (const link of links) {
+            const anchor = document.createElement('a');
+            anchor.className = 'fx-link';
+            anchor.style.left = `${link.rect.x * 100}%`;
+            anchor.style.top = `${link.rect.y * 100}%`;
+            anchor.style.width = `${link.rect.width * 100}%`;
+            anchor.style.height = `${link.rect.height * 100}%`;
+            if (link.url) {
+              anchor.href = link.url;
+              anchor.target = '_blank';
+              anchor.rel = 'noopener noreferrer';
+              anchor.setAttribute('aria-label', link.url);
+            } else if (link.pageIndex !== undefined) {
+              const label = this.labelForPhysical(link.pageIndex);
+              if (label === undefined) continue;
+              anchor.href = `#p=${label}`;
+              anchor.setAttribute('aria-label', this.config.pageLabel(label));
+              anchor.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.goToPage(label);
+              });
+            }
+            sheet.appendChild(anchor);
+          }
+        },
+        () => undefined,
+      );
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }
 
   private onResize() {

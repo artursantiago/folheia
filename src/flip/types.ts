@@ -16,6 +16,8 @@ export interface FlipHost {
   imageOf(page: number): string | undefined;
   /** Accessible text for a page image ("Página 12"). */
   pageLabel(page: number): string;
+  /** Adds overlays (text layer, links) to a page resting on screen. Returns a cleanup. */
+  decorate?(page: number, node: HTMLElement, slot: PageSlotSize): (() => void) | void;
 }
 
 /** Page-turn effect. Flip2D now; a WebGL 3D engine can implement the same contract later. */

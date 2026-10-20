@@ -93,6 +93,7 @@ export class Flip2D implements FlipEngine {
   private changeListeners = new Set<(spread: number) => void>();
   private flipListeners = new Set<(flipping: boolean) => void>();
   private pending: (() => void) | undefined;
+  private decorations: (() => void)[] = [];
 
   constructor(container: HTMLElement) {
     this.stage = el('fx-stage', container);
@@ -237,6 +238,7 @@ export class Flip2D implements FlipEngine {
 
   destroy() {
     this.cancelTurn();
+    this.clearDecorations();
     this.stage.remove();
     this.changeListeners.clear();
     this.flipListeners.clear();
@@ -286,8 +288,14 @@ export class Flip2D implements FlipEngine {
     return this.size.width;
   }
 
+  private clearDecorations() {
+    this.decorations.forEach((cleanup) => cleanup());
+    this.decorations = [];
+  }
+
   private renderStatic() {
     const { width, height } = this.size;
+    this.clearDecorations();
     this.book.replaceChildren();
     this.book.style.width = `${this.double ? width * 2 : width}px`;
     this.book.style.height = `${height}px`;
@@ -295,6 +303,9 @@ export class Flip2D implements FlipEngine {
     for (const { page, side } of this.placement(this.current)) {
       const node = this.pageElement(page, side);
       this.book.appendChild(node);
+      const slot = { width: side === 'wide' ? width * 2 : width, height };
+      const cleanup = this.host?.decorate?.(page, node, slot);
+      if (cleanup) this.decorations.push(cleanup);
     }
     this.book.style.transform = this.centerShift(this.current);
     const placement = this.placement(this.current);
@@ -408,6 +419,7 @@ export class Flip2D implements FlipEngine {
     const backPage = this.double ? this.pageOnSide(to, backSide) : undefined;
 
     // Static layer: what stays put during the turn.
+    this.clearDecorations();
     this.book.replaceChildren();
     this.book.style.transform = 'translateX(0)';
     delete this.book.dataset.lone;
@@ -595,6 +607,15 @@ export class Flip2D implements FlipEngine {
   private onPointerDown = (event: PointerEvent) => {
     if (!this.interactive || !this.host || event.button !== 0) return;
     if (this.turn && !this.peeking) return;
+    // Links and text keep their own behavior: with a mouse, page drags start
+    // only near the outer edges so the middle stays free for selecting text.
+    const target = event.target as Element | null;
+    if (target?.closest?.('a, button')) return;
+    if (event.pointerType === 'mouse') {
+      const rect = this.book.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      if (x > TAP_EDGE && x < 1 - TAP_EDGE) return;
+    }
     this.endPeek();
     this.stage.setPointerCapture?.(event.pointerId);
     const leaf = this.toLeaf(event.clientX, event.clientY);

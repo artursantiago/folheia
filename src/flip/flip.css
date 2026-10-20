@@ -150,3 +150,73 @@
   background: linear-gradient(to bottom, var(--color-page-fold), transparent);
   opacity: 0.5;
 }
+
+/* Text and link overlays, positioned over the drawn page. */
+.fx-overlay {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.fx-sheet {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+/* Selectable, invisible text laid out by PDF.js (it sets --total-scale-factor). */
+.fx-text {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  transform-origin: 0 0;
+  user-select: text;
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari needs it */
+  -webkit-user-select: text;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+.fx-text :is(span, br) {
+  position: absolute;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.fx-text > :not(.markedContent),
+.fx-text .markedContent span:not(.markedContent) {
+  --font-height: 0;
+  --scale-x: 1;
+  --rotate: 0deg;
+
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- PDF.js text metrics */
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.fx-text .markedContent {
+  display: contents;
+}
+
+.fx-text ::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  color: transparent;
+}
+
+.fx-link {
+  position: absolute;
+  z-index: 3;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.fx-link:hover,
+.fx-link:focus-visible {
+  background: var(--color-page-fold);
+  opacity: 0.4;
+}
