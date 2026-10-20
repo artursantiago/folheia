@@ -1,0 +1,6 @@
+dist
+coverage
+docs/prototipo
+package-lock.json
+playwright-report
+test-results
