@@ -75,7 +75,7 @@ function manifest(browser) {
       ? {
           browser_specific_settings: {
             gecko: {
-              id: 'folheia-bridge@artursantiago.github.io',
+              id: 'folheia-bridge@folheia-app.github.io',
               strict_min_version: '128.0',
               data_collection_permissions: { required: ['none'] },
             },
@@ -89,7 +89,7 @@ function manifest(browser) {
 function userscriptHeader() {
   const lines = [
     ['name', 'Folheia Bridge'],
-    ['namespace', 'https://github.com/artursantiago/folheia'],
+    ['namespace', 'https://github.com/folheia-app/folheia'],
     ['version', VERSION],
     ['description', 'Lets the Folheia reader fetch from approved sites without CORS limits.'],
     ['license', 'MIT'],

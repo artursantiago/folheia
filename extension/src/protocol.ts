@@ -171,7 +171,7 @@ export function isFolheiaPage(url: string): boolean {
   } catch {
     return false;
   }
-  if (parsed.protocol === 'https:' && parsed.hostname === 'artursantiago.github.io')
+  if (parsed.protocol === 'https:' && parsed.hostname === 'folheia-app.github.io')
     return parsed.pathname.startsWith('/folheia/');
   const local = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
   return local && (parsed.protocol === 'http:' || parsed.protocol === 'https:');

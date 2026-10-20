@@ -142,7 +142,7 @@ Fontes: [Violentmonkey API](https://violentmonkey.github.io/api/gm/), [Tampermon
 O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a extensão para ler sites com a rede do usuário. As defesas, em camadas:
 
 1. **Só páginas do Folheia.**
-   - O content script só é injetado em `https://artursantiago.github.io/folheia/*`.
+   - O content script só é injetado em `https://folheia-app.github.io/folheia/*`.
    - O build de desenvolvimento (`--dev`) acrescenta `localhost` e `127.0.0.1`. No build normal eles ficam de fora, porque qualquer servidor local contaria como Folheia.
    - O background confere de novo a URL de quem conecta (`isFolheiaPage`) e aceita só o frame principal.
    - Outra implantação (outro domínio ou caminho base) se acrescenta em `FOLHEIA_MATCHES` e `isFolheiaPage`. As duas listas estão juntas no código.
@@ -197,7 +197,7 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
   - o `Referer` nas `<img>` da própria página (§9.2);
   - a recusa de destino não aprovado;
   - o cancelamento;
-  - a ponte que responde em `artursantiago.github.io/folheia/` e fica muda em `…/outro-projeto/` e em outro domínio.
+  - a ponte que responde em `folheia-app.github.io/folheia/` e fica muda em `…/outro-projeto/` e em outro domínio.
 - **Ao vivo (`e2e/bridge-live.spec.ts`, desligado por padrão):** `FOLHEIA_E2E_LIVE=1 npx playwright test e2e/bridge-live.spec.ts --project=chromium`. Com `FOLHEIA_BRIDGE_PROBES=arquivo.json`, testa uma lista de URLs guardada fora do repositório (§9).
 - **Firefox:**
   - os mesmos 7 testes passam;
@@ -363,7 +363,7 @@ Primeiro, gerar os arquivos: `npm run build:extension`. Para testar com o `npm r
 1. Instalar o **Userscripts** (App Store, grátis) e abrir o app uma vez.
 2. **iPad:** Ajustes → Apps → Safari → Extensões → Userscripts → ativar e **Todos os sites → Permitir**. **Mac:** Safari → Ajustes → Extensões → Userscripts → ativar e permitir em todos os sites. Sem o "todos os sites", o CORS não é furado (§3.1).
 3. Passar `extension/dist/folheia-bridge.user.js` para a pasta do Userscripts (no iPad, pelo app Arquivos; no Mac, a pasta escolhida no app). Também dá para abrir a URL `.user.js` no Safari e instalar pelo popup da extensão.
-4. Abrir `https://artursantiago.github.io/folheia/#/lab` (o build `--dev` também roda em `localhost`). A linha **"Ponte"** deve mostrar `userscript · Userscripts · …`.
+4. Abrir `https://folheia-app.github.io/folheia/#/lab` (o build `--dev` também roda em `localhost`). A linha **"Ponte"** deve mostrar `userscript · Userscripts · …`.
 5. **Buscar** (ou "Rodar lote" com a lista local):
    - **MangaDex API** → esperado: `via bridge`, 200.
    - **Capa do Internet Archive** → a imagem aparece.

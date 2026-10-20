@@ -26,7 +26,7 @@ export function patternForUrl(url: string): string {
  * Where the bridge runs: the published site. Keep in sync with
  * isFolheiaPage() in protocol.ts.
  */
-export const FOLHEIA_MATCHES = ['https://artursantiago.github.io/folheia/*'];
+export const FOLHEIA_MATCHES = ['https://folheia-app.github.io/folheia/*'];
 
 /**
  * Local development, only in the dev build: any local server would count as

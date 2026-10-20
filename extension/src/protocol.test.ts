@@ -11,15 +11,15 @@ import { fromBase64, toBase64 } from './wire';
 
 describe('isFolheiaPage', () => {
   it('accepts the published site under /folheia/ and local development', () => {
-    expect(isFolheiaPage('https://artursantiago.github.io/folheia/')).toBe(true);
-    expect(isFolheiaPage('https://artursantiago.github.io/folheia/#/lab')).toBe(true);
+    expect(isFolheiaPage('https://folheia-app.github.io/folheia/')).toBe(true);
+    expect(isFolheiaPage('https://folheia-app.github.io/folheia/#/lab')).toBe(true);
     expect(isFolheiaPage('http://localhost:5173/')).toBe(true);
     expect(isFolheiaPage('http://127.0.0.1:4173/folheia/')).toBe(true);
   });
 
   it('refuses everything else', () => {
-    expect(isFolheiaPage('https://artursantiago.github.io/other/')).toBe(false);
-    expect(isFolheiaPage('http://artursantiago.github.io/folheia/')).toBe(false);
+    expect(isFolheiaPage('https://folheia-app.github.io/other/')).toBe(false);
+    expect(isFolheiaPage('http://folheia-app.github.io/folheia/')).toBe(false);
     expect(isFolheiaPage('https://evil.example/folheia/')).toBe(false);
     expect(isFolheiaPage('https://localhost.evil.example/')).toBe(false);
     expect(isFolheiaPage('not a url')).toBe(false);

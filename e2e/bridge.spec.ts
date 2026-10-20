@@ -137,7 +137,7 @@ test('aborts a request in flight', async () => {
 
 test('answers on the published site and stays silent anywhere else', async () => {
   // Pages served by Playwright under those URLs; the content script goes by URL.
-  await context.route(/^https:\/\/(artursantiago\.github\.io|outsider\.example)\//, (route) =>
+  await context.route(/^https:\/\/(folheia-app\.github\.io|outsider\.example)\//, (route) =>
     route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>t</title>' }),
   );
   const hello = async (url: string) => {
@@ -163,7 +163,7 @@ test('answers on the published site and stays silent anywhere else', async () =>
     await other.close();
     return answered;
   };
-  expect(await hello('https://artursantiago.github.io/folheia/')).toBe(true);
-  expect(await hello('https://artursantiago.github.io/another-project/')).toBe(false);
+  expect(await hello('https://folheia-app.github.io/folheia/')).toBe(true);
+  expect(await hello('https://folheia-app.github.io/another-project/')).toBe(false);
   expect(await hello('https://outsider.example/folheia/')).toBe(false);
 });
