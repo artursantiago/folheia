@@ -236,13 +236,13 @@ export function ReaderScreen({
     return () => window.removeEventListener('keydown', onKey);
   }, [reader, setImmersive]);
 
-  // When the bar shows. Normal mode: it fades after a few idle seconds and comes
-  // back on any movement. Immersive with a fixed bar: always. Immersive with a
-  // hiding bar: a tap in the middle of the book (or the mouse near the bottom
-  // edge) brings it back for a while; another tap in the middle hides it.
+  // When the bar shows. Normal mode and immersive with a fixed bar: always (the
+  // stage leaves room for it, so hiding it shows no more of the book). Immersive
+  // with a hiding bar: a tap in the middle of the book (or the mouse near the
+  // bottom edge) brings it back for a while; another tap in the middle hides it.
   useEffect(() => {
-    // A fixed bar is kept visible by `keepChrome`.
-    if (barMode === 'fixed') return;
+    // Every other mode is kept visible by `keepChrome`.
+    if (barMode !== 'auto') return;
     let visible = true;
     let timer = 0;
     const set = (next: boolean) => {
@@ -263,17 +263,12 @@ export function ReaderScreen({
       window.addEventListener(type, handler);
       disposers.push(() => window.removeEventListener(type, handler));
     };
-    if (barMode === 'auto') {
-      listen('pointermove', (event) => {
-        if (event.pointerType === 'mouse' && event.clientY > window.innerHeight - REVEAL_EDGE)
-          set(true);
-      });
-      const off = reader?.onCenterTap(() => set(!visible));
-      if (off) disposers.push(() => void off());
-    } else {
-      listen('pointermove', () => set(true));
-      listen('pointerdown', () => set(true));
-    }
+    listen('pointermove', (event) => {
+      if (event.pointerType === 'mouse' && event.clientY > window.innerHeight - REVEAL_EDGE)
+        set(true);
+    });
+    const off = reader?.onCenterTap(() => set(!visible));
+    if (off) disposers.push(() => void off());
     return () => {
       window.clearTimeout(timer);
       disposers.forEach((dispose) => dispose());
@@ -282,7 +277,7 @@ export function ReaderScreen({
 
   const title = metadata.title ?? name;
   const details = [metadata.author, metadata.date].filter(Boolean).join(' · ');
-  const keepChrome = panel !== 'none' || goToOpen || barMode === 'fixed';
+  const keepChrome = panel !== 'none' || goToOpen || barMode !== 'auto';
 
   const submitGoTo = (event: FormEvent) => {
     event.preventDefault();

@@ -6,6 +6,10 @@ The stable version is live at <https://folheia-app.github.io/folheia/>; what's i
 
 ## [Unreleased]
 
+### Changed
+
+- Outside the immersive mode, the reader's bottom bar now stays on screen instead of fading out after a few seconds, so the page number is always in view. It never covered the book.
+
 ## [0.2.0] - 2026-10-20
 
 ### Added
