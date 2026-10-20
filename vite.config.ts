@@ -12,6 +12,7 @@ export default defineConfig({
     target: ['safari18', 'chrome130', 'edge130', 'firefox130'],
   },
   test: {
+    include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],

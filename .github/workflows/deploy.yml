@@ -34,9 +34,22 @@ jobs:
         with:
           path: dist
 
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: node scripts/make-fixture-pdf.mjs --pages 60
+      - run: npx playwright test --project=chromium --project=webkit --project=ipad
+
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: check
+    needs: [check, e2e]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
