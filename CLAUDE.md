@@ -3,6 +3,7 @@
 Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; everything runs in the browser. Solo, experimental project by Artur Santiago.
 
 - Product plan and every scope decision: `docs/plano-mvp.md` (source of truth; update it when a decision changes).
+- Roadmap (order of the backlog: work streams, waves, blocking decisions): `docs/roteiro.md`.
 - Clean-room study of the references: `docs/estudo-referencias.md`.
 - Mihon study (reader, screens, sources/extensions, performance): `docs/estudo-mihon.md`.
 - Visual identity: `docs/identidade-visual.md`.

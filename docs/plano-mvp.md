@@ -147,6 +147,8 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 ## 8. Backlog
 
 > Reescrito em 20/10/2026 depois do primeiro teste do Artur no iPad Air M1 (PWA instalado) e no navegador. Cada item é para ser **sabatinado numa sessão própria** antes de implementar. As notas técnicas são pistas do que provavelmente causa cada problema, não decisões.
+>
+> **A ordem entre as seções está em `roteiro.md`** (frentes, ondas e as decisões que destravam cada uma).
 
 ### A. Correções vistas no teste (feito em 20/10/2026)
 
