@@ -11,6 +11,7 @@ import {
   Notice,
   Overline,
   PageCounter,
+  PageSlider,
   Popover,
   PopoverRow,
   ReaderBar,
@@ -37,6 +38,8 @@ function Showcase({ scheme }: { scheme: 'light' | 'dark' }) {
   const [layout, setLayout] = useState<'auto' | 'single' | 'double'>('auto');
   const [cover, setCover] = useState(true);
   const [panel, setPanel] = useState(false);
+  const [page, setPage] = useState(47);
+  const [dragging, setDragging] = useState<number>();
 
   return (
     <section data-theme={scheme} className={styles.column} aria-label={`Tema ${scheme}`}>
@@ -135,7 +138,31 @@ function Showcase({ scheme }: { scheme: 'light' | 'dark' }) {
           <ReaderBarSeparator />
           <IconButton icon="zoomOut" label="Diminuir zoom" />
           <IconButton icon="zoomIn" label="Aumentar zoom" />
-          <IconButton icon="fullscreen" label="Tela cheia" />
+          <IconButton icon="fullscreen" label="Modo imersivo" />
+        </ReaderBar>
+
+        <Overline>Barra do modo imersivo (faixa) e slider de páginas</Overline>
+        <ReaderBar label="Controles de leitura" variant="strip">
+          <IconButton icon="collapse" label="Sair do modo imersivo" />
+          <ReaderBarSeparator />
+          <IconButton icon="prev" label="Página anterior" onClick={() => setPage(page - 1)} />
+          <PageCounter
+            current={String(dragging ?? page)}
+            total={212}
+            label={`Página ${page} de 212. Ir para página`}
+          />
+          <PageSlider
+            value={page}
+            total={212}
+            label="Posição no livro"
+            valueText={(n) => `Página ${n} de 212`}
+            onPreview={setDragging}
+            onCommit={setPage}
+          />
+          <IconButton icon="next" label="Próxima página" onClick={() => setPage(page + 1)} />
+          <ReaderBarSeparator />
+          <IconButton icon="thumbnails" label="Índice" />
+          <IconButton icon="settings" label="Ajustes" />
         </ReaderBar>
 
         <Overline>Popover</Overline>

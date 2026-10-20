@@ -8,6 +8,7 @@ const paths = {
   zoomIn: 'M20 20l-4.5-4.5M11 8v6M8 11h6M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0z',
   zoomOut: 'M20 20l-4.5-4.5M8 11h6M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0z',
   fullscreen: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
+  collapse: 'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5',
   thumbnails: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   outline: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
   settings:

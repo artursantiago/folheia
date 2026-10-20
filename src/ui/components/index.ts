@@ -7,6 +7,7 @@ export { Icon, type IconName } from './Icon';
 export { IconButton } from './IconButton';
 export { Notice } from './Notice';
 export { Overline } from './Overline';
+export { PageSlider } from './PageSlider';
 export { Popover, PopoverRow } from './Popover';
 export { PageCounter, ReaderBar, ReaderBarSeparator } from './ReaderBar';
 export { Segmented } from './Segmented';

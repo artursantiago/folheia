@@ -5,12 +5,18 @@ export interface ReaderBarProps {
   label: string;
   children: ReactNode;
   className?: string;
+  /** `floating`: a card centered over the page. `strip`: edge to edge along the bottom (immersive mode). */
+  variant?: 'floating' | 'strip';
 }
 
-/** The floating reading toolbar: a horizontal card with a perforated top edge. */
-export function ReaderBar({ label, children, className }: ReaderBarProps) {
+/** The reading toolbar: a horizontal card with a perforated top edge. */
+export function ReaderBar({ label, children, className, variant = 'floating' }: ReaderBarProps) {
   return (
-    <nav aria-label={label} className={[styles.bar, className].filter(Boolean).join(' ')}>
+    <nav
+      aria-label={label}
+      data-variant={variant}
+      className={[styles.bar, className].filter(Boolean).join(' ')}
+    >
       {children}
     </nav>
   );

@@ -1,0 +1,67 @@
+/* A thin rule to drag along, with a bookmark ribbon as the marker. */
+.slider {
+  --fill: 0%;
+  --track: var(--border-width);
+  --ribbon-width: var(--space-3);
+  --ribbon-height: var(--space-6);
+
+  flex: 1;
+  min-width: var(--space-16);
+  height: var(--size-touch);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: var(--track);
+  background: linear-gradient(
+    to right,
+    var(--color-ink-muted) var(--fill),
+    var(--color-rule) var(--fill)
+  );
+}
+
+.slider[dir='rtl']::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to left,
+    var(--color-ink-muted) var(--fill),
+    var(--color-rule) var(--fill)
+  );
+}
+
+.slider::-moz-range-track {
+  height: var(--track);
+  background: var(--color-rule);
+}
+
+.slider::-moz-range-progress {
+  height: var(--track);
+  background: var(--color-ink-muted);
+}
+
+.slider::-webkit-slider-thumb {
+  width: var(--ribbon-width);
+  height: var(--ribbon-height);
+  margin-top: calc((var(--track) - var(--ribbon-height)) / 2);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+  appearance: none;
+}
+
+.slider::-moz-range-thumb {
+  width: var(--ribbon-width);
+  height: var(--ribbon-height);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
