@@ -6,7 +6,7 @@
 
 ## 1. Resumo
 
-- **Funciona.** A POC no Chrome lê sites que bloqueiam o Folheia por CORS. Também põe `Referer` e `User-Agent`, transmite binários grandes em pedaços, cancela e recusa destinos não aprovados. Os testes automatizados (e2e) cobrem tudo isso.
+- **Funciona.** A POC, no Chrome e no Firefox, lê sites que bloqueiam o Folheia por CORS. Também põe `Referer` e `User-Agent` (inclusive nas `<img>` da própria página), transmite binários grandes em pedaços, cancela e recusa destinos não aprovados. Os testes automatizados (e2e) cobrem tudo isso nos dois navegadores.
 - **Com fontes de verdade:** testamos 12 das fontes mais conhecidas do repositório do Mihon, entre elas MangaDex, MANGA Plus, Webtoons, Weeb Central e Asura. **9 funcionam pela ponte**, catálogo e capa. Duas param no desafio do Cloudflare, e uma exige assinatura própria (§9). Sem a ponte, a página não lê quase nenhuma.
 - **iPad:** o único caminho gratuito é um **userscript nosso no app Userscripts** (grátis, App Store). Ele fura o CORS, mas com três limites:
   - **não define `Referer`** (o `User-Agent`, sim);
@@ -15,7 +15,9 @@
 - **Testado no simulador do iPad** (Safari do iPadOS 26.2, §9.1):
   - o userscript no Userscripts funciona;
   - **o `User-Agent` muda, o `Referer` não**;
-  - por isso as capas de Webtoons, MangaPill e MangaK não abrem por esse caminho.
+  - o `Referer` não muda nem pela extensão Safari, nem nas `<img>` da página: o Safari só deixa apagar esse cabeçalho;
+  - por isso as capas de Webtoons, MangaPill e MangaK não abrem no iPad.
+- **Capas em qualquer ambiente:** um catálogo de metadados (AniList, que libera CORS, ou a própria MangaDex), com a capa tipográfica do Folheia como reserva (§9.2).
 - **Desktop e Android:** uma **extensão MV3 nossa** (Chrome/Edge e Firefox, o mesmo código) faz tudo, inclusive `Referer`/`User-Agent` e binários rápidos.
   - **Distribuição grátis:** Firefox (assinatura "unlisted" no AMO, instala no Android por arquivo) e Edge Add-ons.
   - **Chrome:** modo desenvolvedor, ou a taxa única da Chrome Web Store.
@@ -71,6 +73,10 @@ O site do Folheia não consegue **ler** respostas de sites sem CORS nem definir 
 - **Testado no simulador do iPad** (§9.1): empacotada com `safari-web-extension-packager` e assinada "ad hoc" (sem conta Apple; só vale no simulador).
   - **Funciona:** a ponte é detectada, o pedido de acesso abre a tela da extensão e o Safari mostra o próprio prompt de permissão por site, com "Permitir por um dia" e "Sempre permitir".
   - **`User-Agent` muda. `Referer`, não:** a regra do declarativeNetRequest é aceita, mas o Safari não aplica o `Referer` às requisições da extensão.
+  - **Nem nas imagens da própria página (`<img>`):**
+    - com a condição `initiatorDomains`, a regra é aceita mas não casa;
+    - sem ela, casa, mas o Safari **remove** o `Referer` em vez de trocar o valor.
+    - Ou seja: no Safari, uma extensão só consegue apagar o `Referer`, nunca escrever outro. As CDNs que exigem `Referer` recusam a requisição sem ele (§9).
   - **Ajuste necessário:** o Safari precisa de `background.persistent: false` no manifesto. O build da POC já gera assim.
 - **Conclusão:** com o Artur sem pagar a Apple, **não vale** no iPad. Fica registrado como caminho se um dia houver a conta paga.
 
@@ -181,15 +187,24 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
 **Testes:**
 
 - **Unitários:** protocolo, padrões de permissão, base64, e cliente + rede com uma ponte falsa.
-- **e2e (`e2e/bridge.spec.ts`, só Chromium):** carrega a extensão descompactada (`--load-extension`). Um servidor local em `127.0.0.1` sem CORS faz o papel do site de fora. Cobre:
+- **e2e (`e2e/bridge.spec.ts`, Chromium e Firefox):** um servidor local em `127.0.0.1` sem CORS faz o papel do site de fora.
+  - **Chromium:** carrega a extensão descompactada (`--load-extension`).
+  - **Firefox:** o Playwright não instala extensões, então o teste instala a extensão como "temporária" pelo protocolo de depuração remota do Firefox, o mesmo que o `web-ext` da Mozilla usa (`e2e/bridge-harness.ts`, código nosso). O CI roda só Chromium e WebKit; localmente: `npx playwright test e2e/bridge.spec.ts --project=chromium --project=firefox`.
+  - **Cobre:**
   - o fetch direto bloqueado e a leitura pela ponte;
   - `Referer` e `User-Agent` conferidos pelo eco do servidor, sem cookie;
   - 8 MB em pedaços;
+  - o `Referer` nas `<img>` da própria página (§9.2);
   - a recusa de destino não aprovado;
   - o cancelamento;
   - a ponte que responde em `artursantiago.github.io/folheia/` e fica muda em `…/outro-projeto/` e em outro domínio.
 - **Ao vivo (`e2e/bridge-live.spec.ts`, desligado por padrão):** `FOLHEIA_E2E_LIVE=1 npx playwright test e2e/bridge-live.spec.ts --project=chromium`. Com `FOLHEIA_BRIDGE_PROBES=arquivo.json`, testa uma lista de URLs guardada fora do repositório (§9).
-- **Firefox:** o Playwright não carrega extensões no Firefox, então o teste lá é manual (§10). O pacote do Firefox passa no `web-ext lint` da Mozilla, rodado avulso com `npx`, sem entrar no `package.json`, com 0 erros e 0 avisos.
+- **Firefox:**
+  - os mesmos 7 testes passam;
+  - os 8 MB chegam em ~33 ms, mais rápido que no Chrome, porque o Firefox passa os bytes direto, sem base64;
+  - ao vivo, MangaDex, a capa da Webtoons e a da MangaPill (com `Referer`) deram 200;
+  - o pacote também passa no `web-ext lint` da Mozilla (rodado avulso com `npx`, sem entrar no `package.json`): 0 erros, 0 avisos;
+  - falta testar o Firefox de verdade (o do Playwright é uma versão modificada) e o Firefox para Android (§10.3).
 
 **Medido no Chromium (Mac, 20/10/2026):**
 
@@ -286,6 +301,35 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
   - O iPad Air M1 deve ser umas 2 a 3 vezes mais lento; precisa de medição no aparelho (§10.4).
   - O PDF de 17 MB do Internet Archive estourou o limite de 40 s, mas por causa do servidor do IA, que já levava 22 s no Chromium.
 - **A extensão Safari própria não ganha nada no `Referer`.** A vantagem dela seria só a velocidade. Sem a conta paga da Apple, o Userscripts continua sendo o caminho do iPad.
+
+### 9.2 Capas: como pegar em cada ambiente
+
+As capas são o caso mais comum de imagem com proteção de hotlink. O pedido `image-headers` do protocolo põe o `Referer` certo nas `<img>` que a **própria página** pede a um host aprovado. A imagem é só exibida; os bytes não passam pela ponte e o cache do navegador funciona normalmente.
+
+- **Como a regra é feita:** só imagens, só aquele host, e só quando quem pede é a página do Folheia (`initiatorDomains`).
+- **Permissão necessária:** no Chrome, a permissão de host também precisa cobrir quem pede, então o manifesto lista as páginas do Folheia em `host_permissions`.
+
+| Ambiente                        | Capa da fonte com `Referer`                                  | Outras saídas                           |
+| ------------------------------- | ------------------------------------------------------------ | --------------------------------------- |
+| Chrome / Edge + extensão        | **sim**, por `<img>` (regra de imagem) ou pela ponte (bytes) | —                                       |
+| Firefox (desktop) + extensão    | **sim**, pelos dois                                          | —                                       |
+| Firefox Android + extensão      | provavelmente sim (mesmo motor); falta testar no aparelho    | —                                       |
+| Safari (iPad) + extensão Safari | **não**: o Safari só apaga o `Referer`                       | catálogo de metadados, capa tipográfica |
+| Safari (iPad) + Userscripts     | **não**                                                      | catálogo de metadados, capa tipográfica |
+| App Android (Capacitor)         | **sim**: HTTP nativo                                         | —                                       |
+| Qualquer um, sem nada instalado | não                                                          | catálogo de metadados, capa tipográfica |
+
+**Saídas que valem em todo lugar:**
+
+- **Catálogo de metadados:**
+  - o **AniList** libera CORS na API e nas imagens das capas; testado com uma requisição de cada, inclusive com o `Referer` do Folheia;
+  - a **MangaDex** também libera as capas direto;
+  - é só casar a série pelo título ou pelo ID, como fazem os rastreadores do Mihon;
+  - é mais um host externo, entra na decisão da regra 2 (§11).
+- **Capa tipográfica:** o `BookCover` do Folheia já desenha uma capa no nosso estilo, sem rede. Fica como último recurso.
+- **No iPad, um intermediário** (proxy próprio ou Suwayomi no Mac) seria a única forma de mostrar as capas da fonte que exigem `Referer`.
+
+**Ordem sugerida:** capa do catálogo de metadados, depois a da fonte (onde o ambiente permitir) e por fim a tipográfica.
 
 ## 10. Teste manual (passo a passo para o Artur)
 
