@@ -285,6 +285,11 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
    - **Memória:** ~25–30 MB por página segurada (estimativa do P0), até 2 páginas. **A conferir no iPad.**
 
 6. **Depois, só se ainda fizer falta:** P7 (`enableHWA` A/B), P2 (janela quente em bitmap), P8, P9, P10, na ordem do §6.5.
+7. **Backlog: buscar adiantado os bytes das próximas páginas em PDF por URL** (visto no iPad em 20/10/2026, com os exemplos do Wikimedia). Hoje o app só pede os bytes de uma página quando vai desenhá-la, uma por vez. Assim rede e desenho nunca se sobrepõem.
+   - **Medido:** cada pedaço de 256 KB do Wikimedia leva ~0,45 s; desenhar a página com os bytes já no aparelho leva ~150–250 ms (WebKit no Mac). No Simulator do iPad, cada página do Mágico de Oz ficou pronta em 1,2–1,8 s, e um spread inteiro em ~3 s. Quem vira antes disso vê o verso já pronto e a página da direita ainda em branco.
+   - **Proposta (A, preferida):** pedir em paralelo, enquanto a fila desenha, os bytes das páginas que o plano já quer (~6 à frente). Baixa só o que está para ser lido.
+   - **Alternativa (B):** baixar o arquivo inteiro em segundo plano depois de abrir. Mais simples, mas gasta dados: 17 MB no Mágico de Oz, 100 MB ou mais numa HQ.
+   - Arquivos locais não têm esse custo.
 
 **A confirmar no iPad Air M1** (PWA, em HTTPS):
 
@@ -292,6 +297,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 - **P3:** a memória com um CBZ grande no iPad deitado, virando páginas (Web Inspector → Timelines → Memory). Esperado: até ~190 MB de imagens.
 - **P6:** a memória com zoom numa HQ em PDF, e se o zoom continua sem derrubar a página.
 - **P1 + P5:** virar rápido (toques seguidos) numa HQ em pé deve terminar nítido quase sempre.
+- **Correção das prévias repetidas (`515a522`, na `/next/`):** em livros escaneados vindos da rede, as próximas páginas devem ficar prontas um pouco antes.
 
 - O zoom por pinça não derruba mais a página (corrigido em 20/10/2026; parecia ok no primeiro teste). Se cair de novo, conectar no Mac e ver o motivo no Web Inspector.
 - O modo imersivo, depois de atualizar o PWA: barra do sistema some, barra fixa com slider, opção "some sozinha" nos Ajustes.
