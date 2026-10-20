@@ -32,7 +32,7 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
    - Colors, fonts, sizes, spacing, radii and motion come only from the tokens in `src/theme/`. Stylelint enforces this for colors, font families, font sizes and radii; for spacing and motion it's on you.
    - New UI must appear in the live style guide at `#/estilo`.
    - Do not add a logo or icon until Artur asks for one.
-6. **i18n.** No hard-coded UI strings. Every string goes in the typed dictionaries in `src/i18n/` (pt-BR and en). The only exception is the developer style guide (`src/ui/pages/StyleGuide.tsx`).
+6. **i18n.** No hard-coded UI strings. Every string goes in the typed dictionaries in `src/i18n/` (pt-BR and en). The only exceptions are the developer pages: the style guide (`#/estilo`) and the engine lab (`#/lab`).
 7. **Accessibility.** Keyboard navigation, ARIA, visible focus and `prefers-reduced-motion` are required. The PDF text layer stays selectable and works with screen readers.
 8. **Ready for Capacitor** (native app later):
    - Configurable base path; never hard-code `/folheia/`.

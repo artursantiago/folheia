@@ -1,9 +1,10 @@
 import { createStore } from '../lib/store';
 
-export type Route = { name: 'home' } | { name: 'styleguide' };
+export type Route = { name: 'home' } | { name: 'styleguide' } | { name: 'lab' };
 
 export function parseHash(hash: string): Route {
   if (hash.startsWith('#/estilo')) return { name: 'styleguide' };
+  if (hash.startsWith('#/lab')) return { name: 'lab' };
   return { name: 'home' };
 }
 

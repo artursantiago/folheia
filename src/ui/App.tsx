@@ -7,6 +7,7 @@ import { route } from './router';
 import styles from './App.module.css';
 
 const StyleGuide = lazy(() => import('./pages/StyleGuide'));
+const Lab = lazy(() => import('./pages/Lab'));
 
 export function App() {
   const { theme } = useStore(preferences);
@@ -14,6 +15,14 @@ export function App() {
   const { t } = useI18n();
 
   useEffect(() => applyTheme(theme), [theme]);
+
+  if (current.name === 'lab') {
+    return (
+      <Suspense fallback={null}>
+        <Lab />
+      </Suspense>
+    );
+  }
 
   if (current.name === 'styleguide') {
     return (
