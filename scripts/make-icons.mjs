@@ -133,17 +133,25 @@ function png(size, share, colors) {
   ]);
 }
 
-/** The favicon follows the system theme: Ateliê by day, Sebo à noite by night. */
-function favicon() {
+/**
+ * The favicon follows the system theme: Ateliê by day, Sebo à noite by night.
+ * With `fixed` colors it stays in that palette (the preview's dark icon).
+ */
+function favicon(fixed) {
   const map = layout(64, 0.66);
   const r = (n) => Math.round(n * 100) / 100;
   const rule = rulePolygon(map);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <style>
+  <style>${
+    fixed
+      ? `
+    .paper { fill: ${fixed.paper} } .ink { fill: ${fixed.ink} } .accent { fill: ${fixed.accent} }`
+      : `
     .paper { fill: ${LIGHT.paper} } .ink { fill: ${LIGHT.ink} } .accent { fill: ${LIGHT.accent} }
     @media (prefers-color-scheme: dark) {
       .paper { fill: ${DARK.paper} } .ink { fill: ${DARK.ink} } .accent { fill: ${DARK.accent} }
-    }
+    }`
+  }
   </style>
   <rect class="paper" width="64" height="64" rx="14"/>
   <path class="ink" transform="translate(${r(map.x(0))} ${r(map.y(0))}) scale(${map.scale.toFixed(4)} ${(-map.scale).toFixed(4)})" d="${F_PATH}"/>
@@ -152,12 +160,18 @@ function favicon() {
 `;
 }
 
-mkdirSync('public/icons', { recursive: true });
 // Home-screen icons are full squares (the system rounds them); maskable ones
-// keep the monogram inside the 80% safe circle.
-writeFileSync('public/icons/icon-192.png', png(192, 0.62, LIGHT));
-writeFileSync('public/icons/icon-512.png', png(512, 0.62, LIGHT));
-writeFileSync('public/icons/maskable-512.png', png(512, 0.5, LIGHT));
-writeFileSync('public/icons/apple-touch-icon.png', png(180, 0.62, LIGHT));
-writeFileSync('public/icons/favicon.svg', favicon());
+// keep the monogram inside the 80% safe circle. The stable app is light; the
+// preview channel (docs/versionamento.md) is dark, to tell them apart.
+for (const [dir, colors, fixed] of [
+  ['public/icons', LIGHT, undefined],
+  ['public/icons/next', DARK, DARK],
+]) {
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(`${dir}/icon-192.png`, png(192, 0.62, colors));
+  writeFileSync(`${dir}/icon-512.png`, png(512, 0.62, colors));
+  writeFileSync(`${dir}/maskable-512.png`, png(512, 0.5, colors));
+  writeFileSync(`${dir}/apple-touch-icon.png`, png(180, 0.62, colors));
+  writeFileSync(`${dir}/favicon.svg`, favicon(fixed));
+}
 console.log('Icons written to public/icons');

@@ -62,6 +62,8 @@ Os pontos que decidem a ordem:
 
 ### Onda 0: agora
 
+- **Versão 0.1.0** (20/10/2026): o leitor de hoje com os ganhos de desempenho, publicada antes do redesign. Dela em diante, a raiz do site é a versão estável e a `main` vai para a prévia em `/next/` (`versionamento.md`).
+
 - **Desempenho (frente 1):** os passos da A2, já em andamento.
 - **Decisões:** D1, D2, D3 e D4, cada uma numa conversa curta ou sabatina.
 - **Identidade (frente 2), sem código:**

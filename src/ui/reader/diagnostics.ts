@@ -5,7 +5,7 @@ export function diagnostics(extra: Record<string, unknown> = {}): string {
   const env = currentEnvironment();
   const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
   const report = {
-    app: `Folheia ${__APP_VERSION__}`,
+    app: `Folheia ${__APP_VERSION__} (${__APP_CHANNEL__} · ${__APP_BUILD__})`,
     userAgent: env.userAgent,
     platform: env.platform,
     touchPoints: env.maxTouchPoints,

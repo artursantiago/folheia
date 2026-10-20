@@ -57,6 +57,23 @@ Open source (MIT) personal reading collection: books, comics, manga and magazine
 
 `sources/` (PageSource: PDF, CBZ) → `render/` (queue, cache, resolution tiers) → `layout/` (single/double, cover, RTL, spreads, virtual blanks) → `flip/` (FlipEngine: our own 2D now, 3D later) → `viewer/` and `ui/`. Also `i18n/`, `theme/`, `storage/`, `platform/`, `examples.ts`.
 
+## Versions and releases
+
+Full guide: `docs/versionamento.md`.
+
+- **SemVer**, adapted to an app: PATCH for fixes, MINOR for features and behavior changes, MAJOR for anything that breaks (e.g. stored data that doesn't migrate). Before 1.0.0, big changes go in MINOR. **1.0.0 = the personal library (acervo) is ready** (wave 2 of `docs/roteiro.md`).
+- **Two channels on one origin:** the site root is **stable** (the latest `vX.Y.Z` release) and `/next/` is the **preview** (main). The build channel comes from `FOLHEIA_CHANNEL` (`stable`, `next`, `dev`; exposed as `__APP_CHANNEL__`).
+  - The preview is "Folheia β", with dark icons and **its own storage** (`folheia-next:`).
+  - **Any new storage** (IndexedDB, OPFS, caches) must be named per channel, or a preview migration could break the stable data.
+- **`CHANGELOG.md` (English, Keep a Changelog):** every user-visible change that lands on main adds a line under `## [Unreleased]` **in the same commit/PR**. Internal work (refactors, tests, CI, docs) doesn't. Write for the reader, not as a commit list.
+- **Releasing:**
+  1. Move Unreleased to `## [X.Y.Z] - date` and fix the compare links.
+  2. Run `npm version X.Y.Z --no-git-tag-version`.
+  3. Commit `chore(release): vX.Y.Z`.
+  4. Run `git tag -a vX.Y.Z -m "Folheia X.Y.Z"` and push main and the tag.
+
+  CI then creates the GitHub Release (notes from the changelog, stable site attached) and deploys. Only release when Artur asks.
+
 ## Commands
 
 Node 24 (`.nvmrc`). Run `nvm use` before anything.

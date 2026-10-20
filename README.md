@@ -52,6 +52,7 @@ Vite, TypeScript, React (só na interface; o motor de páginas é TypeScript pur
 
 - [Plano do MVP](docs/plano-mvp.md): escopo, decisões, arquitetura e backlog.
 - [Roteiro](docs/roteiro.md): a ordem do backlog, em frentes e ondas.
+- [Changelog](CHANGELOG.md) e [versionamento](docs/versionamento.md): o que mudou em cada versão e como as versões saem. A prévia da próxima versão fica em <https://folheia-app.github.io/folheia/next/>.
 - [Estudo das referências](docs/estudo-referencias.md): como leitores flipbook funcionam, em palavras próprias.
 - [Estudo do Mihon](docs/estudo-mihon.md) e [estudo de interface](docs/estudo-interface.md): a biblioteca pessoal que vem por aí.
 - [Identidade visual](docs/identidade-visual.md): o tema Ex-libris e as regras do design system.

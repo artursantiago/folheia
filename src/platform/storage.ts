@@ -10,7 +10,9 @@ export interface KeyValueStore {
   remove(key: string): void;
 }
 
-const PREFIX = 'folheia:';
+// The preview channel keeps its own data, so testing main never touches the
+// reading data of the stable app on the same origin (docs/versionamento.md).
+const PREFIX = __APP_CHANNEL__ === 'next' ? 'folheia-next:' : 'folheia:';
 
 export const webStorage: KeyValueStore = {
   get(key) {

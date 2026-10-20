@@ -3,18 +3,44 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { readFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { pdfjsAssets } from './build/pdfjsAssets.ts';
 
 const { version } = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string };
+
+// Release channel (docs/versionamento.md): "stable" is the published version at
+// the site root, "next" is main under /next/ for testing, "dev" is local.
+const channel = process.env.FOLHEIA_CHANNEL ?? 'dev';
+if (!['stable', 'next', 'dev'].includes(channel)) throw new Error(`Unknown channel ${channel}`);
+const next = channel === 'next';
+const icons = next ? 'icons/next' : 'icons';
+
+function buildId() {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
+  try {
+    return execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+  } catch {
+    return 'local';
+  }
+}
 
 // A relative base lets the same build run on GitHub Pages (under /folheia/),
 // any other static host, and later inside a Capacitor WebView.
 export default defineConfig({
   base: './',
-  define: { __APP_VERSION__: JSON.stringify(version) },
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+    __APP_CHANNEL__: JSON.stringify(channel),
+    __APP_BUILD__: JSON.stringify(buildId()),
+  },
   plugins: [
     react(),
     pdfjsAssets(),
+    {
+      // The preview gets its own (dark) icons, to tell the two apps apart.
+      name: 'folheia-channel-icons',
+      transformIndexHtml: (html) => (next ? html.replaceAll('./icons/', `./${icons}/`) : html),
+    },
     // Web only: a native (Capacitor) build ships the files itself.
     ...(process.env.FOLHEIA_NATIVE
       ? []
@@ -22,10 +48,10 @@ export default defineConfig({
           VitePWA({
             registerType: 'prompt',
             injectRegister: false,
-            includeAssets: ['icons/favicon.svg', 'icons/apple-touch-icon.png'],
+            includeAssets: [`${icons}/favicon.svg`, `${icons}/apple-touch-icon.png`],
             manifest: {
-              name: 'Folheia',
-              short_name: 'Folheia',
+              name: next ? 'Folheia (prévia)' : 'Folheia',
+              short_name: next ? 'Folheia β' : 'Folheia',
               description: 'Leia livros, HQs e mangás folheando, como no papel.',
               lang: 'pt-BR',
               start_url: './',
@@ -34,10 +60,10 @@ export default defineConfig({
               background_color: '#12161D',
               theme_color: '#12161D',
               icons: [
-                { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-                { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+                { src: `${icons}/icon-192.png`, sizes: '192x192', type: 'image/png' },
+                { src: `${icons}/icon-512.png`, sizes: '512x512', type: 'image/png' },
                 {
-                  src: 'icons/maskable-512.png',
+                  src: `${icons}/maskable-512.png`,
                   sizes: '512x512',
                   type: 'image/png',
                   purpose: 'maskable',
@@ -59,6 +85,8 @@ export default defineConfig({
               globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm,bcmap,pfb,icc}'],
               maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
               navigateFallback: 'index.html',
+              // The stable app at the root must not answer for the preview in /next/.
+              navigateFallbackDenylist: [/\/next\//],
             },
           }),
         ]),

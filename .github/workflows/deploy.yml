@@ -1,18 +1,22 @@
 name: CI e deploy
 
+# Versioning and channels: docs/versionamento.md.
+# - A tag vX.Y.Z publishes a GitHub Release with the stable site attached.
+# - Every deploy puts the latest release at the site root (stable) and main
+#   under /next/ (preview, with its own data).
+
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -29,10 +33,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v5
-        if: github.ref == 'refs/heads/main'
-        with:
-          path: dist
 
   e2e:
     runs-on: ubuntu-latest
@@ -47,10 +47,83 @@ jobs:
       - run: node scripts/make-fixture-pdf.mjs --pages 60 && node scripts/make-text-pdf.mjs && node scripts/make-fixture-cbz.mjs
       - run: npx playwright test --project=chromium --project=webkit --project=ipad --project=iphone
 
-  deploy:
-    if: github.ref == 'refs/heads/main'
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [check, e2e]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Check that the tag matches package.json
+        run: test "v$(node -p "require('./package.json').version")" = "$TAG"
+      - name: Build the stable site
+        run: FOLHEIA_CHANNEL=stable npx vite build
+      - name: Release notes from CHANGELOG.md
+        run: |
+          awk -v v="${TAG#v}" '
+            $0 ~ "^## \\[" v "\\]" { on = 1; next }
+            on && /^## \[/ { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md
+      - name: Publish the release
+        run: |
+          tar -czf "folheia-site-$TAG.tar.gz" -C dist .
+          gh release create "$TAG" "folheia-site-$TAG.tar.gz" \
+            --title "Folheia ${TAG#v}" --notes-file notes.md --verify-tag
+
+  site:
+    if: >-
+      always() && github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) &&
+      needs.check.result == 'success' && needs.e2e.result == 'success' &&
+      (needs.release.result == 'success' || needs.release.result == 'skipped')
+    needs: [check, e2e, release]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build the preview (main) into /next/
+        run: FOLHEIA_CHANNEL=next npx vite build --outDir site/next
+      - name: Put the latest release at the root
+        run: |
+          if gh release download --repo "$GITHUB_REPOSITORY" --pattern 'folheia-site-*.tar.gz' --output stable.tar.gz; then
+            tar -xzf stable.tar.gz -C site
+          else
+            echo "No release yet: building main as the stable site."
+            FOLHEIA_CHANNEL=stable npx vite build --outDir stable-dist
+            cp -R stable-dist/. site/
+          fi
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: site
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
