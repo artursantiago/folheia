@@ -6,12 +6,20 @@ describe('preferences', () => {
     const storage = memoryStorage();
     const prefs = createPreferencesStore(storage);
     expect(prefs.get()).toEqual(defaultPreferences);
-    prefs.set({ ...defaultPreferences, theme: 'dark', locale: 'en', layout: 'single' });
+    expect(prefs.get().lossless).toBe(false);
+    prefs.set({
+      ...defaultPreferences,
+      theme: 'dark',
+      locale: 'en',
+      layout: 'single',
+      lossless: true,
+    });
     expect(createPreferencesStore(storage).get()).toEqual({
       ...defaultPreferences,
       theme: 'dark',
       locale: 'en',
       layout: 'single',
+      lossless: true,
     });
   });
 

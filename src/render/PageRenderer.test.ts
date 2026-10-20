@@ -3,8 +3,12 @@ import { createBudget } from './budget';
 import { PageRenderer } from './PageRenderer';
 
 vi.mock('./encode', () => ({
-  encodeCanvas: async (canvas: { width: number; height: number }) => ({
-    blob: new Blob([new Uint8Array(1000)]),
+  encodeCanvas: async (
+    canvas: { width: number; height: number },
+    _quality: number,
+    type = 'image/jpeg',
+  ) => ({
+    blob: new Blob([new Uint8Array(1000)], { type }),
     width: canvas.width,
     height: canvas.height,
   }),
@@ -176,6 +180,32 @@ describe('PageRenderer', () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
     // Only sharp renders: page 3's preview came from its sharp page.
     expect(calls.filter((c) => c.target.width < 300)).toEqual([]);
+  });
+
+  it('lossless: new sharp pages are PNG, and JPEG ones on screen are redone', async () => {
+    const { source, calls } = fakeSource();
+    const renderer = new PageRenderer(source, desktop, () => 1);
+    const focus = () =>
+      renderer.focus({ visible: [{ page: 0 }], ahead: [], behind: [], nearby: [] });
+    focus();
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.tier).toBe('sharp'));
+    const jpeg = renderer.getImage({ page: 0 })!.url;
+    calls.length = 0;
+
+    renderer.setLossless(true);
+    focus();
+    // The JPEG stays up until the PNG lands; then it is replaced, once.
+    expect(renderer.getImage({ page: 0 })?.url).toBe(jpeg);
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.url).not.toBe(jpeg));
+    focus();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(calls.map((c) => c.page)).toEqual([0]);
+
+    // Back to JPEG: the PNG page is kept as is.
+    renderer.setLossless(false);
+    focus();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(calls.map((c) => c.page)).toEqual([0]);
   });
 
   it('renders half pages from the full sheet with a region', async () => {

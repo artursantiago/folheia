@@ -75,6 +75,10 @@ export class PageRenderer {
   private distance = new Map<string, number>();
   /** Sharp keys holding the file's own image: nothing sharper can come from a render. */
   private originals = new Set<string>();
+  /** Sharp pages and zoom tiles as PNG instead of JPEG (lossless option, 18b). */
+  private lossless = false;
+  /** Sharp keys stored as PNG. */
+  private losslessKeys = new Set<string>();
   private destroyed = false;
   /** Running average of how long the source takes per tier, in ms. */
   private cost: Record<Tier, number> = { preview: 0, sharp: 0 };
@@ -107,6 +111,15 @@ export class PageRenderer {
   subscribe(listener: Listener) {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
+  }
+
+  /**
+   * Lossless pages from now on. The pages kept as JPEG stay on screen until
+   * their PNG replaces them (re-plan to ask for it); turning it off keeps the
+   * PNG ones, which are no worse.
+   */
+  setLossless(on: boolean) {
+    this.lossless = on;
   }
 
   /** Preview if there is one (small and quick to decode), else the sharp image. */
@@ -218,7 +231,7 @@ export class PageRenderer {
           canvas.width = canvas.height = 0;
           return;
         }
-        const image = await encodeCanvas(canvas, SHARP_QUALITY);
+        const image = await encodeCanvas(canvas, SHARP_QUALITY, this.sharpType);
         if (signal.aborted || this.destroyed) return;
         const entry = this.tiles.set(key, image.blob, image.width, image.height);
         onReady(entry.url);
@@ -258,7 +271,19 @@ export class PageRenderer {
     this.sharp.clear();
     this.tiles.clear();
     this.originals.clear();
+    this.losslessKeys.clear();
     this.listeners.clear();
+  }
+
+  private get sharpType() {
+    return this.lossless ? 'image/png' : 'image/jpeg';
+  }
+
+  /** A sharp image good enough to keep: big enough, and lossless when that's asked for. */
+  private serves(existing: CachedImage, size: PixelSize) {
+    if (this.originals.has(existing.key)) return true;
+    if (this.lossless && !this.losslessKeys.has(existing.key)) return false;
+    return existing.width >= size.width;
   }
 
   private isPinned(ref: string) {
@@ -304,7 +329,7 @@ export class PageRenderer {
     if (!this.distance.has(refKey(ref))) this.distance.set(refKey(ref), priority);
     const size = this.sharpTarget(ref);
     const existing = this.sharp.findByPrefix(prefix);
-    if (existing && (existing.width >= size.width || this.originals.has(existing.key))) {
+    if (existing && this.serves(existing, size)) {
       this.sharp.get(existing.key);
       return;
     }
@@ -335,21 +360,29 @@ export class PageRenderer {
         if (!signal.aborted && !this.destroyed)
           this.previews.set(key, preview.blob, preview.width, preview.height);
       },
-      store: (image) => this.storeSharp(ref, size, image),
+      store: (image) =>
+        this.storeSharp(ref, size, image, image.blob.type === 'image/png' ? 'png' : 'jpeg'),
     });
   }
 
   /** Replaces the smaller version this page had, if any. */
-  private storeSharp(ref: PageRef, size: PixelSize, image: EncodedImage, original = false) {
+  private storeSharp(
+    ref: PageRef,
+    size: PixelSize,
+    image: EncodedImage,
+    kind: 'original' | 'png' | 'jpeg',
+  ) {
     const prefix = sharpPrefix(ref);
     const key = `${prefix}${size.width}`;
     this.sharp.retain((k) => !k.startsWith(prefix));
-    for (const k of this.originals) if (k.startsWith(prefix)) this.originals.delete(k);
+    for (const set of [this.originals, this.losslessKeys])
+      for (const k of set) if (k.startsWith(prefix)) set.delete(k);
     const pinned = new Set(
       this.sharp.keys().filter((k) => this.isPinned(k.slice(0, k.indexOf('@')))),
     );
     this.sharp.set(key, image.blob, image.width, image.height, pinned);
-    if (original) this.originals.add(key);
+    if (kind === 'original') this.originals.add(key);
+    if (kind === 'png') this.losslessKeys.add(key);
   }
 
   /**
@@ -362,7 +395,7 @@ export class PageRenderer {
     const original = await this.source.original(ref.page, signal).catch(() => undefined);
     if (signal.aborted || this.destroyed) return true;
     if (!original || original.width * original.height > this.budget.maxOriginalPixels) return false;
-    this.storeSharp(ref, size, original, true);
+    this.storeSharp(ref, size, original, 'original');
     this.emit(refKey(ref));
     return true;
   }
@@ -393,7 +426,10 @@ export class PageRenderer {
       const took = performance.now() - started;
       this.cost[tier] = this.cost[tier] ? this.cost[tier] * 0.7 + took * 0.3 : took;
       await steps.derive?.(canvas);
-      const image = await encodeCanvas(canvas, tier === 'sharp' ? SHARP_QUALITY : PREVIEW_QUALITY);
+      const image =
+        tier === 'sharp'
+          ? await encodeCanvas(canvas, SHARP_QUALITY, this.sharpType)
+          : await encodeCanvas(canvas, PREVIEW_QUALITY);
       if (signal.aborted || this.destroyed) return;
       steps.store(image);
       this.emit(refKey(ref));

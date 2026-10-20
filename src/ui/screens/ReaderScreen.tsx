@@ -111,6 +111,7 @@ export function ReaderScreen({
         coverAlone: initial.coverAlone,
         direction: record?.direction,
         hoverPeek: initial.hoverPeek,
+        lossless: initial.lossless,
       },
       fileDirection: metadata.direction,
       initialPage: hashPage,
@@ -136,8 +137,9 @@ export function ReaderScreen({
       layout: prefs.layout,
       coverAlone: prefs.coverAlone,
       hoverPeek: prefs.hoverPeek,
+      lossless: prefs.lossless,
     });
-  }, [reader, prefs.layout, prefs.coverAlone, prefs.hoverPeek]);
+  }, [reader, prefs.layout, prefs.coverAlone, prefs.hoverPeek, prefs.lossless]);
 
   const state = useStore((reader?.state ?? emptyState) as Store<ReaderState | undefined>);
 

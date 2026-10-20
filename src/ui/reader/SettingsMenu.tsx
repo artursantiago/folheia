@@ -99,6 +99,14 @@ export function SettingsMenu({
           />
         </PopoverRow>
         <PopoverRow>
+          <Switch
+            label={t('settings.lossless')}
+            description={t('settings.losslessHint')}
+            checked={prefs.lossless}
+            onChange={(lossless) => set({ lossless })}
+          />
+        </PopoverRow>
+        <PopoverRow>
           <span>{t('settings.immersiveBar')}</span>
           <Segmented<ImmersiveBar>
             label={t('settings.immersiveBar')}

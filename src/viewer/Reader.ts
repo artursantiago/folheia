@@ -28,6 +28,8 @@ export interface ReaderOptions {
   /** Explicit reading direction; undefined follows the file's own hint. */
   direction: ReadingDirection | undefined;
   hoverPeek: boolean;
+  /** Sharp pages and zoom tiles kept as PNG (backlog 18b). */
+  lossless: boolean;
 }
 
 export interface ReaderState {
@@ -89,6 +91,7 @@ export class Reader {
       source.kind === 'pdf' &&
       detectEmbeddedSpreads((i) => source.knownPageSize(i), source.pageCount);
     this.renderer = new PageRenderer(source, budget);
+    this.renderer.setLossless(this.options.lossless);
     this.flip = new Flip2D(container);
     this.flip.setHoverPeek(this.options.hoverPeek);
 
@@ -178,6 +181,10 @@ export class Reader {
     const before = this.options;
     this.options = { ...before, ...patch };
     this.flip.setHoverPeek(this.options.hoverPeek);
+    if (before.lossless !== this.options.lossless) {
+      this.renderer.setLossless(this.options.lossless);
+      this.plan();
+    }
     const needsRebuild =
       before.layout !== this.options.layout ||
       before.coverAlone !== this.options.coverAlone ||

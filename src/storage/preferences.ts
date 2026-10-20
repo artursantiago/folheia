@@ -17,6 +17,8 @@ export interface Preferences {
   /** "Just the book": remembered, so the next book opens the same way. */
   immersive: boolean;
   immersiveBar: ImmersiveBar;
+  /** Sharp pages kept losslessly (PNG) instead of as JPEG: sharper lines, more memory. */
+  lossless: boolean;
 }
 
 export const defaultPreferences: Preferences = {
@@ -27,6 +29,7 @@ export const defaultPreferences: Preferences = {
   hoverPeek: true,
   immersive: false,
   immersiveBar: 'fixed',
+  lossless: false,
 };
 
 const KEY = 'preferences';
@@ -47,6 +50,7 @@ function parse(raw: string | null): Preferences {
       hoverPeek: typeof data.hoverPeek === 'boolean' ? data.hoverPeek : true,
       immersive: data.immersive === true,
       immersiveBar: oneOf(data.immersiveBar, ['fixed', 'auto'], 'fixed'),
+      lossless: data.lossless === true,
     };
   } catch {
     return defaultPreferences;

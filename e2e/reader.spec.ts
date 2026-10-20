@@ -40,3 +40,27 @@ test('reopens at the page in the address', async ({ page }) => {
   const counter = page.getByRole('button', { name: /Ir para página|Go to page/ });
   await expect(counter).toHaveText(/(^8–9|^9)\s*\//, { timeout: 15_000 });
 });
+
+test('best quality keeps the page on screen as PNG', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'The settings button lives in the wide toolbar.');
+  await page.goto('./');
+  await page.locator('input[type=file]').setInputFiles(FIXTURE);
+  await expect(page.getByRole('button', { name: /Ir para página|Go to page/ })).toBeVisible({
+    timeout: 15_000,
+  });
+  const typeOnScreen = () =>
+    page.evaluate(async () => {
+      const img = document.querySelector<HTMLImageElement>('.fx-page img.fx-img');
+      if (!img || img.naturalWidth < 400) return 'not sharp yet';
+      // A replaced image's URL is revoked while it is still on screen for a frame.
+      return fetch(img.src).then(
+        (response) => response.blob().then((blob) => blob.type),
+        () => 'replaced',
+      );
+    });
+  await expect.poll(typeOnScreen, { timeout: 15_000 }).toBe('image/jpeg');
+
+  await page.getByRole('button', { name: /^(Ajustes|Settings)$/ }).click();
+  await page.getByRole('switch', { name: /Qualidade máxima|Best quality/ }).click();
+  await expect.poll(typeOnScreen, { timeout: 15_000 }).toBe('image/png');
+});
