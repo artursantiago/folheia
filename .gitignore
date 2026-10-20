@@ -7,3 +7,4 @@ fixtures/generated/
 *.local
 .DS_Store
 .claude/launch.json
+fixtures/personal/

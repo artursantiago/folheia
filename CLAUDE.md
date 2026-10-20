@@ -14,11 +14,14 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
 - Docs in `docs/` and `README.md` are in Portuguese; `README.en.md` is a short English summary.
 - You may commit and push to `main` without asking. Stop to ask only for genuinely important decisions; otherwise keep going and summarize at the end.
 - Small, descriptive commits, Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `perf:`, `ci:`), straight to `main`. Run lint, typecheck, tests and build before committing.
+- **Public examples vs. personal files.** The example collection on the site is public, so it only lists public-domain works. Artur's own books (comics included) are used locally only: put them in `fixtures/personal/` (git-ignored) for testing, and never commit them or link them from the site. `fixtures/personal/invincible-vol-1.pdf` is a real 100 MB comic PDF, good for iPad performance tests.
 - Anything not in the plan goes to the backlog (`docs/plano-mvp.md` §8) instead of being built on the side.
 
 ## Non-negotiable rules
 
-1. **Clean room.** Never read, copy or adapt code, CSS, names or assets from DearFlip, flipbookpdf.net, turn.js or other commercial flipbooks. Work only from `docs/estudo-referencias.md` and official docs of the libraries we use.
+1. **Learn from others, never copy.** Folheia is Artur's personal project (only he uses it), but the repo is public and MIT, so nothing from others' code goes in.
+   - **Open-source readers** (e.g. Internet Archive BookReader, AGPL) may be read to understand how they work. Write the lessons in our own words in `docs/estudo-referencias.md`, never paste or adapt their code, CSS, names or assets, and prefer a separate study agent so the implementer works from the notes.
+   - **Commercial flipbooks** (DearFlip, flipbookpdf.net, turn.js): don't read their code at all. Work only from the study notes and the official docs of the libraries we use.
 2. **Privacy.** The user's file never leaves the device. No analytics, no third-party scripts, fonts or CDNs: everything is self-hosted. The only external requests allowed are the user-supplied `?file=` URL and the example books (Wikimedia Commons), and only when the user opens them.
 3. **Licenses.** Dependencies must be MIT, Apache-2.0, BSD or ISC (fonts: OFL). Check before adding one. No GPL/LGPL, no unRAR, no turn.js, no page-flip.
 4. **Performance is a requirement** (iPad with big image-heavy files):
