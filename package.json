@@ -1,7 +1,7 @@
 {
   "name": "folheia",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Leitor de PDF e CBZ em formato de livro, 100% no navegador.",
   "license": "MIT",
   "author": "Artur Santiago",

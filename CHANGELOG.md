@@ -6,6 +6,17 @@ The stable version is live at <https://folheia-app.github.io/folheia/>; what's i
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
+### Added
+
+- A "Best quality" option in the reading settings keeps sharp pages and zoomed-in areas lossless, for crisper lines in comics. It's off by default and uses more memory.
+
+### Fixed
+
+- Zooming in and out many times (with a pinch or the buttons) no longer brings the reader down on the iPad.
+- In heavy scanned books, the next pages get ready sooner: a page that was already sharp is no longer rendered again as a preview.
+
 ## [0.1.0] - 2026-10-20
 
 The first version: a reader that turns pages like paper, for books, comics and manga in PDF and CBZ, built for the iPad and for big, image-heavy files.
@@ -30,5 +41,6 @@ The first version: a reader that turns pages like paper, for books, comics and m
 - CBZ pages are shown straight from the archive's own images, with no re-encoding.
 - Cached pages are JPEG on every browser, and zoomed-in PDF pages stay decoded between tile renders.
 
-[Unreleased]: https://github.com/folheia-app/folheia/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/folheia-app/folheia/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/folheia-app/folheia/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/folheia-app/folheia/releases/tag/v0.1.0
