@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-@media (width <= 600px) {
+@media (width < 600px) {
   .anchor {
     position: fixed;
     right: var(--space-3);

@@ -23,6 +23,12 @@ export default {
       'oklab',
       'oklch',
     ],
+    // Breakpoints come from src/theme/breakpoints.ts: only those widths.
+    'media-feature-name-value-allowed-list': {
+      width: ['600px', '1024px'],
+      'min-width': [],
+      'max-width': [],
+    },
     'declaration-property-value-allowed-list': {
       'font-family': ['/^var\\(--/', 'inherit'],
       'font-size': ['/^var\\(--/', '/^clamp\\(var\\(--/', 'inherit', '100%', '1em'],

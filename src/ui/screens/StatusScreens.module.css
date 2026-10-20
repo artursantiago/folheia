@@ -82,7 +82,7 @@
   }
 }
 
-@media (width <= 600px) {
+@media (width < 600px) {
   .stamp {
     position: static;
     margin-top: var(--space-4);

@@ -134,7 +134,7 @@
   text-align: center;
 }
 
-@media (width <= 600px) {
+@media (width < 600px) {
   .tagline {
     display: none;
   }
