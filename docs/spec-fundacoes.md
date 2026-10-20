@@ -34,7 +34,7 @@ Todo caminho de abertura termina em `openBook` (`session.ts:43`). É ali que ent
   - `meta`: o próximo tombo e a versão.
   - **Ficam para depois:** `bookmarks` (etapa 4) e `shelves` (etapa 3). O esquema já prevê as duas.
 - **As preferências continuam no `localStorage`**, síncronas. O tema precisa estar pronto antes do primeiro desenho, para a tela não piscar.
-- **L1 (se aprovado na D3):** o progresso é gravado ~1 s depois que a leitura para, e forçado no `pagehide` e no `visibilitychange`. Chegar à última página marca como lido.
+- **L1 (aprovado na D3):** o progresso é gravado ~1 s depois que a leitura para, e forçado no `pagehide` e no `visibilitychange`. Chegar à última página marca como lido.
 
 ### 2.2 Migração do `localStorage`
 
@@ -82,7 +82,7 @@ Todo caminho de abertura termina em `openBook` (`session.ts:43`). É ali que ent
 - **Importa:** junta pela impressão digital. O que já existe não é sobrescrito sem confirmação.
 - **Formato** com versão, para o app Android ler.
 
-### 2.9 L4 (se aprovado na D3)
+### 2.9 L4 (aprovado na D3)
 
 Em `src/layout/book.ts`: duas páginas só formam par quando as proporções são parecidas, com uma tolerância. Testes com encarte, página dobrável e PDF de páginas um pouco diferentes.
 
@@ -91,13 +91,13 @@ Em `src/layout/book.ts`: duas páginas só formam par quando as proporções sã
 1. Tokens de corte de tela + o ajuste do `width < 600px`. É independente e pequeno.
 2. Interface de armazenamento assíncrono, IndexedDB, falso em memória e versão de esquema.
 3. Identidade nova (hash do diretório central) e o registro do livro. Migração do `localStorage`.
-4. L1: gravação quando a leitura para (se aprovado).
+4. L1: gravação quando a leitura para.
 5. `FileStore` no OPFS e a cópia ao abrir um arquivo local.
 6. Interface de abrir arquivo; a `HomeScreen` passa a usá-la.
 7. `Network` com range; o `http.ts` passa a usá-la.
 8. Rotas com histórico e a pilha de diálogos.
 9. Exportar e importar.
-10. L4 (se aprovado).
+10. L4: pareamento por proporção. É independente e pode ir antes.
 
 Cada passo com testes, lint, typecheck e build, como sempre. Entram no `CHANGELOG.md` só o que a pessoa nota: o Voltar e, se for o caso, o progresso gravado ao sair.
 

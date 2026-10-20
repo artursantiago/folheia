@@ -3,7 +3,7 @@
 > 20/10/2026. **Rascunho para o Artur revisar** antes de levar ao Claude Design. É a etapa 0 da biblioteca (`plano-mvp.md` §8 C2).
 >
 > - **Fontes do pedido:** as telas do `estudo-interface.md` §8, as mudanças de moldura do leitor do `roteiro.md` §2 e os textos e o ícone do `identidade-visual.md`.
-> - **Itens marcados com (D3):** dependem da triagem do leitor (`pauta-decisoes.md`) e saem do pedido se forem recusados.
+> - **Triagem do leitor (D3) feita em 20/10/2026:** a dica das zonas de toque entra; o contador discreto não, porque a barra do modo normal deixa de sumir.
 > - **Formato:** o mesmo do protótipo aprovado (um arquivo por tela, claro e escuro), para a cópia entrar em `docs/prototipo-v2/`.
 
 ---
@@ -55,8 +55,8 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
    - a grade de miniaturas **em pares de spread**;
    - no celular, o menu **"⋯"** com o que hoje some (primeira e última página, zoom, compartilhar);
    - a opção **"Qualidade máxima"**, que hoje está nos Ajustes: decida o lugar final;
-   - (D3) a **dica das zonas de toque** na primeira leitura: cada zona pintada com "Anterior", "Próxima" e "Menu", sumindo no primeiro toque;
-   - (D3) o **contador discreto "10 / 69"** quando a barra some sozinha.
+   - a **barra do modo normal sempre visível** (ela não some mais), no espaço que o palco já reserva;
+   - a **dica das zonas de toque** na primeira leitura e quando a direção muda: cada zona pintada com "Anterior", "Próxima" e, no meio, "Toque duplo: zoom", sumindo no primeiro toque.
 8. **Catálogos:** os exemplos de domínio público, mais discretos que o carrossel atual, com "Guardar no acervo". Deixe espaço visível para "Adicionar catálogo" (servidores OPDS), sem detalhar.
 9. **Mais:** ajustes; cópia dos arquivos (interruptor) e espaço usado; leitura sem registro; exportar e importar o acervo; e "Sobre", com os carimbos que saíram do início ("Seu arquivo não sai deste aparelho", "Domínio público").
 10. **Estados:**

@@ -730,22 +730,22 @@ Lista viva dos pontos deste estudo que podem entrar no app. **Nada aqui está de
 
 ### 8.1 Leitor
 
-| ID  | Candidato                                                                                                  | Ref. | Esforço | Impacto | Decisão |
-| --- | ---------------------------------------------------------------------------------------------------------- | ---- | ------- | ------- | ------- |
-| L1  | Progresso gravado só quando a leitura para numa página, com gravação garantida ao sair                     | §2.4 | P       | médio   |         |
-| L2  | Dica visual das zonas de toque na primeira leitura (componente Ex-libris, respeita reduced-motion)         | §2.2 | P       | médio   |         |
-| L3  | "Zoom e percorrer" spreads largos em tela de uma página (iPad em pé), como alternativa a dividir           | §2.3 | M       | alto    |         |
-| L4  | Pareamento de página dupla: paridade recomeça depois de página sozinha; só parear proporções parecidas     | §2.3 | P       | médio   |         |
-| L5  | Ajustes por livro (direção, modo, escala) sobre os globais, com aviso curto ao abrir                       | §2.1 | M       | médio   |         |
-| L6  | Fundo automático pela cor da borda da página (modo "só o livro")                                           | §2.3 | P       | baixo   |         |
-| L7  | Cortar margens brancas e pretas de PDFs escaneados (desligado no modo duplo)                               | §2.3 | M       | médio   |         |
-| L8  | Slider de páginas que se inverte em RTL + indicador "n / total" discreto                                   | §2.4 | P       | médio   |         |
-| L9  | Brilho, sépia e inverter com pré-visualização ao vivo (camada própria, sem CSS `filter` no livro ampliado) | §2.4 | M       | baixo   |         |
-| L10 | Toque longo na página: usar como capa, salvar, compartilhar (no PDF, fora da camada de texto)              | §2.4 | M       | baixo   |         |
-| L11 | Layouts de toque alternativos (L, Kindle, bordas) e inversão                                               | §2.2 | M       | baixo   |         |
-| L12 | Modo de rolagem vertical (webtoon) com faixas, só as visíveis desenhadas, altura reservada                 | §2.3 | G       | médio   |         |
+| ID  | Candidato                                                                                                  | Ref. | Esforço | Impacto | Decisão                                                          |
+| --- | ---------------------------------------------------------------------------------------------------------- | ---- | ------- | ------- | ---------------------------------------------------------------- |
+| L1  | Progresso gravado só quando a leitura para numa página, com gravação garantida ao sair                     | §2.4 | P       | médio   | **Sim**, etapa 1 (fundações), com o IndexedDB                    |
+| L2  | Dica visual das zonas de toque na primeira leitura (componente Ex-libris, respeita reduced-motion)         | §2.2 | P       | médio   | **Sim**, etapa 2; aparece também quando a direção muda           |
+| L3  | "Zoom e percorrer" spreads largos em tela de uma página (iPad em pé), como alternativa a dividir           | §2.3 | M       | alto    | **Sim, depois**, junto da E14                                    |
+| L4  | Pareamento de página dupla: paridade recomeça depois de página sozinha; só parear proporções parecidas     | §2.3 | P       | médio   | **Sim**, onda 1 (motor): ~20% de tolerância, só tamanhos medidos |
+| L5  | Ajustes por livro (direção, modo, escala) sobre os globais, com aviso curto ao abrir                       | §2.1 | M       | médio   | **Sim**: campo nas fundações, interface com a E14                |
+| L6  | Fundo automático pela cor da borda da página (modo "só o livro")                                           | §2.3 | P       | baixo   | **Não**                                                          |
+| L7  | Cortar margens brancas e pretas de PDFs escaneados (desligado no modo duplo)                               | §2.3 | M       | médio   | **Não**                                                          |
+| L8  | Slider de páginas que se inverte em RTL + indicador "n / total" discreto                                   | §2.4 | P       | médio   | **Feito** (B5). Sem contador; a barra normal deixa de sumir      |
+| L9  | Brilho, sépia e inverter com pré-visualização ao vivo (camada própria, sem CSS `filter` no livro ampliado) | §2.4 | M       | baixo   | **Backlog** "se houver vontade"                                  |
+| L10 | Toque longo na página: usar como capa, salvar, compartilhar (no PDF, fora da camada de texto)              | §2.4 | M       | baixo   | **Só "usar como capa"**, pelas miniaturas (I12, etapa 3)         |
+| L11 | Layouts de toque alternativos (L, Kindle, bordas) e inversão                                               | §2.2 | M       | baixo   | **Não**                                                          |
+| L12 | Modo de rolagem vertical (webtoon) com faixas, só as visíveis desenhadas, altura reservada                 | §2.3 | G       | médio   | **Junto da E15**, como a técnica                                 |
 
-O L8 coincide com o slider do item B5, que já está sendo feito em outra sessão (20/10/2026).
+**Triados em 20/10/2026** com o Artur (`pauta-decisoes.md`, D3a). O porquê de cada decisão está lá; os aprovados foram para o `plano-mvp.md` §8.
 
 ### 8.2 Desempenho
 

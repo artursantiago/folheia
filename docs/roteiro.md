@@ -14,7 +14,7 @@
 | **2. Identidade e apresentação** | **Protótipo v2** (C2, etapa 0). **Ícone e logo** (D10). **Splash** (D11). **Textos** (C8: menos "PDF e CBZ", e o tom). **README** e **README.en**, a **descrição do repositório** e a **página da organização** (`folheia-app/.github`).                                            | A começar                                                  |
 | **3. Biblioteca**                | C2, etapas 1 a 5: fundações, acervo mínimo, organização, Leituras e marcadores, tablet. Resolve C6, C7 e C9.                                                                                                                                                                        | Decidida na sabatina; espera o protótipo v2 para a etapa 2 |
 | **4. Fontes e catálogos**        | E4 (extensão, PR #1). F1–F8 do Mihon: `CatalogSource`, OPDS, Internet Archive, fontes JS, `CapacitorHttp`. Capas por catálogo de metadados.                                                                                                                                         | POC pronta; depende de decisões (§3)                       |
-| **5. Leitor**                    | B2 (controles na sobra lateral, slider na barra normal, marcas de capítulo no slider). E12 (busca no PDF), E14 (painel Paginação), E15 (rolagem vertical/webtoon). E2 (voz alta, grade de miniaturas como modo). L1–L12 do Mihon. E13 (som), E16 (3D), E17 (temas), E18 (exportar). | Parte espera triagem (L1–L12)                              |
+| **5. Leitor**                    | B2 (controles na sobra lateral, slider na barra normal, marcas de capítulo no slider). E12 (busca no PDF), E14 (painel Paginação), E15 (rolagem vertical/webtoon). E2 (voz alta, grade de miniaturas como modo). L1–L12 do Mihon. E13 (som), E16 (3D), E17 (temas), E18 (exportar). | L1–L12 triados em 20/10/2026                               |
 | **6. App Android**               | F19: Capacitor ou TWA, a pasta da biblioteca, SQLite, splash e ícones nativos, HTTP nativo para as fontes (F8).                                                                                                                                                                     | Depois das fundações                                       |
 | **7. Se houver demanda**         | G20 (GoatCounter), G21 (CBR/CB7), G22 (HQ de domínio público nos exemplos).                                                                                                                                                                                                         | Sem data                                                   |
 
@@ -56,7 +56,7 @@ Os pontos que decidem a ordem:
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | D1  | **Revisão conjunta dos estudos** (o "quando começar" da biblioteca)                                                                         | Etapa 1 da biblioteca                       |
 | D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                                                 | Frente 4, a parte de capas da etapa 2, G20  |
-| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8, que ainda estão sem decisão                            | A frente 5 e o desenho da frente 4          |
+| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8. ✅ L1–L12 em 20/10/2026; F1–F8 vão com a D2            | A frente 5 e o desenho da frente 4          |
 | D4  | ✅ **Direção do ícone e do tom dos textos** (início da frente 2). Decidida em 20/10/2026: monograma F e os textos de `identidade-visual.md` | Protótipo v2, README, página da organização |
 | D5  | **O PR #1:** mesclar em partes (a `Network` nas fundações, a extensão depois) ou fechar e refazer a partir do estudo                        | Frente 4                                    |
 
@@ -83,7 +83,7 @@ Os pontos que decidem a ordem:
   - interfaces de `platform/`, **incluindo a `Network` do PR #1**;
   - cortes de tela;
   - exportar/importar em JSON.
-- **Leitor, só motor (se aprovados em D3):** L1 (gravar o progresso quando a leitura para, que já cai no armazenamento novo) e L4 (pareamento).
+- **Leitor, só motor (aprovados na D3):** L1 (gravar o progresso quando a leitura para, que já cai no armazenamento novo) e L4 (pareamento por proporção).
 - **Identidade:** o protótipo v2 continua em paralelo até ser aprovado.
 
 ### Onda 2: o acervo aparece

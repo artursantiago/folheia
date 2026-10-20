@@ -344,6 +344,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 
 - **Controles na sobra lateral.** Depois de encaixar o livro, colocar os controles onde sobra espaço. Numa HQ em página dupla com o iPad na horizontal sobram ~57 pt de cada lado, e um trilho vertical ali não tira nada do livro. Quando não houver sobra lateral, a barra volta para baixo. Ficou para uma próxima fase.
 - **Slider também na barra normal**, junto com uma revisão da barra do modo normal.
+- **A barra do modo normal não some mais** (decidido na triagem do L8, 20/10/2026). O palco já reserva o espaço dela, então escondê-la não mostrava mais livro, só escondia a página em que você está. O modo imersivo com a barra que some continua como está, sem contador.
 - Marcadores de capítulos (sumário do PDF) e de resultados de busca no trilho do slider (ver `estudo-referencias.md` §12.4).
 
 ### C. Tela inicial (prioridade média)
@@ -370,11 +371,12 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
   - rotas com histórico (Voltar);
   - interfaces de abrir, guardar e buscar em `platform/`;
   - tokens de corte de tela (600px e 1024px);
-  - exportar/importar o acervo em JSON.
+  - exportar/importar o acervo em JSON;
+  - o progresso gravado quando a leitura para (L1) e o campo dos ajustes por livro (L5).
 
   A mudança para a organização `folheia-app` vem **antes** desta etapa ir para a `main` (§9).
 
-- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Catálogos (exemplos) e Mais. Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer e o "⋯" do leitor no celular. Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
+- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Catálogos (exemplos) e Mais. Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer, o "⋯" do leitor no celular e a dica das zonas de toque (L2). Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
 - **Etapa 3, organização:** estantes, seleção em lote, as três exibições (capas é o padrão), ordenar (última leitura é o padrão), filtrar, buscar, série, notas e capa escolhida.
 - **Etapa 4, Leituras e marcadores:** a seção Leituras (sem tempo de leitura), os marcadores de página (fita + `B`) e a leitura sem registro (modo global). Independente da etapa 3.
 - **Etapa 5, tablet:** dois painéis (acervo + ficha) a partir de 1024px.
@@ -397,7 +399,9 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 12. Busca de texto no PDF (a camada de texto já existe).
 13. Som de virar página (asset próprio).
 14. Painel **Paginação**: interruptor manual de spreads + "deslocar uma página".
+    - Entram aqui o **"zoom e percorrer"** spreads largos no iPad em pé (L3) e a interface dos **ajustes por livro** (L5): cada opção de "como o livro é feito" (direção, simples/dupla, capa sozinha, dividir spreads) ganha "este livro / todos", e um aviso curto ao abrir só quando o livro difere do global.
 15. Modo **rolagem vertical** (webtoon e PDF).
+    - Com a técnica de faixas do Mihon (L12): decodificar uma vez em escala reduzida, cortar em faixas, desenhar só as visíveis e manter a altura reservada.
 16. Efeito **3D** (three.js, carregado sob demanda).
 17. Temas alternativos: **Cordel**, HQ, mangá.
 18. Exportar flipbook autônomo (.zip).
@@ -433,7 +437,12 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 
 Os candidatos estão em **`estudo-mihon.md` §8**, aguardando a triagem do Artur, que decide **se** e **como** cada um entra:
 
-- leitor: L1–L12;
+- leitor: L1–L12. **Triados em 20/10/2026** (`pauta-decisoes.md`, D3a):
+  - L1 e o campo do L5 nas fundações (C2, etapa 1); L2 na etapa 2; L3 e a interface do L5 na E14; L12 na E15; L10 vira o I12 (etapa 3);
+  - **L4, onda 1 (motor):** duas páginas só formam par quando as proporções diferem menos de ~20%, e só com tamanhos medidos. Sem par, a primeira fica com um branco virtual;
+  - L8 já feito (B5); a barra normal deixa de sumir (B2);
+  - **se houver vontade:** L9 (brilho, sépia e inverter, numa camada própria, nunca CSS `filter`) e "compartilhar esta página" no "⋯";
+  - **não:** L6, L7 e L11;
 - desempenho: P0–P11. **P0 medido em 20/10/2026**, e a ordem dos próximos passos está na seção A2;
 - interface e biblioteca: I0–I16. **Triados em 20/10/2026** e virados na seção C2;
 - fontes e catálogos: F1–F8;

@@ -6,29 +6,29 @@
 
 ## Ordem sugerida
 
-1. **D3, só o leitor (L1–L12):** decide o que entra no pedido do protótipo v2 e no motor da onda 1.
+1. ✅ **D3, só o leitor (L1–L12), decidida em 20/10/2026:** decide o que entra no pedido do protótipo v2 e no motor da onda 1.
 2. **D1 + D5:** o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
 3. **Protótipo v2 e fundações, em paralelo:** rascunhos em `prototipo-v2-pedido.md` e `spec-fundacoes.md`.
 4. **D2 + F1–F8:** as fontes dependem da regra 2, então é uma conversa só. Não bloqueia nada até a onda 2 (capas) e a onda 3 (fontes).
 
 ## D3a. Triagem do leitor (L1–L12)
 
-O que o código já faz foi conferido em 20/10/2026.
+**Decidido com o Artur em 20/10/2026.** A última coluna já traz a decisão; o porquê da proposta está logo abaixo. O que o código já faz foi conferido no mesmo dia.
 
-| ID  | Candidato (resumo)                       | Hoje no Folheia                                                                                                      | Recomendação                                                                       |
-| --- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| L1  | Gravar o progresso quando a leitura para | Grava no `localStorage` a cada troca de página (`ReaderScreen.tsx`, `bookMemory.recordProgress`), sem gravar ao sair | **Sim, nas fundações (etapa 1).** Com o armazenamento assíncrono, vira necessidade |
-| L2  | Dica das zonas de toque                  | Não existe                                                                                                           | **Sim, etapa 2 (moldura).** Entra no protótipo v2                                  |
-| L3  | "Zoom e percorrer" spreads largos        | Spreads largos são divididos ao meio (`splitSpreads`)                                                                | **Sim, depois**, junto do painel Paginação (E14). O protótipo só reserva a opção   |
-| L4  | Regras de pareamento                     | Página larga já fica sozinha e a paridade já recomeça (`layout/book.ts`). Falta parear só proporções parecidas       | **Sim, onda 1 (motor)**, só a regra que falta. Pequeno, com testes                 |
-| L5  | Ajustes por livro                        | A direção já é guardada por livro; o modo e a capa sozinha são globais                                               | **Sim, junto da E14**, guardado no registro do livro (fundações)                   |
-| L6  | Fundo automático pela cor da borda       | Não existe                                                                                                           | **Não por ora** (backlog "se houver vontade")                                      |
-| L7  | Cortar margens de PDFs escaneados        | Não existe                                                                                                           | **Não por ora** (backlog "se houver vontade")                                      |
-| L8  | Slider que inverte em RTL + "n / total"  | **Feito** no modo imersivo (B5). Falta o contador discreto quando a barra some                                       | **Feito.** O contador discreto entra no protótipo v2 como detalhe da moldura       |
-| L9  | Brilho, sépia, inverter                  | Não existe                                                                                                           | **Não por ora** (backlog "se houver vontade")                                      |
-| L10 | Toque longo: capa, salvar, compartilhar  | Não existe                                                                                                           | **Só "usar como capa", pelas miniaturas**, na etapa 3 (é o I12). Sem toque longo   |
-| L11 | Layouts de toque alternativos            | Zonas esquerda/direita, com setas físicas                                                                            | **Não** (backlog "se houver vontade")                                              |
-| L12 | Rolagem vertical (webtoon) com faixas    | É a E15, já no backlog                                                                                               | **Juntar com a E15**, levando a técnica das faixas. "Depois, por vontade"          |
+| ID  | Candidato (resumo)                       | Hoje no Folheia                                                                                                      | Recomendação                                                                                                 |
+| --- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| L1  | Gravar o progresso quando a leitura para | Grava no `localStorage` a cada troca de página (`ReaderScreen.tsx`, `bookMemory.recordProgress`), sem gravar ao sair | **Sim, nas fundações (etapa 1).** Com o armazenamento assíncrono, vira necessidade                           |
+| L2  | Dica das zonas de toque                  | Não existe                                                                                                           | **Sim, etapa 2 (moldura).** Aparece também quando a direção muda                                             |
+| L3  | "Zoom e percorrer" spreads largos        | Spreads largos são divididos ao meio (`splitSpreads`)                                                                | **Sim, depois**, junto do painel Paginação (E14). O protótipo só reserva a opção                             |
+| L4  | Regras de pareamento                     | Página larga já fica sozinha e a paridade já recomeça (`layout/book.ts`). Falta parear só proporções parecidas       | **Sim, onda 1 (motor):** ~20% de tolerância, só com tamanhos medidos                                         |
+| L5  | Ajustes por livro                        | A direção já é guardada por livro; o modo e a capa sozinha são globais                                               | **Sim, junto da E14**, guardado no registro do livro (fundações)                                             |
+| L6  | Fundo automático pela cor da borda       | Não existe                                                                                                           | **Não**                                                                                                      |
+| L7  | Cortar margens de PDFs escaneados        | Não existe                                                                                                           | **Não**                                                                                                      |
+| L8  | Slider que inverte em RTL + "n / total"  | **Feito** no modo imersivo (B5). Falta o contador discreto quando a barra some                                       | **Feito.** Sem contador: a barra do modo normal deixa de sumir                                               |
+| L9  | Brilho, sépia, inverter                  | Não existe                                                                                                           | **Backlog "se houver vontade"**                                                                              |
+| L10 | Toque longo: capa, salvar, compartilhar  | Não existe                                                                                                           | **Só "usar como capa"**, pelas miniaturas e pela ficha (I12, etapa 3). "Compartilhar esta página" no backlog |
+| L11 | Layouts de toque alternativos            | Zonas esquerda/direita, com setas físicas                                                                            | **Não**                                                                                                      |
+| L12 | Rolagem vertical (webtoon) com faixas    | É a E15, já no backlog                                                                                               | **Juntar com a E15**, levando a técnica das faixas. "Depois, por vontade"                                    |
 
 **Por que cada um:**
 
@@ -37,7 +37,8 @@ O que o código já faz foi conferido em 20/10/2026.
 - **L3:** é o que mais ajuda a ler HQ no iPad em pé, mas depende do `ZoomController` e de "próxima" andar pela imagem antes de virar. É um modo novo do leitor, então vai melhor junto da E14.
 - **L4:** evita parear uma página dobrável com uma normal, ou duas páginas de tamanhos muito diferentes, como num encarte. Precisa de uma tolerância, para não desmanchar spreads de PDFs com pequenas variações de tamanho.
 - **L5:** só faz sentido quando houver ficha do livro. A E14 (painel Paginação) é o lugar natural para escolher entre "este livro" e "todos".
-- **L6, L7, L9, L11:** o impacto foi estimado como baixo ou médio. O L7 e o L9 custam processamento por página no iPad, e o L9 esbarra no aviso do `CLAUDE.md` sobre CSS `filter` em camadas grandes. Ficam como ideias.
+- **L6, L7, L9, L11:** o impacto foi estimado como baixo ou médio. O L6 briga com o fundo de papel da identidade. O L7 e o L9 custam processamento por página no iPad, e o L9 esbarra no aviso do `CLAUDE.md` sobre CSS `filter` em camadas grandes. O Artur guardou só o L9, como ideia.
+- **L8:** o palco do modo normal já reserva o espaço da barra, então escondê-la não mostrava mais livro. Basta a barra não sumir. No modo imersivo com a barra que some, quem o escolhe quer 100% do livro, e um toque traz a barra.
 - **L10:** no PDF, o toque longo já é o gesto de selecionar texto, e no iOS ele abre o menu do sistema. Escolher a capa pela grade de miniaturas resolve o I12 sem conflito.
 
 ## D2. Sabatina de privacidade (com F1–F8)
