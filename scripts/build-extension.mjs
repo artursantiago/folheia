@@ -61,7 +61,9 @@ function manifest(browser) {
     host_permissions: dev ? ['http://127.0.0.1/*', ...granted] : [],
     optional_host_permissions: ['https://*/*', 'http://*/*'],
     background:
-      browser === 'firefox' ? { scripts: ['background.js'] } : { service_worker: 'background.js' },
+      browser === 'firefox'
+        ? { scripts: ['background.js'], persistent: false }
+        : { service_worker: 'background.js' },
     content_scripts: [{ matches, js: ['content.js'], run_at: 'document_start', all_frames: false }],
     options_ui: { page: 'options.html', open_in_tab: true },
     action: { default_title: '__MSG_name__' },

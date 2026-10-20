@@ -14,7 +14,7 @@ import {
   type BridgeInfo,
   type BridgeRequest,
 } from './protocol';
-import { api, engine } from './webext';
+import { api, engine, type DnrRule } from './webext';
 import { PORT_NAME, toBase64, type FromBackground, type ToBackground } from './wire';
 
 const info: BridgeInfo = {
@@ -232,23 +232,26 @@ async function addHeaderRule(request: BridgeRequest): Promise<number | undefined
   if (!dnr) throw new Error('This browser cannot set Referer or User-Agent');
   await rulesReady;
   const id = nextRuleId++;
-  await dnr.updateSessionRules({
-    addRules: [
-      {
-        id,
-        priority: 1,
-        action: {
-          type: 'modifyHeaders',
-          requestHeaders: names.map((header) => ({
-            header,
-            operation: 'set',
-            value: request.headers[header] ?? '',
-          })),
-        },
-        // Only this URL, and only requests that don't come from a tab.
-        condition: { urlFilter: `|${request.url}|`, tabIds: [-1] },
-      },
-    ],
+  const rule = (condition: DnrRule['condition']): DnrRule => ({
+    id,
+    priority: 1,
+    action: {
+      type: 'modifyHeaders',
+      requestHeaders: names.map((header) => ({
+        header,
+        operation: 'set',
+        value: request.headers[header] ?? '',
+      })),
+    },
+    condition,
   });
+  // Only this URL, and only requests that don't come from a tab. Safari has
+  // no tabIds in rules: there the exact URL, for the request's lifetime, has to do.
+  const urlFilter = `|${request.url}|`;
+  try {
+    await dnr.updateSessionRules({ addRules: [rule({ urlFilter, tabIds: [-1] })] });
+  } catch {
+    await dnr.updateSessionRules({ addRules: [rule({ urlFilter })] });
+  }
   return id;
 }

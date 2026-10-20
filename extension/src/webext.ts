@@ -66,4 +66,8 @@ const scope = globalThis as { browser?: WebExtApi; chrome?: WebExtApi };
 export const api: WebExtApi = (scope.browser ?? scope.chrome) as WebExtApi;
 
 /** Good enough to label the bridge ("firefox" also covers Firefox for Android). */
-export const engine = navigator.userAgent.includes('Firefox') ? 'firefox' : 'chrome';
+export const engine = /Firefox\//.test(navigator.userAgent)
+  ? 'firefox'
+  : /Chrome\/|Chromium\//.test(navigator.userAgent)
+    ? 'chrome'
+    : 'safari';
