@@ -208,6 +208,27 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
    - As sombras da dobra crescem com a dobra e voltam a zero quando a folha assenta.
    - A espiada na capa sozinha não desliza mais o livro inteiro para o lado.
 
+### A2. Desempenho: próximos passos (ordem decidida depois do P0, 20/10/2026)
+
+O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% do render é o PDF.js decodificar as imagens embutidas (~170 ms por página); pintar e guardar custa pouco. A ordem abaixo segue a recomendação do P0, e cada passo é uma melhoria separada, com medição antes e depois (`e2e/flip.spec.ts` e `e2e/engine.spec.ts` com a Invincible):
+
+1. **P11: JPEG também no Chromium.** Hoje o Chrome do computador grava a página em WebP, que é 10–13× mais lento que JPEG (140–290 ms por página) e quase não economiza espaço. Não muda o iPad, que já usa JPEG. Esforço mínimo.
+2. **P1 + P5: menos página em branco ao virar rápido.**
+   - **P1:** calcular o plano novo **antes** de retomar a fila no fim da virada (hoje um job do plano velho roda primeiro) e planejar pelo destino das viradas enfileiradas.
+   - **P5:** despejar do cache pela distância da página atual (hoje o LRU pode jogar fora a página da frente antes da de trás) e prender as páginas da virada.
+   - Alvo: o ritmo "apressado" do `flip.spec`, que hoje termina em branco 8 de 10 vezes no desktop e 3 de 10 no iPad.
+3. **P3: CBZ sem recompressão.** O arquivo original vira o cache e é exibido com `createImageBitmap`. Fica sem perda e 70–200 ms mais rápido por página, sem memória extra.
+4. **18b: opção "qualidade máxima (sem perda)" em PNG.** Ver o item 18b, em E. Antes, medir no iPad real, em HTTPS, quanto o `toBlob` PNG custa no Safari.
+5. **P6: manter a página visível decodificada durante o zoom.** Tiles e re-renders ficam ~10× mais baratos (de ~170 para 2–17 ms). Custa ~25–30 MB por página segurada no worker, a medir no aparelho.
+6. **Depois, só se ainda fizer falta:** P7 (`enableHWA` A/B), P2 (janela quente em bitmap), P8, P9, P10, na ordem do §6.5.
+
+**A confirmar no iPad Air M1** (PWA, em HTTPS):
+
+- O zoom por pinça não derruba mais a página (corrigido em 20/10/2026; parecia ok no primeiro teste). Se cair de novo, conectar no Mac e ver o motivo no Web Inspector.
+- O modo imersivo, depois de atualizar o PWA: barra do sistema some, barra fixa com slider, opção "some sozinha" nos Ajustes.
+- A barra de status legível nos dois temas (talvez seja preciso reinstalar o PWA).
+- No console: `typeof ImageDecoder` (se o Safari do iPadOS tem, PDFs com JPEG abrem 4–5× mais rápido).
+
 ### B. Leitura imersiva (feito em 20/10/2026)
 
 5. **Modo imersivo, "só o livro".** Feito.
@@ -313,7 +334,7 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 Os candidatos estão em **`estudo-mihon.md` §8**, aguardando a triagem do Artur, que decide **se** e **como** cada um entra:
 
 - leitor: L1–L12;
-- desempenho: P0–P10, ligado ao item A3;
+- desempenho: P0–P11. **P0 medido em 20/10/2026**, e a ordem dos próximos passos está na seção A2;
 - interface e biblioteca: I0–I16. **Triados em 20/10/2026** e virados na seção C2;
 - fontes e catálogos: F1–F8;
 - plataforma e repositórios: O1–O2.
@@ -330,4 +351,8 @@ O que for aprovado entra nas seções certas deste backlog.
 
 - Criar o repositório **público** `artursantiago/folheia` com `gh` e fazer o push.
 - Ativar o GitHub Pages com a fonte "GitHub Actions".
-- **Mudar o repositório para a organização `folheia-app`** (decidido em 20/10/2026, `estudo-interface.md`): depois da revisão conjunta dos estudos e **antes** de a etapa 1 da biblioteca (C2) ir para a `main`, para o acervo já nascer na origem nova. Só com nenhuma outra sessão trabalhando no repositório. Na hora, conferir se o GitHub Pages redireciona o endereço antigo e reinstalar o PWA do iPad.
+- **Mudar o repositório para a organização `folheia-app`** (decidido em 20/10/2026, `estudo-interface.md`): depois da revisão conjunta dos estudos e **antes** de a etapa 1 da biblioteca (C2) ir para a `main`, para o acervo já nascer na origem nova. Só com nenhuma outra sessão trabalhando no repositório. Na hora:
+  - conferir se o GitHub Pages redireciona o endereço antigo;
+  - reinstalar o PWA do iPad. O endereço novo é outra origem, então preferências, progresso de leitura e o PWA instalado ficam na antiga e não passam para a nova;
+  - trocar os links do site no `README.md` e no `README.en.md` (hoje `artursantiago.github.io/folheia`), atualizar o `git remote` das cópias locais e a descrição do repositório;
+  - o caminho base já é relativo (`base: './'`), então o build não precisa mudar.
