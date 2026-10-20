@@ -6,8 +6,9 @@
     "moduleResolution": "bundler",
     "types": ["node"],
     "strict": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "eslint.config.js", "stylelint.config.js"]
+  "include": ["vite.config.ts", "eslint.config.js", "stylelint.config.js", "build", "scripts"]
 }
