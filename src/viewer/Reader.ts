@@ -192,9 +192,9 @@ export class Reader {
   thumbnail(index: number): string | undefined {
     const ref = this.book.pages[index]?.ref;
     if (!ref) return undefined;
-    const image = this.renderer.getImage(ref);
-    if (!image) this.renderer.requestThumbnail(ref);
-    return image?.url;
+    const url = this.renderer.getThumbnail(ref);
+    if (!url) this.renderer.requestThumbnail(ref);
+    return url;
   }
 
   /** A single tap in the middle of the book (immersive mode uses it to show its bar). */

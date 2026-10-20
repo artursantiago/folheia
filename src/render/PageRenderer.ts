@@ -73,6 +73,8 @@ export class PageRenderer {
    * ahead counts as nearer than the way back. Over budget, the farthest goes.
    */
   private distance = new Map<string, number>();
+  /** Sharp keys holding the file's own image: nothing sharper can come from a render. */
+  private originals = new Set<string>();
   private destroyed = false;
   /** Running average of how long the source takes per tier, in ms. */
   private cost: Record<Tier, number> = { preview: 0, sharp: 0 };
@@ -105,6 +107,11 @@ export class PageRenderer {
   subscribe(listener: Listener) {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
+  }
+
+  /** Preview if there is one (small and quick to decode), else the sharp image. */
+  getThumbnail(ref: PageRef): string | undefined {
+    return (this.previews.peek(refKey(ref)) ?? this.sharp.findByPrefix(sharpPrefix(ref)))?.url;
   }
 
   /** Sharp image if ready, else the preview, else nothing yet. */
@@ -246,6 +253,7 @@ export class PageRenderer {
     this.previews.clear();
     this.sharp.clear();
     this.tiles.clear();
+    this.originals.clear();
     this.listeners.clear();
   }
 
@@ -260,6 +268,8 @@ export class PageRenderer {
   }
 
   private get previewsPay() {
+    // The file's own images are ready almost at once; a rendered preview would only delay them.
+    if (this.source.original) return false;
     const { preview, sharp } = this.cost;
     return !preview || !sharp || preview < sharp * PREVIEW_PAYS_RATIO;
   }
@@ -290,7 +300,7 @@ export class PageRenderer {
     if (!this.distance.has(refKey(ref))) this.distance.set(refKey(ref), priority);
     const size = this.sharpTarget(ref);
     const existing = this.sharp.findByPrefix(prefix);
-    if (existing && existing.width >= size.width) {
+    if (existing && (existing.width >= size.width || this.originals.has(existing.key))) {
       this.sharp.get(existing.key);
       return;
     }
@@ -309,7 +319,7 @@ export class PageRenderer {
 
   private async renderSharp(ref: PageRef, size: PixelSize, signal: AbortSignal) {
     const key = refKey(ref);
-    const prefix = sharpPrefix(ref);
+    if (await this.storeOriginal(ref, size, signal)) return;
     await this.renderInto(ref, size, 'sharp', signal, {
       // Shrinking the sharp page is far cheaper than rendering a preview.
       derive: async (canvas) => {
@@ -319,15 +329,36 @@ export class PageRenderer {
         if (!signal.aborted && !this.destroyed)
           this.previews.set(key, preview.blob, preview.width, preview.height);
       },
-      store: (image) => {
-        // Replaces the smaller version this page had, if any.
-        this.sharp.retain((k) => !k.startsWith(prefix));
-        const pinned = new Set(
-          this.sharp.keys().filter((k) => this.isPinned(k.slice(0, k.indexOf('@')))),
-        );
-        this.sharp.set(`${prefix}${size.width}`, image.blob, image.width, image.height, pinned);
-      },
+      store: (image) => this.storeSharp(ref, size, image),
     });
+  }
+
+  /** Replaces the smaller version this page had, if any. */
+  private storeSharp(ref: PageRef, size: PixelSize, image: EncodedImage, original = false) {
+    const prefix = sharpPrefix(ref);
+    const key = `${prefix}${size.width}`;
+    this.sharp.retain((k) => !k.startsWith(prefix));
+    for (const k of this.originals) if (k.startsWith(prefix)) this.originals.delete(k);
+    const pinned = new Set(
+      this.sharp.keys().filter((k) => this.isPinned(k.slice(0, k.indexOf('@')))),
+    );
+    this.sharp.set(key, image.blob, image.width, image.height, pinned);
+    if (original) this.originals.add(key);
+  }
+
+  /**
+   * Keeps the file's own image as the sharp page when the source has one and
+   * it isn't too big to show as is: lossless, and no decode, draw and
+   * re-encode. False means it has to be rendered instead.
+   */
+  private async storeOriginal(ref: PageRef, size: PixelSize, signal: AbortSignal) {
+    if (!this.source.original || ref.half) return false;
+    const original = await this.source.original(ref.page, signal).catch(() => undefined);
+    if (signal.aborted || this.destroyed) return true;
+    if (!original || original.width * original.height > this.budget.maxOriginalPixels) return false;
+    this.storeSharp(ref, size, original, true);
+    this.emit(refKey(ref));
+    return true;
   }
 
   private async renderInto(

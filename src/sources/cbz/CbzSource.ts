@@ -4,6 +4,7 @@ import {
   SourceError,
   type BookMetadata,
   type OutlineItem,
+  type OriginalImage,
   type PageSize,
   type PageSource,
   type RenderTarget,
@@ -23,6 +24,8 @@ const MIME: Record<string, string> = {
   jxl: 'image/jxl',
   bmp: 'image/bmp',
 };
+/** Formats shown as is (no GIF: it would animate; JXL and BMP aren't everywhere). */
+const DISPLAYABLE = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 const HEADER_BYTES = 64 * 1024;
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
@@ -154,6 +157,24 @@ export class CbzSource implements PageSource {
 
   private emit() {
     for (const listener of this.listeners) listener();
+  }
+
+  async original(index: number, signal: AbortSignal): Promise<OriginalImage | undefined> {
+    const entry = this.entries[index];
+    const type = this.mime(index);
+    if (!entry || !DISPLAYABLE.has(type)) return undefined;
+    // Stored (uncompressed) entries come back as a slice of the file: no copy.
+    const blob = await entry.blob(type);
+    if (signal.aborted) throw new SourceError('aborted', 'Render aborted');
+    let size = this.sizes[index];
+    if (!size) {
+      // A header we can't read means a page we can't trust to decode: render it instead.
+      size = imageSize(new Uint8Array(await blob.slice(0, HEADER_BYTES).arrayBuffer()));
+      if (!size || size.width <= 0 || size.height <= 0) return undefined;
+      this.sizes[index] = size;
+      this.emit();
+    }
+    return { blob, ...size };
   }
 
   async render(

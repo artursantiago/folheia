@@ -132,6 +132,31 @@ describe('PageRenderer', () => {
     expect([sharp(1), sharp(2), sharp(3), sharp(4)]).toEqual([false, true, true, true]);
   });
 
+  it("shows a CBZ page's own image as is, and renders only the ones too big for that", async () => {
+    const { source, calls } = fakeSource();
+    const original = { blob: new Blob([new Uint8Array(500)]), width: 1000, height: 1500 };
+    source.original = async (page) =>
+      page === 3 ? { ...original, width: 5000, height: 7500 } : original;
+    const renderer = new PageRenderer(source, desktop, () => 2);
+    renderer.setDisplaySize({ width: 300, height: 400 });
+    renderer.focus({ visible: [{ page: 1 }], ahead: [{ page: 3 }], behind: [], nearby: [] });
+    await vi.waitFor(() => expect(renderer.getImage({ page: 3 })?.tier).toBe('sharp'));
+    expect(renderer.getImage({ page: 1 })).toMatchObject({
+      tier: 'sharp',
+      width: 1000,
+      bytes: 500,
+    });
+    // Page 3 (37.5 MP) went through the canvas; page 1 needed no render, not even a preview.
+    expect(calls.map((c) => c.page)).toEqual([3]);
+
+    // A bigger slot still can't beat the original: it is kept, not re-rendered.
+    renderer.setDisplaySize({ width: 900, height: 1200 });
+    renderer.focus({ visible: [{ page: 1 }], ahead: [], behind: [], nearby: [] });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(calls.map((c) => c.page)).toEqual([3]);
+    expect(renderer.getImage({ page: 1 })?.width).toBe(1000);
+  });
+
   it('renders half pages from the full sheet with a region', async () => {
     const { source, calls } = fakeSource();
     const renderer = new PageRenderer(source, desktop, () => 1);

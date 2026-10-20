@@ -5,6 +5,12 @@ export interface RenderBudget {
   maxPixelRatio: number;
   /** Largest canvas we ever allocate, in pixels. */
   maxCanvasPixels: number;
+  /**
+   * Largest original image (a CBZ page) shown as is, without re-encoding.
+   * It is decoded at full size on screen, so this bounds each page's memory;
+   * bigger ones are scaled down into a canvas like any render.
+   */
+  maxOriginalPixels: number;
   /** Total compressed bytes kept in the page cache. */
   maxCacheBytes: number;
   /** Long side of preview renders, in pixels. */
@@ -32,6 +38,8 @@ export function createBudget(env: Environment): RenderBudget {
     maxPixelRatio: 2,
     // WebKit on iOS kills tabs well before desktop browsers; PDF.js uses ~5 MP there too.
     maxCanvasPixels: ios ? 5_000_000 : lowMemory ? 8_000_000 : 16_000_000,
+    // Images decode outside the canvas limit; 8 MP covers comics scanned ~2400 px wide.
+    maxOriginalPixels: ios || lowMemory ? 8_000_000 : 16_000_000,
     maxCacheBytes: ios || lowMemory ? 48 * 1024 * 1024 : 128 * 1024 * 1024,
     previewLongSide: 360,
   };

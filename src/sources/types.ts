@@ -51,6 +51,12 @@ export interface PageLink {
 
 export type SourceKind = 'pdf' | 'cbz';
 
+export interface OriginalImage {
+  blob: Blob;
+  width: number;
+  height: number;
+}
+
 /**
  * Anything that can provide pages: PDF now, CBZ next, images later.
  * Implementations never touch the DOM tree beyond scratch canvases.
@@ -64,6 +70,12 @@ export interface PageSource {
   getPageSize(index: number): PageSize;
   /** Size only if actually measured (not a fallback guess). */
   knownPageSize(index: number): PageSize | undefined;
+  /**
+   * The page's own encoded image, when the file stores one per page (CBZ) in a
+   * format every supported browser decodes: it can be shown as is, losslessly
+   * and without re-encoding. Optional.
+   */
+  original?(index: number, signal: AbortSignal): Promise<OriginalImage | undefined>;
   /** Renders the page (or a region of it) into a canvas the caller owns and must release. */
   render(index: number, target: RenderTarget, signal: AbortSignal): Promise<HTMLCanvasElement>;
   getMetadata(): Promise<BookMetadata>;
