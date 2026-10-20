@@ -258,3 +258,30 @@ Dados verificados no npm e no GitHub em 19/10/2026.
 8. **Compatibilidade:** definir **agora** a versão mínima de iPadOS, porque ela decide a versão do pdfjs-dist (6.x legacy ⇒ iPadOS 18+; 5.7.x legacy ⇒ iPadOS 16.4+). Ajustar `build.target` do Vite para o mesmo alvo e testar em Safari real.
 9. **ZIP:** se for preciso, preferir **fflate** (MIT, menor e mais rápida). Se ficar com jszip, documentar no NOTICE que o projeto usa a opção **MIT** da licença dupla.
 10. **Higiene de clean room:** manter este documento como única ponte entre o estudo e a implementação, registrar no repositório que a implementação foi feita sem consultar o código das referências e não incluir assets (sons, ícones, texturas) delas.
+
+---
+
+## 11) Adendo: leitor do Internet Archive (observado no site, 20/10/2026)
+
+O Artur trouxe o leitor de livros do Internet Archive como referência de tela cheia. Observei **só o comportamento no site**, num livro em domínio público (_The Wonderful Wizard of Oz_). Não li o código: o projeto deles é open source, mas com licença AGPL, incompatível com o nosso modelo MIT; vale a mesma regra do clean room.
+
+**Interface:**
+
+- Em tela cheia, o spread ocupa praticamente toda a área.
+- Os controles ficam em duas faixas finas e escuras nas bordas:
+  - **embaixo:** rótulo da página (com o número físico entre parênteses), um slider para arrastar até qualquer página, anterior/próxima, uma página / duas páginas / grade de miniaturas, leitura em voz alta, zoom e sair da tela cheia;
+  - **na lateral esquerda:** uma coluna de ícones para painéis (conteúdo, busca, mais opções).
+- A grade de miniaturas é um **modo de visualização** do livro, e não um painel lateral.
+- A **URL guarda a página e o modo** (página e "duas páginas"), como o nosso `#p=`.
+
+**Carregamento:**
+
+- As páginas chegam como imagens prontas, renderizadas no servidor numa **escala discreta** (frações fixas do original, tipo 1/2, 1/4), escolhida pelo tamanho na tela. Escalas fixas evitam re-renderizar a cada pequena mudança e aumentam o reaproveitamento do cache.
+- As páginas do **spread vizinho já ficam no DOM como `<img>` carregadas, só que invisíveis**. Quando o leitor vira, a imagem já está decodificada e aparece na hora, sem a "piscada".
+
+**Lições para o Folheia:**
+
+- Manter o próximo spread decodificado e escondido (item A2/A3 do backlog).
+- Usar degraus de escala fixos para as versões nítidas.
+- Slider de páginas e grade de miniaturas como modo de visualização (item B5).
+- Leitura em voz alta como recurso futuro. A Web Speech API roda no próprio aparelho, então combina com a privacidade.
