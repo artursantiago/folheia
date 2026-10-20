@@ -1,6 +1,6 @@
 # Folheia — Spec das fundações (biblioteca, etapa 1)
 
-> 20/10/2026. **Rascunho para a sabatina da etapa.** As decisões vêm do `estudo-interface.md` (topo e §5). O mapa do código foi feito em 20/10/2026, na `main` da v0.2.0.
+> 20/10/2026. **Aprovada na sabatina da etapa (20/10/2026)**; as respostas estão no §4. As decisões vêm do `estudo-interface.md` (topo e §5). O mapa do código foi feito em 20/10/2026, na `main` da v0.2.0.
 >
 > - **O que este documento faz:** junta o que a etapa 1 precisa construir, o ponto de partida no código e as perguntas que ainda pedem resposta. As perguntas estão no §4.
 > - **O que fica de fora:** a etapa 1 não muda a cara do app. O Acervo, a ficha e o aviso "Do início" são da etapa 2.
@@ -101,7 +101,20 @@ Em `src/layout/book.ts`: duas páginas só formam par quando as proporções sã
 
 Cada passo com testes, lint, typecheck e build, como sempre. Entram no `CHANGELOG.md` só o que a pessoa nota: o Voltar e, se for o caso, o progresso gravado ao sair.
 
-## 4. Perguntas para a sabatina da etapa
+## 4. Sabatina da etapa
+
+**Respondida com o Artur em 20/10/2026.** As perguntas ficam abaixo como registro; a resposta vem logo depois de cada uma.
+
+### Respostas
+
+1. **A cópia só liga na prévia** (`/next/`) e no dev. Na estável ela fica pronta, mas desligada, até a etapa 2 trazer o Mais com o interruptor e o espaço usado.
+2. **OPFS no Safari 18:** o Artur preferiu seguir sem o teste no iPad. A escrita vai sempre por um **worker com `createSyncAccessHandle`**, que existe desde o Safari 15.2 e funciona no Chromium, no Firefox e no WebKit. O teste ficou no `#/lab` ("Armazenamento (OPFS)") para quando ele quiser conferir.
+3. **IndexedDB com o `idb`** (ISC, ~1,2 KB), só dentro do adaptador web. Nos testes, o `fake-indexeddb` (Apache-2.0, só de desenvolvimento) exercita o adaptador de verdade.
+4. **Cortes de tela:** `src/theme/breakpoints.ts` exporta 600 e 1024 para o `matchMedia`, e a regra `media-feature-name-value-allowed-list` do Stylelint só aceita essas duas larguras nos `@media`. Um teste confere que as duas listas batem. O `postcss-custom-media` é MIT-0, fora da lista de licenças.
+5. **O cartão "Continuar?" fica** até a etapa 2. Só muda de onde vem o registro: ele é lido no `openBook`, antes de o leitor aparecer.
+6. **A cópia fica ligada nos e2e.** Ela roda em segundo plano, sem atrasar a primeira página, e falha em silêncio: o livro entra sem o arquivo, com o motivo guardado. O `persist()` nunca é esperado, porque no Firefox ele abre um pedido de permissão (no headless, nunca responde). No WebKit do Playwright o contexto efêmero recusa o OPFS (`UnknownError`), então os specs de hoje exercitam a falha. Um spec novo confere a cópia de verdade, com contexto persistente no WebKit.
+
+### Perguntas
 
 1. **A cópia liga já na etapa 1?** Copiar 100 MB por livro sem uma tela para ver ou apagar (Mais só chega na etapa 2) enche o aparelho às escuras.
    - **Recomendação:** a cópia fica pronta, mas só liga na prévia (`/next/`) até a etapa 2.
