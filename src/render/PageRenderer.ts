@@ -1,11 +1,5 @@
 import type { PageRegion, PageSize, PageSource } from '../sources/types';
-import {
-  previewSize,
-  SCALE_STEP,
-  sharpSize,
-  type PixelSize,
-  type RenderBudget,
-} from './budget';
+import { previewSize, SCALE_STEP, sharpSize, type PixelSize, type RenderBudget } from './budget';
 import { encodeCanvas, scaleCanvas, type EncodedImage } from './encode';
 import { PageCache, type CachedImage } from './PageCache';
 import { RenderQueue } from './RenderQueue';
