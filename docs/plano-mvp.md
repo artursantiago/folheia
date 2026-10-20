@@ -156,6 +156,7 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 2. **"Piscada" quando a página fica nítida.** Ao virar, aparece a imagem, e depois ela pisca quando a versão melhor chega.
    - _Pista:_ a troca de prévia para nítida muda o `src` da mesma `<img>`, e o navegador mostra um quadro vazio enquanto decodifica.
    - _Ideia:_ decodificar a nova imagem fora da tela (`img.decode()`) e fazer um crossfade curto por cima da prévia.
+   - _Referência:_ o leitor do Internet Archive deixa o spread vizinho já carregado no DOM, invisível, e por isso não pisca (ver `estudo-referencias.md` §11).
 3. **Lentidão e "folha de caderno" ao virar.** A sequência visível é: pauta de caderno (o placeholder de carregamento) → texto em baixa qualidade → nítida, depois de um tempo.
    - _Pistas:_ o placeholder com pautas (`.fx-page[data-loading]`) parece conteúdo errado. Hoje só 1 spread à frente é preparado em nitidez. Cada página nítida passa por canvas → WebP/JPEG → `<img>`, e esse ciclo de codificar/decodificar custa caro no iPad.
    - _Ideias:_
@@ -164,6 +165,7 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
      - mostrar a página visível direto como `ImageBitmap`;
      - codificar em um worker (`OffscreenCanvas`);
      - trocar o placeholder por papel liso.
+   - _Ideia (Internet Archive):_ versões nítidas em **degraus de escala fixos**, em vez do tamanho exato de tela, para reaproveitar mais e re-renderizar menos.
    - _Medir antes e depois:_ no iPad real, com o Web Inspector.
 4. **Ponta e sombra aparecem secas.** A ponta levantada no hover e as sombras da dobra surgem de uma vez, sem transição.
    - _Ideia:_ animar a ponta até a posição de "espiada" com easing e fazer as sombras crescerem conforme o tamanho da dobra.
@@ -172,7 +174,7 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 
 5. **Modo "só o livro", em todos os dispositivos.** Além da tela cheia atual, um modo em que o livro ocupa a tela inteira: sem título, sem barra e sem as margens do palco. Num iPad na horizontal ou num notebook, as duas páginas usam todo o espaço e não é preciso ficar dando zoom.
    - Os controles saem de um **botão flutuante** (uma "bolinha"), que pode ser **arrastado** para um canto e abre todas as opções.
-   - **Referência que o Artur mostrou** (outro leitor, em tela cheia):
+   - **Referência que o Artur mostrou:** o leitor do Internet Archive em tela cheia; as notas estão em `estudo-referencias.md` §11:
      - o spread ocupa quase toda a tela, com só uma margem fina;
      - uma faixa estreita embaixo, escura e discreta, traz um slider de páginas ("17/1117"), anterior/próxima, modos de página (única, dupla, grade), áudio, zoom e sair da tela cheia;
      - uma coluna fina de ícones fica na lateral esquerda (biblioteca, páginas, busca, mais).
@@ -227,11 +229,16 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
     - Os dados do app (biblioteca, progresso) provavelmente vão para **SQLite** no aparelho (ex.: `@capacitor-community/sqlite`, MIT) e os arquivos para o Filesystem. A camada `src/platform/` já isola armazenamento, abrir arquivo e compartilhar.
     - Inclui splash e ícones nativos (itens 10 e 11).
 
+### E2. Ideias vindas do Internet Archive
+
+- **Leitura em voz alta** com a Web Speech API, que roda no aparelho, a partir da camada de texto do PDF.
+- **Grade de miniaturas como modo de visualização** do livro, além da gaveta atual.
+
 ### G. Se houver demanda
 
 20. GoatCounter (métricas sem cookies).
 21. CBR/CB7 com build própria do libarchive (BSD-2).
-22. Exemplo de HQ em CBZ no acervo.
+22. Exemplo de HQ no acervo, **somente em domínio público** (ex.: _Little Nemo in Slumberland_, de Winsor McCay, falecido em 1934). Uma HQ protegida por direito autoral não pode entrar, mesmo que esteja num site público.
 
 ## 9. Ações externas depois da aprovação
 
