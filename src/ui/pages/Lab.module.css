@@ -65,3 +65,9 @@
   gap: var(--space-3);
   font-size: var(--text-sm);
 }
+
+.report {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

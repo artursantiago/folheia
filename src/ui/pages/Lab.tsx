@@ -9,6 +9,7 @@ import type { PageSource } from '../../sources/types';
 import { Button, IconButton, Overline, Switch, TextField } from '../components';
 import styles from './Lab.module.css';
 import { describeLossless, measureLossless, measureP0, summarizeP0 } from './labP0';
+import { patternBlob, probeOpfs } from './labOpfs';
 
 type Loaded = { source: PageSource; renderer: PageRenderer; openedIn: number };
 
@@ -41,6 +42,8 @@ export default function Lab() {
   const [imageDecoder, setImageDecoder] = useState(true);
   const [p0, setP0] = useState<string>();
   const [lossless, setLossless] = useState<{ text: string; json?: string }>();
+  const [opfs, setOpfs] = useState<string>();
+  const [opfsFile, setOpfsFile] = useState<File>();
   const version = useRendererVersion(loaded?.renderer);
   useSyncExternalStore(
     (cb) => {
@@ -161,6 +164,15 @@ export default function Lab() {
     }
   }
 
+  async function runOpfs() {
+    setOpfs('testando…');
+    try {
+      setOpfs(await probeOpfs(opfsFile ?? patternBlob(64), setOpfs));
+    } catch (err) {
+      setOpfs(`erro: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   const stats = loaded?.renderer.stats();
   const mb = (bytes = 0) => (bytes / 1048576).toFixed(1);
 
@@ -193,6 +205,21 @@ export default function Lab() {
       </header>
 
       {error && <p role="alert">{error}</p>}
+
+      <section className={styles.p0}>
+        <Overline>Armazenamento (OPFS)</Overline>
+        <input
+          type="file"
+          aria-label="Arquivo para o teste de OPFS (sem arquivo: 64 MB gerados)"
+          onChange={(event) => setOpfsFile(event.target.files?.[0])}
+        />
+        <Button onClick={() => void runOpfs()}>Testar OPFS</Button>
+        {opfs && (
+          <pre className={`${styles.mono} ${styles.report}`} data-testid="opfs">
+            {opfs}
+          </pre>
+        )}
+      </section>
 
       {loaded && (
         <>
