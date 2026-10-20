@@ -146,6 +146,12 @@ const pt = {
   'reader.pageFailed': 'Esta página usa um formato de imagem que este navegador não abre.',
   'app.updateAvailable': 'Nova edição do Folheia disponível',
   'app.reload': 'Recarregar',
+  'crash.label': 'Defeito na encadernação',
+  'crash.title': 'Algo quebrou ao mostrar esta tela.',
+  'crash.body':
+    'Recarregue para continuar. Se acontecer de novo, copie o diagnóstico e abra uma issue no GitHub.',
+  'crash.copy': 'Copiar diagnóstico',
+  'crash.copied': 'Diagnóstico copiado',
   'reader.tallStrips': 'Tiras verticais (webtoon): o modo rolagem ainda não está disponível.',
 } as const;
 
@@ -300,6 +306,12 @@ const en: Messages = {
   'reader.pageFailed': "This page uses an image format this browser can't open.",
   'app.updateAvailable': 'A new edition of Folheia is available',
   'app.reload': 'Reload',
+  'crash.label': 'Binding defect',
+  'crash.title': 'Something broke while showing this screen.',
+  'crash.body':
+    'Reload to carry on. If it happens again, copy the diagnostics and open a GitHub issue.',
+  'crash.copy': 'Copy diagnostics',
+  'crash.copied': 'Diagnostics copied',
   'reader.tallStrips': "Vertical strips (webtoon): scrolling mode isn't available yet.",
 };
 

@@ -14,6 +14,7 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
 - Talk to Artur in Portuguese (pt-BR). Code, identifiers, comments and commit messages in **English**.
 - Docs in `docs/` and `README.md` are in Portuguese; `README.en.md` is a short English summary.
 - You may commit and push to `main` without asking. Stop to ask only for genuinely important decisions; otherwise keep going and summarize at the end.
+- Artur often runs several sessions in parallel. Start derived sessions in their own **git worktree** so they don't disturb the main checkout or each other, and avoid repo-wide changes (renames, transfers, URL moves) while other sessions are active. When a worktree's work has landed, **always suggest cleaning it up** (remove the worktree and its merged branch): leftover worktrees once filled his disk.
 - Small, descriptive commits, Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `perf:`, `ci:`), straight to `main`. Run lint, typecheck, tests and build before committing.
 - **Public examples vs. personal files.** The example collection on the site is public, so it only lists public-domain works. Artur's own books (comics included) are used locally only: put them in `fixtures/personal/` (git-ignored) for testing, and never commit them or link them from the site. `fixtures/personal/invincible-vol-1.pdf` is a real 100 MB comic PDF, good for iPad performance tests.
 - Anything not in the plan goes to the backlog (`docs/plano-mvp.md` §8) instead of being built on the side.

@@ -7,6 +7,9 @@
   color: var(--color-ink);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
+
+  /* The reader zooms the book itself; a browser pinch-zoom of the whole screen only gets in the way. */
+  touch-action: pan-x pan-y;
 }
 
 .lamp {

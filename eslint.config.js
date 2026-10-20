@@ -12,6 +12,7 @@ export default tseslint.config(
       'docs/prototipo',
       'playwright-report',
       'test-results',
+      '.claude',
     ],
   },
   js.configs.recommended,

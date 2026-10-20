@@ -651,25 +651,25 @@ Os detalhes e a ordem estão em §6.5. O P0 decide o resto.
 >
 > Os itens abaixo são entradas para esse estudo, não tarefas.
 
-| ID  | Candidato                                                                                     | Ref.       | Esforço | Impacto | Decisão |
-| --- | --------------------------------------------------------------------------------------------- | ---------- | ------- | ------- | ------- |
-| I0  | **Estudo de interface e redesign** da biblioteca pessoal (pré-requisito dos demais)           | §3, §7     | M       | alto    |         |
-| I1  | Acervo como tela inicial ("Meus livros"), substituindo o papel do "Recentes"                  | §3.2       | G       | alto    |         |
-| I2  | Estantes (um livro em várias; "Por catalogar"; remanejar em lote com caixas de três estados)  | §3.2       | M       | alto    |         |
-| I3  | Exibição: grade de capas, lista e fichário; colunas por orientação                            | §3.2       | M       | médio   |         |
-| I4  | Selos na capa (progresso, novo, concluído, formato)                                           | §3.2       | P       | médio   |         |
-| I5  | Ficha catalográfica do livro (metadados, nº de tombo, estantes, notas; tocar no autor filtra) | §3.3       | M       | alto    |         |
-| I6  | Marcadores de página com miniatura (lacuna do Mihon) e filtro "com marcadores"                | §3.5       | M       | alto    |         |
-| I7  | Registro de leitura (agrupado por dia, retoma ao tocar, tempo de leitura)                     | §3.4       | M       | médio   |         |
-| I8  | Desfazer (remover livro, estante, marcador) e estados vazios no tom da biblioteca             | §3.6       | P       | médio   |         |
-| I9  | iPad: trilho lateral de navegação e dois painéis (acervo + ficha)                             | §3.1, §3.3 | M       | médio   |         |
-| I10 | Busca no acervo (simples primeiro; campos tipo `autor:` depois)                               | §3.2       | P-M     | médio   |         |
-| I11 | Série como agrupamento opcional (do `ComicInfo.xml` Series + Number, ou à mão)                | §7         | M       | médio   |         |
-| I12 | Escolher uma página como capa                                                                 | §3.3       | P       | baixo   |         |
-| I13 | Aviso de exemplar repetido ao adicionar                                                       | §3.3       | P       | baixo   |         |
-| I14 | Leitura sem registro (modo anônimo)                                                           | §3.4       | P       | baixo   |         |
-| I15 | Estatísticas ("relatório da biblioteca")                                                      | §3.4       | M       | baixo   |         |
-| I16 | Exportar e importar o acervo em JSON (sem os arquivos); essencial antes do app                | §3.4       | M       | médio   |         |
+| ID  | Candidato                                                                                                              | Ref.       | Esforço | Impacto | Decisão |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | ------- | ------- | ------- |
+| I0  | **Estudo de interface e redesign** da biblioteca pessoal (pré-requisito dos demais). Proposta em `estudo-interface.md` | §3, §7     | M       | alto    |         |
+| I1  | Acervo como tela inicial ("Meus livros"), substituindo o papel do "Recentes"                                           | §3.2       | G       | alto    |         |
+| I2  | Estantes (um livro em várias; "Por catalogar"; remanejar em lote com caixas de três estados)                           | §3.2       | M       | alto    |         |
+| I3  | Exibição: grade de capas, lista e fichário; colunas por orientação                                                     | §3.2       | M       | médio   |         |
+| I4  | Selos na capa (progresso, novo, concluído, formato)                                                                    | §3.2       | P       | médio   |         |
+| I5  | Ficha catalográfica do livro (metadados, nº de tombo, estantes, notas; tocar no autor filtra)                          | §3.3       | M       | alto    |         |
+| I6  | Marcadores de página com miniatura (lacuna do Mihon) e filtro "com marcadores"                                         | §3.5       | M       | alto    |         |
+| I7  | Registro de leitura (agrupado por dia, retoma ao tocar, tempo de leitura)                                              | §3.4       | M       | médio   |         |
+| I8  | Desfazer (remover livro, estante, marcador) e estados vazios no tom da biblioteca                                      | §3.6       | P       | médio   |         |
+| I9  | iPad: trilho lateral de navegação e dois painéis (acervo + ficha)                                                      | §3.1, §3.3 | M       | médio   |         |
+| I10 | Busca no acervo (simples primeiro; campos tipo `autor:` depois)                                                        | §3.2       | P-M     | médio   |         |
+| I11 | Série como agrupamento opcional (do `ComicInfo.xml` Series + Number, ou à mão)                                         | §7         | M       | médio   |         |
+| I12 | Escolher uma página como capa                                                                                          | §3.3       | P       | baixo   |         |
+| I13 | Aviso de exemplar repetido ao adicionar                                                                                | §3.3       | P       | baixo   |         |
+| I14 | Leitura sem registro (modo anônimo)                                                                                    | §3.4       | P       | baixo   |         |
+| I15 | Estatísticas ("relatório da biblioteca")                                                                               | §3.4       | M       | baixo   |         |
+| I16 | Exportar e importar o acervo em JSON (sem os arquivos); essencial antes do app                                         | §3.4       | M       | médio   |         |
 
 ### 8.4 Fontes e catálogos
 
