@@ -168,7 +168,6 @@
 
 .fx-strip-front {
   background: linear-gradient(to bottom, var(--color-page-fold), transparent);
-  opacity: 0.5;
 }
 
 /* Text and link overlays, positioned over the drawn page. */

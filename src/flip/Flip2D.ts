@@ -8,6 +8,7 @@ import {
   type Fold,
   type Point,
   type Polygon,
+  turnProgress,
 } from './geometry';
 import type { FlipEngine, FlipHost, PageSlotSize } from './types';
 
@@ -16,6 +17,8 @@ const SHADOW_PX = 46;
 const TAP_SLOP = 6;
 const PEEK_ZONE = 90;
 const PEEK_LIFT = 34;
+/** The corner rises to (and settles from) its peek in this time. */
+const PEEK_MS = 180;
 /** Taps only turn pages near the outer edges; the middle is left for zoom gestures. */
 const TAP_EDGE = 0.3;
 
@@ -27,7 +30,7 @@ interface Turn {
   corner: Corner;
   point: Point;
   els: TurnElements;
-  raf?: number;
+  raf?: number | undefined;
 }
 
 interface TurnElements {
@@ -54,6 +57,7 @@ interface Drag {
   turnStart?: Point;
 }
 
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 function polygonCss(points: Polygon): string {
@@ -87,6 +91,8 @@ export class Flip2D implements FlipEngine {
   private turn: Turn | undefined;
   private drag: Drag | undefined;
   private peeking = false;
+  /** Where a peek is heading: lifted, or back down before it ends. */
+  private peekGoal: 'lift' | 'rest' | undefined;
   private interactive = true;
   private hoverPeek = true;
   private reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -170,8 +176,8 @@ export class Flip2D implements FlipEngine {
   private request(target: number) {
     const count = this.host?.spreads.length ?? 0;
     this.wanted = Math.max(0, Math.min(target, count - 1));
-    if (this.peeking) this.endPeek();
-    if (!this.turn) this.continueToWanted();
+    // A peek in progress is not a turn: it gets taken over (or dropped) by turnTo.
+    if (!this.turn || this.peeking) this.continueToWanted();
   }
 
   private continueToWanted() {
@@ -196,28 +202,32 @@ export class Flip2D implements FlipEngine {
     if (!host) return;
     const to = Math.max(0, Math.min(target, host.spreads.length - 1));
     if (to === this.current) return;
-    this.endPeek();
-    if (this.turn) {
+    const forward = to > this.current;
+    const from = forward ? this.current : to;
+    const animate = options.animate ?? Math.abs(to - this.current) === 1;
+    const smooth = animate && !this.reducedMotion && !this.needsCrossfade(this.current, to);
+    // A lifted corner (hover or touch) simply carries on into the turn.
+    const peek = smooth && forward ? this.adoptPeek() : undefined;
+    if (!peek) this.endPeek();
+    if (this.turn && !peek) {
       // Finish the running turn instantly, then continue from there.
       this.pending = () => void this.goTo(to, options);
       return;
     }
-    const animate = options.animate ?? Math.abs(to - this.current) === 1;
-    if (!animate || this.reducedMotion || this.needsCrossfade(this.current, to)) {
+    if (!smooth) {
       this.crossfade(to, animate);
       if (this.wanted !== undefined) requestAnimationFrame(() => this.continueToWanted());
       return;
     }
-    const forward = to > this.current;
-    const from = forward ? this.current : to;
-    this.startTurn(from, 'bottom');
+    if (!peek) this.startTurn(from, 'bottom');
     const turn = this.turn as Turn | undefined;
     if (!turn) return;
-    const c = cornerPoint('bottom', this.size.width, this.size.height);
-    const t = this.turnedPoint('bottom');
-    const lift = { x: 0, y: this.size.height * 0.82 };
-    turn.point = forward ? c : t;
-    await this.animatePoint(forward ? [c, lift, t] : [t, lift, c], duration);
+    const { width: w, height: h } = this.size;
+    const c = cornerPoint(turn.corner, w, h);
+    const t = this.turnedPoint(turn.corner);
+    const lift = { x: 0, y: turn.corner === 'bottom' ? h * 0.82 : h * 0.18 };
+    if (!peek) turn.point = forward ? c : t;
+    await this.animatePoint(forward ? [turn.point, lift, t] : [t, lift, c], duration);
     this.finishTurn(forward);
   }
 
@@ -527,7 +537,8 @@ export class Flip2D implements FlipEngine {
     return { x: (x - spineX) * s, y };
   }
 
-  private startTurn(from: number, corner: Corner) {
+  /** `peek`: only the corner lifts, so a lone cover stays centered. */
+  private startTurn(from: number, corner: Corner, peek = false) {
     const host = this.host;
     if (!host) return;
     const to = from + 1;
@@ -540,8 +551,7 @@ export class Flip2D implements FlipEngine {
     // Static layer: what stays put during the turn.
     this.clearDecorations();
     this.book.replaceChildren();
-    this.book.style.transform = 'translateX(0)';
-    delete this.book.dataset.lone;
+    if (!peek) this.openBook();
     if (this.double) {
       const staticBack = this.pageOnSide(from, backSide);
       if (staticBack !== undefined) this.book.appendChild(this.pageElement(staticBack, backSide));
@@ -627,20 +637,30 @@ export class Flip2D implements FlipEngine {
     els.back.style.clipPath = polygonCss(fold.folded.map(toBack));
     els.backWrap.style.visibility = fold.folded.length ? 'visible' : 'hidden';
 
-    // Shadows run along the fold line.
-    this.placeStrip(els.castStrip, toFront(fold.origin), {
-      x: s * fold.normal.x,
-      y: fold.normal.y,
-    });
-    this.placeStrip(els.backStrip, toBack(fold.origin), {
-      x: -s * fold.normal.x,
-      y: fold.normal.y,
-    });
+    // Shadows run along the fold line. They grow with the fold and fade out
+    // again as the leaf lands, so nothing pops in or out at either end.
+    const strength = Math.min(1, Math.sin(Math.PI * turnProgress(fold.point, w)) * 2.5);
+    const depth = 0.35 + 0.65 * strength;
+    this.placeStrip(
+      els.castStrip,
+      toFront(fold.origin),
+      { x: s * fold.normal.x, y: fold.normal.y },
+      depth,
+      strength,
+    );
+    this.placeStrip(
+      els.backStrip,
+      toBack(fold.origin),
+      { x: -s * fold.normal.x, y: fold.normal.y },
+      depth,
+      strength,
+    );
     this.placeStrip(
       els.frontShade,
       toFront(fold.origin),
       { x: -s * fold.normal.x, y: -fold.normal.y },
-      0.6,
+      0.6 * depth,
+      0.5 * strength,
     );
     this.foldVisibility(fold);
   }
@@ -652,7 +672,7 @@ export class Flip2D implements FlipEngine {
   }
 
   /** A gradient band along the fold line, fading in the direction of `normal`. */
-  private placeStrip(strip: HTMLElement, origin: Point, normal: Point, depth = 1) {
+  private placeStrip(strip: HTMLElement, origin: Point, normal: Point, depth = 1, opacity = 1) {
     const { width, height } = this.size;
     const length = 2 * Math.hypot(width, height);
     const thickness = SHADOW_PX * depth;
@@ -664,6 +684,7 @@ export class Flip2D implements FlipEngine {
     strip.style.width = `${length}px`;
     strip.style.height = `${thickness}px`;
     strip.style.transform = matrixCss([t.x, t.y, n.x, n.y, e, f]);
+    strip.style.opacity = opacity.toFixed(3);
   }
 
   private animatePoint(path: Point[], duration: number): Promise<void> {
@@ -736,7 +757,10 @@ export class Flip2D implements FlipEngine {
       const x = (event.clientX - rect.left) / rect.width;
       if (x > TAP_EDGE && x < 1 - TAP_EDGE) return;
     }
-    this.endPeek();
+    // A finger near the free corner lifts it a little, like the mouse hover does.
+    const corner = event.pointerType === 'mouse' ? undefined : this.peekCorner(event);
+    if (corner) this.raisePeek(corner);
+    else if (event.pointerType !== 'mouse') this.endPeek();
     this.stage.setPointerCapture?.(event.pointerId);
     const leaf = this.toLeaf(event.clientX, event.clientY);
     this.drag = {
@@ -770,11 +794,18 @@ export class Flip2D implements FlipEngine {
       if (!this.canGo(kind)) return;
       const corner: Corner = drag.start.y < this.size.height / 2 ? 'top' : 'bottom';
       drag.kind = kind;
-      this.startTurn(kind === 'forward' ? this.current : this.current - 1, corner);
-      drag.turnStart =
-        kind === 'forward'
-          ? cornerPoint(corner, this.size.width, this.size.height)
-          : this.turnedPoint(corner);
+      // Dragging a lifted corner keeps it where it is instead of snapping flat.
+      const peek = kind === 'forward' ? this.adoptPeek(corner) : undefined;
+      if (peek) {
+        drag.turnStart = { ...peek.point };
+      } else {
+        this.endPeek();
+        this.startTurn(kind === 'forward' ? this.current : this.current - 1, corner);
+        drag.turnStart =
+          kind === 'forward'
+            ? cornerPoint(corner, this.size.width, this.size.height)
+            : this.turnedPoint(corner);
+      }
     }
     const turn = this.turn;
     if (!turn || !drag.turnStart) return;
@@ -790,15 +821,20 @@ export class Flip2D implements FlipEngine {
     if (!drag || drag.pointerId !== event.pointerId) return;
     this.drag = undefined;
     const turn = this.turn;
-    if (!drag.kind || !turn) {
+    if (!drag.kind || !turn || this.peeking) {
       // A tap: right side moves forward in LTR, backward in RTL.
-      if (event.type === 'pointercancel') return;
       const rect = this.book.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
-      if (x > TAP_EDGE && x < 1 - TAP_EDGE) return;
+      if (event.type === 'pointercancel' || (x > TAP_EDGE && x < 1 - TAP_EDGE)) {
+        if (event.pointerType !== 'mouse') this.lowerPeek();
+        return;
+      }
       const forward = x >= 0.5 !== this.rtl;
       if (forward) this.next();
-      else this.prev();
+      else {
+        this.endPeek();
+        this.prev();
+      }
       return;
     }
     const { width: w, height: h } = this.size;
@@ -814,44 +850,109 @@ export class Flip2D implements FlipEngine {
   };
 
   private onPointerLeave = () => {
-    if (!this.drag) this.endPeek();
+    if (!this.drag) this.lowerPeek();
   };
 
   /** Hovering near the free corner lifts it a little, inviting a drag. */
   private updatePeek(event: PointerEvent) {
-    if (!this.hoverPeek || (this.turn && !this.peeking) || !this.canGo('forward')) return;
+    const corner = this.peekCorner(event);
+    if (corner) this.raisePeek(corner);
+    else this.lowerPeek();
+  }
+
+  /** The free corner under the pointer, if it's close enough to peek. */
+  private peekCorner(event: PointerEvent): Corner | undefined {
     const { width: w, height: h } = this.size;
     const leaf = this.toLeaf(event.clientX, event.clientY);
-    const nearX = leaf.x > w - PEEK_ZONE && leaf.x <= w + 4;
-    const corner: Corner | undefined = !nearX
-      ? undefined
-      : leaf.y > h - PEEK_ZONE && leaf.y <= h + 4
-        ? 'bottom'
-        : leaf.y < PEEK_ZONE && leaf.y >= -4
-          ? 'top'
-          : undefined;
-    if (!corner) {
-      this.endPeek();
-      return;
-    }
+    if (leaf.x <= w - PEEK_ZONE || leaf.x > w + 4) return undefined;
+    if (leaf.y > h - PEEK_ZONE && leaf.y <= h + 4) return 'bottom';
+    if (leaf.y < PEEK_ZONE && leaf.y >= -4) return 'top';
+    return undefined;
+  }
+
+  private peekPoint(corner: Corner): Point {
+    const c = cornerPoint(corner, this.size.width, this.size.height);
+    return { x: c.x - PEEK_LIFT, y: c.y + (corner === 'bottom' ? -PEEK_LIFT : PEEK_LIFT) * 0.6 };
+  }
+
+  private raisePeek(corner: Corner) {
+    if (!this.hoverPeek || (this.turn && !this.peeking) || !this.canGo('forward')) return;
+    if (this.turn && this.turn.corner !== corner) this.endPeek();
     if (!this.turn) {
-      this.startTurn(this.current, corner);
+      this.startTurn(this.current, corner, true);
       this.peeking = true;
+      this.peekGoal = undefined;
     }
-    const turn = this.turn as Turn | undefined;
-    if (!turn) return;
-    turn.corner = corner;
-    const c = cornerPoint(corner, w, h);
-    turn.point = {
-      x: c.x - PEEK_LIFT,
-      y: c.y + (corner === 'bottom' ? -PEEK_LIFT : PEEK_LIFT) * 0.6,
-    };
-    this.drawTurn();
+    if (this.peekGoal === 'lift') return;
+    this.peekGoal = 'lift';
+    void this.tweenPoint(this.peekPoint(corner), PEEK_MS);
+  }
+
+  /** Lets a lifted corner settle back down, then removes the turning layer. */
+  private lowerPeek() {
+    const turn = this.turn;
+    if (!this.peeking || !turn || this.peekGoal === 'rest') return;
+    this.peekGoal = 'rest';
+    const flat = cornerPoint(turn.corner, this.size.width, this.size.height);
+    void this.tweenPoint(flat, PEEK_MS).then(() => {
+      if (this.turn === turn && this.peeking && this.peekGoal === 'rest') this.endPeek();
+    });
+  }
+
+  /** Turns the current peek into a real forward turn, if there is one to take over. */
+  private adoptPeek(corner?: Corner): Turn | undefined {
+    const turn = this.turn;
+    if (!this.peeking || !turn || turn.from !== this.current) return undefined;
+    if (corner && turn.corner !== corner) return undefined;
+    if (turn.raf) cancelAnimationFrame(turn.raf);
+    turn.raf = undefined;
+    this.peeking = false;
+    this.peekGoal = undefined;
+    this.openBook();
+    return turn;
+  }
+
+  /** A turn spans both sides: a lone cover slides from the middle to its side. */
+  private openBook() {
+    this.book.style.transform = 'translateX(0)';
+    delete this.book.dataset.lone;
+  }
+
+  /** Eases the corner of the current (peek) turn to `target`. */
+  private tweenPoint(target: Point, duration: number): Promise<void> {
+    const turn = this.turn;
+    if (!turn) return Promise.resolve();
+    if (turn.raf) cancelAnimationFrame(turn.raf);
+    if (this.reducedMotion) {
+      turn.raf = undefined;
+      turn.point = target;
+      this.drawTurn();
+      return Promise.resolve();
+    }
+    const from = { ...turn.point };
+    const start = performance.now();
+    return new Promise((resolve) => {
+      const step = (now: number) => {
+        if (this.turn !== turn) return resolve();
+        const t = Math.min(1, (now - start) / duration);
+        const k = easeOut(t);
+        turn.point = { x: from.x + (target.x - from.x) * k, y: from.y + (target.y - from.y) * k };
+        this.drawTurn();
+        if (t < 1) {
+          turn.raf = requestAnimationFrame(step);
+        } else {
+          turn.raf = undefined;
+          resolve();
+        }
+      };
+      turn.raf = requestAnimationFrame(step);
+    });
   }
 
   private endPeek() {
     if (!this.peeking) return;
     this.peeking = false;
+    this.peekGoal = undefined;
     if (this.turn) {
       if (this.turn.raf) cancelAnimationFrame(this.turn.raf);
       this.turn = undefined;
