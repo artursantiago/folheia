@@ -108,9 +108,16 @@ export function ReaderScreen({
       fileDirection: metadata.direction,
       initialPage: hashPage,
       pageLabel: (number) => tRef.current('reader.page', { number }),
+      failedText: tRef.current('reader.pageFailed'),
     });
     setReader(instance);
     if (instance.state.get().splitSpreads) notify(tRef.current('reader.spreadsSplit'));
+    const offTall = instance.state.subscribe(() => {
+      if (instance.state.get().tallStrips) {
+        notify(tRef.current('reader.tallStrips'));
+        offTall();
+      }
+    });
     return () => {
       instance.destroy();
       setReader(undefined);

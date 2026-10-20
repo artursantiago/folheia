@@ -45,6 +45,29 @@ function copyFor(error: SourceError): ErrorCopy {
         body: 'error.http.body',
         stamp: 'error.network.stamp',
       };
+    case 'unsupported-format': {
+      const kind = String(error.detail);
+      if (kind === 'rar' || kind === '7z')
+        return {
+          label: 'error.unsupported.label',
+          title: kind === 'rar' ? 'error.cbr.title' : 'error.cb7.title',
+          body: 'error.archive.body',
+          stamp: 'error.unsupported.stamp',
+        };
+      if (kind === 'encrypted-zip')
+        return {
+          label: 'error.unsupported.label',
+          title: 'error.encrypted.title',
+          body: 'error.encrypted.body',
+          stamp: 'error.unsupported.stamp',
+        };
+      return {
+        label: 'error.unsupported.label',
+        title: 'error.unknown.title',
+        body: 'error.unknown.body',
+        stamp: 'error.unsupported.stamp',
+      };
+    }
     case 'empty':
       return {
         label: 'error.invalid.label',

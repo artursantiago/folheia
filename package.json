@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fixtures": "node scripts/make-fixture-pdf.mjs && node scripts/make-fixture-pdf.mjs --pages 24 --spreads --out fixtures/generated/spreads.pdf && node scripts/make-text-pdf.mjs",
+    "fixtures": "node scripts/make-fixture-pdf.mjs && node scripts/make-fixture-pdf.mjs --pages 24 --spreads --out fixtures/generated/spreads.pdf && node scripts/make-text-pdf.mjs && node scripts/make-fixture-cbz.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -27,7 +27,8 @@
     "@fontsource/young-serif": "^5.3.0",
     "pdfjs-dist": "^6.4.299",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "unzipit": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

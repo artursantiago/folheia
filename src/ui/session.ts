@@ -1,5 +1,5 @@
 import { createStore } from '../lib/store';
-import { openPdf, type PdfInput } from '../sources/pdf/PdfSource';
+import { openSource, type SourceInput } from '../sources/open';
 import type { ExampleBook } from '../examples';
 import { SourceError, type BookMetadata, type PageSource } from '../sources/types';
 
@@ -45,9 +45,10 @@ export async function openBook(request: OpenRequest) {
   const name = nameOf(request);
   await closeBook();
   session.set({ status: 'opening', name });
-  const input: PdfInput = request.kind === 'file' ? { file: request.file } : { url: request.url };
+  const input: SourceInput =
+    request.kind === 'file' ? { file: request.file } : { url: request.url };
   try {
-    const source = await openPdf(input, {
+    const source = await openSource(input, {
       onPassword: (reason) =>
         new Promise((resolve) =>
           passwordRequest.set({

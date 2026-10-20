@@ -14,11 +14,12 @@ const pt = {
 
   'home.overline': 'Biblioteca de bolso',
   'home.title': 'Todo PDF merece ser folheado.',
-  'home.lead': 'Abra um PDF e leia como um livro de verdade. Tudo acontece no seu navegador.',
+  'home.lead':
+    'Abra um PDF ou uma HQ em CBZ e leia como um livro de verdade. Tudo acontece no seu navegador.',
   'home.privacy': 'Seu arquivo não sai deste aparelho',
   'home.loanCard': 'Ficha de empréstimo',
   'home.bring': 'Traga um livro para a mesa.',
-  'home.dropHint': 'Arraste um PDF até aqui, ou escolha no seu aparelho.',
+  'home.dropHint': 'Arraste um PDF ou CBZ até aqui, ou escolha no seu aparelho.',
   'home.choose': 'Escolher arquivo',
   'home.orUrl': 'ou por endereço',
   'home.urlLabel': 'Endereço do arquivo',
@@ -122,10 +123,23 @@ const pt = {
   'error.http.body': 'O endereço pode estar errado ou o arquivo pode ter sido removido.',
   'error.invalid.label': 'Arquivo avariado',
   'error.invalid.title': 'Não conseguimos ler este arquivo.',
-  'error.invalid.body': 'Ele pode estar corrompido ou não ser um PDF de verdade.',
+  'error.invalid.body': 'Ele pode estar corrompido ou não ser um PDF ou CBZ de verdade.',
   'error.invalid.stamp': 'Avariado',
   'error.empty.title': 'Este PDF não tem nenhuma página.',
   'error.chooseAnother': 'Escolher outro arquivo',
+  'error.unsupported.label': 'Formato fora do acervo',
+  'error.unsupported.stamp': 'Não catalogado',
+  'error.cbr.title': 'Ainda não lemos arquivos CBR.',
+  'error.cb7.title': 'Ainda não lemos arquivos CB7.',
+  'error.archive.body':
+    'Converta para CBZ: extraia as imagens, compacte-as em .zip sem compressão e troque a extensão para .cbz. Programas como Calibre, Komga ou Kavita fazem isso por você.',
+  'error.encrypted.title': 'Esta HQ está protegida por senha.',
+  'error.encrypted.body':
+    'Arquivos CBZ com senha ainda não são suportados. Gere uma cópia sem senha e abra de novo.',
+  'error.unknown.title': 'Não reconhecemos este formato.',
+  'error.unknown.body': 'O Folheia lê arquivos PDF e HQs em CBZ.',
+  'reader.pageFailed': 'Esta página usa um formato de imagem que este navegador não abre.',
+  'reader.tallStrips': 'Tiras verticais (webtoon): o modo rolagem ainda não está disponível.',
 } as const;
 
 export type MessageKey = keyof typeof pt;
@@ -147,11 +161,12 @@ const en: Messages = {
 
   'home.overline': 'Pocket library',
   'home.title': 'Every PDF deserves to be leafed through.',
-  'home.lead': 'Open a PDF and read it like a real book. Everything happens in your browser.',
+  'home.lead':
+    'Open a PDF or a CBZ comic and read it like a real book. Everything happens in your browser.',
   'home.privacy': 'Your file never leaves this device',
   'home.loanCard': 'Loan card',
   'home.bring': 'Bring a book to the table.',
-  'home.dropHint': 'Drop a PDF here, or pick one from your device.',
+  'home.dropHint': 'Drop a PDF or CBZ here, or pick one from your device.',
   'home.choose': 'Choose file',
   'home.orUrl': 'or by address',
   'home.urlLabel': 'File address',
@@ -255,10 +270,23 @@ const en: Messages = {
   'error.http.body': 'The address may be wrong or the file may have been removed.',
   'error.invalid.label': 'Damaged file',
   'error.invalid.title': "We couldn't read this file.",
-  'error.invalid.body': 'It may be corrupted or not really a PDF.',
+  'error.invalid.body': 'It may be corrupted or not really a PDF or CBZ.',
   'error.invalid.stamp': 'Damaged',
   'error.empty.title': 'This PDF has no pages.',
   'error.chooseAnother': 'Choose another file',
+  'error.unsupported.label': 'Format not in the collection',
+  'error.unsupported.stamp': 'Not catalogued',
+  'error.cbr.title': "We can't read CBR files yet.",
+  'error.cb7.title': "We can't read CB7 files yet.",
+  'error.archive.body':
+    'Convert it to CBZ: extract the images, zip them with no compression and rename the file to .cbz. Tools like Calibre, Komga or Kavita can do it for you.',
+  'error.encrypted.title': 'This comic is password-protected.',
+  'error.encrypted.body':
+    "Password-protected CBZ files aren't supported yet. Make a copy without a password and open it again.",
+  'error.unknown.title': "We don't recognize this format.",
+  'error.unknown.body': 'Folheia reads PDF files and CBZ comics.',
+  'reader.pageFailed': "This page uses an image format this browser can't open.",
+  'reader.tallStrips': "Vertical strips (webtoon): scrolling mode isn't available yet.",
 };
 
 export const messages = { 'pt-BR': pt, en } satisfies Record<string, Messages>;

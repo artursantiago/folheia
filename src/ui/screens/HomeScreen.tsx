@@ -143,7 +143,7 @@ export function HomeScreen() {
               <input
                 ref={fileInput}
                 type="file"
-                accept=".pdf,application/pdf"
+                accept=".pdf,application/pdf,.cbz,application/vnd.comicbook+zip,application/x-cbz,application/zip"
                 className="srOnly"
                 tabIndex={-1}
                 aria-hidden="true"

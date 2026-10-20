@@ -109,7 +109,7 @@ export default function Lab() {
         <Overline>Laboratório do motor</Overline>
         <input
           type="file"
-          accept=".pdf,application/pdf"
+          accept=".pdf,application/pdf,.cbz"
           aria-label="Abrir PDF"
           onChange={(event) => {
             const file = event.target.files?.[0];

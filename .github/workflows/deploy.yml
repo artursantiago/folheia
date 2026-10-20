@@ -44,7 +44,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
-      - run: node scripts/make-fixture-pdf.mjs --pages 60 && node scripts/make-text-pdf.mjs
+      - run: node scripts/make-fixture-pdf.mjs --pages 60 && node scripts/make-text-pdf.mjs && node scripts/make-fixture-cbz.mjs
       - run: npx playwright test --project=chromium --project=webkit --project=ipad --project=iphone
 
   deploy:
