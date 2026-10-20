@@ -21,6 +21,9 @@ const PEEK_LIFT = 34;
 const PEEK_MS = 180;
 /** Taps only turn pages near the outer edges; the middle is left for zoom gestures. */
 const TAP_EDGE = 0.3;
+/** A tap in the middle waits this long to make sure it isn't the start of a double tap (zoom). */
+const CENTER_TAP_DELAY = 250;
+const TAP_MAX_MS = 350;
 
 type Side = 'left' | 'right';
 
@@ -98,6 +101,9 @@ export class Flip2D implements FlipEngine {
   private reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   private changeListeners = new Set<(spread: number) => void>();
   private flipListeners = new Set<(flipping: boolean) => void>();
+  private centerTapListeners = new Set<() => void>();
+  private centerDown: { id: number; x: number; y: number; time: number } | undefined;
+  private centerTapTimer: number | undefined;
   private pending: (() => void) | undefined;
   private decorations: (() => void)[] = [];
   /** Where repeated next/prev presses want to end up; turns run one after another. */
@@ -122,6 +128,8 @@ export class Flip2D implements FlipEngine {
     this.stage.addEventListener('pointerup', this.onPointerUp);
     this.stage.addEventListener('pointercancel', this.onPointerUp);
     this.stage.addEventListener('pointerleave', this.onPointerLeave);
+    this.stage.addEventListener('pointerdown', this.trackCenterTap);
+    this.stage.addEventListener('pointerup', this.trackCenterTap);
   }
 
   get spread() {
@@ -157,6 +165,11 @@ export class Flip2D implements FlipEngine {
   onChange(listener: (spread: number) => void) {
     this.changeListeners.add(listener);
     return () => this.changeListeners.delete(listener);
+  }
+
+  onCenterTap(listener: () => void) {
+    this.centerTapListeners.add(listener);
+    return () => this.centerTapListeners.delete(listener);
   }
 
   onFlipStateChange(listener: (flipping: boolean) => void) {
@@ -270,6 +283,9 @@ export class Flip2D implements FlipEngine {
   /** Another gesture (pinch, pan) took over: drop any drag and settle the page. */
   cancelGesture() {
     this.drag = undefined;
+    this.centerDown = undefined;
+    window.clearTimeout(this.centerTapTimer);
+    this.centerTapTimer = undefined;
     this.endPeek();
     if (this.turn && !this.turn.raf) this.finishTurn(false);
   }
@@ -286,6 +302,8 @@ export class Flip2D implements FlipEngine {
   }
 
   destroy() {
+    window.clearTimeout(this.centerTapTimer);
+    this.centerTapListeners.clear();
     this.cancelTurn();
     this.clearDecorations();
     this.stage.remove();
@@ -847,6 +865,42 @@ export class Flip2D implements FlipEngine {
     void this.animatePoint([turn.point, mid, target], Math.max(140, TURN_MS * remaining)).then(() =>
       this.finishTurn(completed),
     );
+  };
+
+  /** Single taps in the middle third are reported, after making sure no second tap follows. */
+  private trackCenterTap = (event: PointerEvent) => {
+    if (event.type === 'pointerdown') {
+      if (this.centerTapTimer !== undefined) {
+        // Second tap of a double tap: that's a zoom, not a tap.
+        window.clearTimeout(this.centerTapTimer);
+        this.centerTapTimer = undefined;
+        this.centerDown = undefined;
+        return;
+      }
+      const target = event.target as Element | null;
+      if (event.button !== 0 || target?.closest?.('a, button')) return;
+      const rect = this.book.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      if (x <= TAP_EDGE || x >= 1 - TAP_EDGE) return;
+      this.centerDown = {
+        id: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        time: performance.now(),
+      };
+      return;
+    }
+    const down = this.centerDown;
+    this.centerDown = undefined;
+    if (!down || down.id !== event.pointerId) return;
+    const moved = Math.hypot(event.clientX - down.x, event.clientY - down.y);
+    if (moved > TAP_SLOP || performance.now() - down.time > TAP_MAX_MS) return;
+    // A click that ends a text selection isn't a tap.
+    if (window.getSelection?.()?.toString()) return;
+    this.centerTapTimer = window.setTimeout(() => {
+      this.centerTapTimer = undefined;
+      for (const listener of this.centerTapListeners) listener();
+    }, CENTER_TAP_DELAY);
   };
 
   private onPointerLeave = () => {

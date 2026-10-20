@@ -47,6 +47,8 @@ export interface FlipEngine {
   cancelGesture(): void;
   setHoverPeek(enabled: boolean): void;
   onChange(listener: (spread: number) => void): () => void;
+  /** A single tap or click in the middle of the book (not a double tap, not a turn). */
+  onCenterTap(listener: () => void): () => void;
   /** True while a page is moving (the render queue pauses meanwhile). */
   onFlipStateChange(listener: (flipping: boolean) => void): () => void;
   destroy(): void;

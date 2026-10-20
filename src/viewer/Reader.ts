@@ -192,6 +192,11 @@ export class Reader {
     return image?.url;
   }
 
+  /** A single tap in the middle of the book (immersive mode uses it to show its bar). */
+  onCenterTap(listener: () => void) {
+    return this.flip.onCenterTap(listener);
+  }
+
   /** Notifies when any page image becomes available. */
   onImages(listener: () => void) {
     return this.renderer.subscribe(() => listener());
