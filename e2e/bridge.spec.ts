@@ -5,10 +5,20 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import { launchWithBridge, type Harness } from './bridge-harness';
 
-test.skip(({ browserName }) => browserName !== 'chromium', 'Extensions load only in Chromium');
+// Chromium loads the extension unpacked; Firefox as a temporary add-on.
+test.skip(
+  ({ browserName }) => browserName === 'webkit',
+  'Safari extensions need Xcode (see docs/estudo-extensao.md)',
+);
 
 const APP = 'http://localhost:5174/#/lab';
 const BIG = 8 << 20;
+/** A 1×1 PNG. */
+const PIXEL = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+  'base64',
+);
+const imageReferers: string[] = [];
 
 let harness: Harness;
 let server: Server;
@@ -17,7 +27,8 @@ let context: BrowserContext;
 let page: Page;
 
 test.beforeAll(async () => {
-  test.skip(test.info().project.name !== 'chromium', 'Desktop Chromium only');
+  const project = test.info().project.name;
+  test.skip(project !== 'chromium' && project !== 'firefox', 'Desktop Chromium and Firefox only');
 
   const big = Buffer.alloc(BIG, 7);
   server = createServer((request, response) => {
@@ -27,6 +38,10 @@ test.beforeAll(async () => {
     } else if (request.url === '/big') {
       response.writeHead(200, { 'content-type': 'application/octet-stream' });
       response.end(big);
+    } else if (request.url?.startsWith('/pixel.png')) {
+      imageReferers.push(request.headers.referer ?? '');
+      response.writeHead(200, { 'content-type': 'image/png' });
+      response.end(PIXEL);
     } else if (request.url === '/slow') {
       // Never answers: the client has to abort.
     } else {
@@ -37,7 +52,7 @@ test.beforeAll(async () => {
   const address = server.address();
   target = `http://127.0.0.1:${typeof address === 'object' && address ? address.port : 0}`;
 
-  harness = await launchWithBridge();
+  harness = await launchWithBridge([], project === 'firefox' ? 'firefox' : 'chromium');
   context = harness.context;
   page = await context.newPage();
   await page.goto(APP);
@@ -53,14 +68,18 @@ async function fetchFromLab(url: string, route: 'auto' | 'só fetch' | 'só pont
   const panel = page.getByTestId('bridge-panel');
   await panel.getByLabel('URL da ponte').fill(url);
   const { referer = '', userAgent = '' } = extra as { referer?: string; userAgent?: string };
-  await panel.getByLabel('Referer').fill(referer);
-  await panel.getByLabel('User-Agent').fill(userAgent);
+  await panel.getByLabel('Referer', { exact: true }).fill(referer);
+  await panel.getByLabel('User-Agent', { exact: true }).fill(userAgent);
   await panel.getByLabel(route).check();
   await panel.getByRole('button', { name: 'Buscar' }).click();
 }
 
 test('detects the extension and answers with its protocol', async () => {
-  await expect(page.getByTestId('bridge-status')).toHaveText(/^extension · chrome · v0\.1\.0/);
+  await expect(page.getByTestId('bridge-status')).toHaveText(
+    new RegExp(
+      `^extension · ${test.info().project.name === 'firefox' ? 'firefox' : 'chrome'} · v0\\.1\\.0`,
+    ),
+  );
 });
 
 test('plain fetch is blocked by CORS; the bridge reads it, with Referer and User-Agent', async () => {
@@ -89,6 +108,19 @@ test('streams a large binary body and measures it', async () => {
   const mbps = (BIG / 1048576 / (ms / 1000)).toFixed(1);
   info.annotations.push({ type: 'bridge 8 MB (ms)', description: `${ms} ms · ${mbps} MB/s` });
   console.log(`[bridge] 8 MB in ${ms} ms (${mbps} MB/s)`);
+});
+
+test("sets a Referer on the page's own <img> requests to an approved host", async () => {
+  const panel = page.getByTestId('bridge-panel');
+  await panel.getByLabel('Imagem direta (URL)').fill(`${target}/pixel.png`);
+  await panel.getByRole('button', { name: 'Mostrar com <img>' }).click();
+  await expect(page.getByTestId('image-status')).toHaveText('loaded · sem regra');
+  expect(imageReferers.at(-1)).toContain('localhost:5174');
+
+  await panel.getByLabel('Referer da imagem').fill('https://example.org/reader/');
+  await panel.getByRole('button', { name: 'Mostrar com <img>' }).click();
+  await expect(page.getByTestId('image-status')).toHaveText('loaded · regra aplicada a 127.0.0.1');
+  expect(imageReferers.at(-1)).toBe('https://example.org/reader/');
 });
 
 test('refuses destinations the user never approved', async () => {

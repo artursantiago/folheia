@@ -12,7 +12,7 @@ import { createServer, type ViteDevServer } from 'vite';
 import { launchWithBridge, type Harness } from './bridge-harness';
 
 test.skip(!process.env.FOLHEIA_E2E_LIVE, 'Set FOLHEIA_E2E_LIVE=1 to hit the real sites');
-test.skip(({ browserName }) => browserName !== 'chromium', 'Extensions load only in Chromium');
+test.skip(({ browserName }) => browserName === 'webkit', 'Safari extensions need Xcode');
 
 // Our own server on 127.0.0.1: MangaDex allows localhost origins by CORS,
 // and the shared dev server listens on localhost only.
@@ -24,7 +24,8 @@ let harness: Harness;
 let page: Page;
 
 test.beforeAll(async () => {
-  test.skip(test.info().project.name !== 'chromium', 'Desktop Chromium only');
+  const project = test.info().project.name;
+  test.skip(project !== 'chromium' && project !== 'firefox', 'Desktop Chromium and Firefox only');
   server = await createServer({ server: { host: '127.0.0.1', port: 5175, strictPort: true } });
   await server.listen();
   // Probes may hit any site; the default run only the two legitimate ones.
@@ -32,6 +33,7 @@ test.beforeAll(async () => {
     process.env.FOLHEIA_BRIDGE_PROBES
       ? ['https://*/*']
       : ['https://api.mangadex.org/*', 'https://*.archive.org/*'],
+    project === 'firefox' ? 'firefox' : 'chromium',
   );
   page = await harness.context.newPage();
   await page.goto(APP);
