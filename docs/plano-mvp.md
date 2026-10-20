@@ -172,6 +172,12 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 
 5. **Modo "só o livro", em todos os dispositivos.** Além da tela cheia atual, um modo em que o livro ocupa a tela inteira: sem título, sem barra e sem as margens do palco. Num iPad na horizontal ou num notebook, as duas páginas usam todo o espaço e não é preciso ficar dando zoom.
    - Os controles saem de um **botão flutuante** (uma "bolinha"), que pode ser **arrastado** para um canto e abre todas as opções.
+   - **Referência que o Artur mostrou** (outro leitor, em tela cheia):
+     - o spread ocupa quase toda a tela, com só uma margem fina;
+     - uma faixa estreita embaixo, escura e discreta, traz um slider de páginas ("17/1117"), anterior/próxima, modos de página (única, dupla, grade), áudio, zoom e sair da tela cheia;
+     - uma coluna fina de ícones fica na lateral esquerda (biblioteca, páginas, busca, mais).
+     - O que importa da referência é a **proporção**: o livro como protagonista absoluto e os controles finos e escuros encostados nas bordas. Não é para copiar o layout; a solução tem que sair na nossa identidade (Ex-libris), possivelmente combinando com a bolinha arrastável.
+     - O **slider de páginas** é uma boa ideia a considerar para livros longos.
    - _Decidir:_
      - se é um ajuste persistente ou um botão;
      - como sair do modo;
