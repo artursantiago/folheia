@@ -51,6 +51,9 @@
   position: absolute;
   top: 0;
   overflow: hidden;
+  /* Each page keeps its own layers (spine shading, overlays): a page lying
+     underneath must never paint its shading over the leaf turning above it. */
+  isolation: isolate;
   background: var(--color-page);
 }
 
