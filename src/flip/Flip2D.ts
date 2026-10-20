@@ -1,5 +1,6 @@
 import './flip.css';
 import {
+  apply,
   compose,
   computeFold,
   cornerPoint,
@@ -19,6 +20,8 @@ const PEEK_ZONE = 90;
 const PEEK_LIFT = 34;
 /** The corner rises to (and settles from) its peek in this time. */
 const PEEK_MS = 180;
+/** Touches this far outside the pages still grab them (a corner at the very edge). */
+const GRAB_MARGIN = 24;
 /** Taps only turn pages near the outer edges; the middle is left for zoom gestures. */
 const TAP_EDGE = 0.3;
 /** A tap in the middle waits this long to make sure it isn't the start of a double tap (zoom). */
@@ -34,6 +37,8 @@ interface Turn {
   point: Point;
   els: TurnElements;
   raf?: number | undefined;
+  /** Set once the turn is animating to its end: true lands on `from + 1`. */
+  outcome?: boolean | undefined;
 }
 
 interface TurnElements {
@@ -43,6 +48,8 @@ interface TurnElements {
   frontShade: HTMLElement;
   cast: HTMLElement;
   castStrip: HTMLElement;
+  /** Two-page books: the shadow the leaf throws on the page it is about to cover. */
+  castBack?: { node: HTMLElement; strip: HTMLElement } | undefined;
   backWrap: HTMLElement;
   back: HTMLElement;
   backStrip: HTMLElement;
@@ -153,8 +160,11 @@ export class Flip2D implements FlipEngine {
   }
 
   setInteractive(enabled: boolean) {
+    if (this.interactive === enabled) return;
     this.interactive = enabled;
     if (!enabled) this.endPeek();
+    // Zoomed in, only this spread keeps decoded images; neighbors come back after.
+    this.warmNeighbors();
   }
 
   setHoverPeek(enabled: boolean) {
@@ -240,6 +250,7 @@ export class Flip2D implements FlipEngine {
     const t = this.turnedPoint(turn.corner);
     const lift = { x: 0, y: turn.corner === 'bottom' ? h * 0.82 : h * 0.18 };
     if (!peek) turn.point = forward ? c : t;
+    turn.outcome = forward;
     await this.animatePoint(forward ? [turn.point, lift, t] : [t, lift, c], duration);
     this.finishTurn(forward);
   }
@@ -287,7 +298,10 @@ export class Flip2D implements FlipEngine {
     window.clearTimeout(this.centerTapTimer);
     this.centerTapTimer = undefined;
     this.endPeek();
-    if (this.turn && !this.turn.raf) this.finishTurn(false);
+    const turn = this.turn;
+    // A pinch must never zoom a moving leaf: its layers would be rasterized at
+    // the zoomed size (hundreds of MB on an iPad). Land it right away instead.
+    if (turn) this.finishTurn(turn.outcome ?? false);
   }
 
   clearTiles() {
@@ -475,6 +489,7 @@ export class Flip2D implements FlipEngine {
 
   /** Spreads whose images are kept decoded: the next turn, either way, finds them ready. */
   private warmSpreads(): number[] {
+    if (!this.interactive) return [this.current];
     return [this.current - 1, this.current, this.current + 1, this.current + 2];
   }
 
@@ -598,6 +613,15 @@ export class Flip2D implements FlipEngine {
     cast.style.width = `${width}px`;
     cast.style.height = `${height}px`;
     const castStrip = el('fx-strip fx-strip-cast', cast);
+    let castBack: TurnElements['castBack'];
+    if (this.double) {
+      const node = el('fx-page', layer);
+      node.style.background = 'transparent';
+      node.style.left = `${this.slotX(backSide)}px`;
+      node.style.width = `${width}px`;
+      node.style.height = `${height}px`;
+      castBack = { node, strip: el('fx-strip fx-strip-cast', node) };
+    }
 
     const front =
       frontPage === undefined ? el('fx-page fx-paper') : this.pageElement(frontPage, slotSide);
@@ -622,7 +646,18 @@ export class Flip2D implements FlipEngine {
       from,
       corner,
       point: cornerPoint(corner, width, height),
-      els: { layer, beneath, front, frontShade, cast, castStrip, backWrap, back, backStrip },
+      els: {
+        layer,
+        beneath,
+        front,
+        frontShade,
+        cast,
+        castStrip,
+        castBack,
+        backWrap,
+        back,
+        backStrip,
+      },
     };
     this.emitFlipping(true);
   }
@@ -673,6 +708,22 @@ export class Flip2D implements FlipEngine {
       depth,
       strength,
     );
+    if (els.castBack) {
+      // Once over the other page, the leaf's free edge (local x = 0 of the back
+      // side) shades it: wide while the leaf is high, tight and gone as it lands.
+      const progress = turnProgress(fold.point, w);
+      const a = apply(backMatrix, { x: 0, y: 0 });
+      const b = apply(backMatrix, { x: 0, y: h });
+      const inward = apply(backMatrix, { x: 1, y: 0 });
+      const left = this.slotX(this.rtl ? 'right' : 'left');
+      this.placeStrip(
+        els.castBack.strip,
+        { x: (a.x + b.x) / 2 - left, y: (a.y + b.y) / 2 },
+        { x: a.x - inward.x, y: a.y - inward.y },
+        0.4 + 0.9 * (1 - progress),
+        strength,
+      );
+    }
     this.placeStrip(
       els.frontShade,
       toFront(fold.origin),
@@ -763,9 +814,26 @@ export class Flip2D implements FlipEngine {
     return kind === 'forward' ? this.current < count - 1 : this.current > 0;
   }
 
+  /** Whether a screen point is on the pages shown now (with a small margin to grab a corner). */
+  private onPages(clientX: number, clientY: number): boolean {
+    const rect = this.book.getBoundingClientRect();
+    const scale = rect.width / (this.book.offsetWidth || rect.width) || 1;
+    const x = (clientX - rect.left) / scale;
+    const y = (clientY - rect.top) / scale;
+    const margin = GRAB_MARGIN / scale;
+    if (y < -margin || y > this.size.height + margin) return false;
+    return this.placement(this.current).some(({ side }) => {
+      const left = this.slotX(side);
+      const width = side === 'wide' ? this.size.width * 2 : this.size.width;
+      return x >= left - margin && x <= left + width + margin;
+    });
+  }
+
   private onPointerDown = (event: PointerEvent) => {
     if (!this.interactive || !this.host || event.button !== 0) return;
     if (this.turn && !this.peeking) return;
+    // Pages turn from the pages themselves, not from the empty stage around them.
+    if (!this.peeking && !this.onPages(event.clientX, event.clientY)) return;
     // Links and text keep their own behavior: with a mouse, page drags start
     // only near the outer edges so the middle stays free for selecting text.
     const target = event.target as Element | null;
@@ -862,6 +930,7 @@ export class Flip2D implements FlipEngine {
     const target = completed ? this.turnedPoint(turn.corner) : cornerPoint(turn.corner, w, h);
     const remaining = Math.abs(target.x - turn.point.x) / (2 * w);
     const mid = { x: (turn.point.x + target.x) / 2, y: (turn.point.y + target.y) / 2 };
+    turn.outcome = completed;
     void this.animatePoint([turn.point, mid, target], Math.max(140, TURN_MS * remaining)).then(() =>
       this.finishTurn(completed),
     );
@@ -879,9 +948,11 @@ export class Flip2D implements FlipEngine {
       }
       const target = event.target as Element | null;
       if (event.button !== 0 || target?.closest?.('a, button')) return;
+      // The middle of the pages, or the empty stage around them; the page edges turn pages.
       const rect = this.book.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
-      if (x <= TAP_EDGE || x >= 1 - TAP_EDGE) return;
+      const onPages = this.onPages(event.clientX, event.clientY);
+      if (onPages && (x <= TAP_EDGE || x >= 1 - TAP_EDGE)) return;
       this.centerDown = {
         id: event.pointerId,
         x: event.clientX,

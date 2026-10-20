@@ -119,7 +119,10 @@ export class Reader {
         this.flip.clearTiles();
         this.renderer.clearTiles();
         this.flip.setInteractive(scale === 1);
+        const wasZoomed = this.state.get().zoom > 1;
         if (this.state.get().zoom !== scale) this.state.set((s) => ({ ...s, zoom: scale }));
+        // Zoom tiles are big: while zoomed in, the neighbors give their memory back.
+        if (wasZoomed !== scale > 1) this.plan();
       },
       settle: () => this.renderTiles(),
       takeOver: () => this.flip.cancelGesture(),
@@ -473,6 +476,11 @@ export class Reader {
    */
   private plan() {
     const s = this.flip.spread;
+    if (this.zoomer?.zoomed) {
+      this.renderer.focus({ visible: this.refs(s), ahead: [], behind: [], nearby: [] });
+      this.queueRefresh();
+      return;
+    }
     const ahead = [...this.refs(s + 1), ...this.refs(s + 2)];
     const behind = this.refs(s - 1);
     this.renderer.focus({
