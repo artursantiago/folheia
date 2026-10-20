@@ -258,7 +258,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 
    - **Memória:** a imagem original é decodificada inteira na tela. No iPad deitado, uma página dessas tem 6 MP (24 MB decodificada) contra 2,3 MP (9 MB) da nítida de antes. O leitor mantém decodificados até 4 spreads (o visível, 1 atrás e 2 à frente), então o pior caso sobe de ~72 MB para ~190 MB. É memória de imagem, fora do teto de canvas do iOS, mas **precisa ser conferida no iPad** (Web Inspector → Timelines → Memory). Se pesar, basta baixar `maxOriginalPixels` no iOS (abaixo dele, volta o caminho do canvas).
 
-4. **18b: opção "qualidade máxima (sem perda)" em PNG.** Ver o item 18b, em E. **Esperando a medição no iPad.**
+4. **18b: opção "qualidade máxima (sem perda)" em PNG.** Feito. Ver o item 18b, em E.
    - O `#/lab` ganhou o botão **Medir PNG sem perda (18b)** (`e2e/lossless.spec.ts` roda o mesmo no desktop, com `FOLHEIA_18B=1`). Ele mede, nos tamanhos do iPad, quanto o `toBlob` JPEG e o PNG levam, **quanto travam a thread principal**, o tamanho e o tempo de decodificar.
    - No desktop (Invincible, mediana de 5 páginas):
 
@@ -267,7 +267,23 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
      | deitada (1221×1877) | 20 / 30 ms (trava 9 / 29), 407 / 1555 KB  | 26 / 70 ms (trava 26 / 70), 656 / 2173 KB  |
      | em pé (1803×2773)   | 39 / 55 ms (trava 22 / 30), 718 / 2374 KB | 45 / 85 ms (trava 45 / 85), 1209 / 2416 KB |
 
-   - **No WebKit, o `toBlob` trava a thread principal o tempo todo** (a codificação não sai dela). O PNG custa +40–45 ms de trava por página nítida, além de 2–3× mais tempo para decodificar. No iPad de verdade deve ser mais.
+   - **No WebKit, o `toBlob` trava a thread principal o tempo todo** (a codificação não sai dela). O PNG custa +40–45 ms de trava por página nítida, além de 2–3× mais tempo para decodificar.
+   - **No iPad Air M1** (Safari do iPadOS, site publicado em HTTPS, Invincible, 20/10/2026):
+
+     | Página              | JPEG                               | PNG                                |
+     | ------------------- | ---------------------------------- | ---------------------------------- |
+     | deitada (1221×1877) | 32 ms (trava 32), 656 KB, dec. 13  | 68 ms (trava 68), 2173 KB, dec. 32 |
+     | em pé (1803×2773)   | 53 ms (trava 53), 1209 KB, dec. 28 | 84 ms (trava 84), 2416 KB, dec. 52 |
+
+     O render do PDF.js, frio, levou **1045 ms** por página no iPad (no Mac, ~160 ms). Perto disso, o PNG soma +31–36 ms de trava e +19–24 ms de decodificação: **3–5% a mais por página**. A trava só acontece com a fila andando, e a fila pausa durante a virada, então a animação não sofre.
+
+   - **Decisão:** entra o PNG na cache nítida, sem o P2. O interruptor **"Qualidade máxima"** fica nos Ajustes, desligado por padrão e lembrado entre livros. O lugar final dele sai do protótipo v2 (`roteiro.md`).
+   - **Como ficou:**
+     - Ligado, as páginas nítidas do PDF e os tiles de zoom são guardados em PNG; as prévias continuam em JPEG.
+     - O CBZ já é sem perda pelo P3.
+     - Ao ligar, a página na tela é refeita em PNG, e a versão JPEG fica à vista até a nova chegar. Ao desligar, as páginas em PNG ficam como estão.
+     - Nos 48 MB do iOS cabem ~20 páginas nítidas em PNG, e o plano segura 6–8.
+   - **Achado do iPad:** o PDF.js leva ~1 s por página da Invincible no aparelho, 6,5× o Mac; no lab, a 1ª nítida saiu em 7,3 s. As emulações do Playwright subestimam bastante o iPad. Isso pesa a favor do **P4** (decodificar uma vez a página de HQ) e confirma o ganho do **P6** no zoom.
 
 5. **P6: manter a página visível decodificada durante o zoom.** Feito.
    - Com zoom, as páginas do spread na tela ficam analisadas e decodificadas no PDF.js, e cada tile novo só pinta. Ao sair do zoom, virar ou fechar, elas são liberadas.
@@ -378,6 +394,7 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 17. Temas alternativos: **Cordel**, HQ, mangá.
 18. Exportar flipbook autônomo (.zip).
     18b. **Opção "qualidade máxima (sem perda)"**, desligada por padrão; o padrão continua o de hoje (JPEG). Pedida pelo Artur em 20/10/2026, depois da comparação de qualidade com a Invincible: a diferença é pequena, mas visível nos traços.
+    - **Feito em 20/10/2026, em PNG** (medição do iPad e decisão em A2, item 4). O texto abaixo é o estudo que levou a ela.
     - **Como fazer sem perda:** não recomprimir. JPEG 1,0 ainda perde um pouco e ocupa 2–3× mais no cache. A saída é o **P2** do `estudo-mihon.md` §6.5: a janela quente (spread visível + vizinhos) fica como bitmap descomprimido, exibido num canvas `bitmaprenderer`, e só o que sai da janela é comprimido. No CBZ, o **P3**: o arquivo original é o cache, sem nenhuma recompressão.
     - **Memória:** uma página decodificada custa o mesmo num `<img>` ou num bitmap (largura × altura × 4 bytes: na Invincible no iPad, 8,7 MB por página do spread deitado e 19,1 MB em pé, medido no P0). O risco é segurar páginas demais, não o formato. As defesas:
       - orçamento explícito de pixels descomprimidos (no iPad, cerca de 3 spreads), com despejo por distância (**P5**) e as páginas da virada presas;
