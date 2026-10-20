@@ -1,6 +1,7 @@
 import { messages, type Locale, type MessageKey } from './messages';
 
 export type { Locale, MessageKey };
+export type MessageParams = Record<string, string | number>;
 
 export function detectLocale(languages: readonly string[] = navigator.languages): Locale {
   for (const lang of languages) {
@@ -10,6 +11,11 @@ export function detectLocale(languages: readonly string[] = navigator.languages)
   return 'pt-BR';
 }
 
-export function translate(locale: Locale, key: MessageKey): string {
-  return messages[locale][key];
+/** Looks up a message and fills `{name}` placeholders. */
+export function translate(locale: Locale, key: MessageKey, params?: MessageParams): string {
+  const template: string = messages[locale][key];
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in params ? String(params[name]) : match,
+  );
 }

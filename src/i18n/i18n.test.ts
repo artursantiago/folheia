@@ -16,3 +16,12 @@ describe('i18n', () => {
     expect(translate('en', 'app.tagline')).toBe('Book reader · PDF and CBZ');
   });
 });
+
+describe('translate with params', () => {
+  it('fills placeholders and keeps unknown ones', () => {
+    expect(translate('pt-BR', 'reader.pageCounter', { current: 12, total: 51 })).toBe(
+      'Página 12 de 51',
+    );
+    expect(translate('en', 'reader.pageCounter', { current: 3 })).toBe('Page 3 of {total}');
+  });
+});
