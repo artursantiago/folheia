@@ -7,7 +7,7 @@
 ## Ordem sugerida
 
 1. ✅ **D3, só o leitor (L1–L12), decidida em 20/10/2026:** decide o que entra no pedido do protótipo v2 e no motor da onda 1.
-2. **D1 + D5** (✅ D1 decidida em 20/10/2026): o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
+2. ✅ **D1 + D5, decididas em 20/10/2026:** o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
 3. **Protótipo v2 e fundações, em paralelo:** rascunhos em `prototipo-v2-pedido.md` e `spec-fundacoes.md`.
 4. **D2 + F1–F8:** as fontes dependem da regra 2, então é uma conversa só. Não bloqueia nada até a onda 2 (capas) e a onda 3 (fontes).
 
@@ -94,9 +94,9 @@ Estado em 20/10/2026:
 - **Não traz dependências novas.**
 - **O roteiro aponta para E4, E4.1 e E4.4**, que só existem no branch. Hoje essas referências estão quebradas na `main`.
 
-**Recomendação: mesclar em partes, mas trazendo arquivos, não commits.**
+**Decidido em 20/10/2026: mesclar em partes, trazendo arquivos, não commits (opção A).** Os três passos abaixo foram aprovados como estão.
 
-1. **Agora, só documentação:** trazer para a `main` o `estudo-extensao.md`, a seção E4 do `plano-mvp.md` e a linha do `estudo-mihon.md`. Isso conserta as referências do roteiro e não mexe em nenhuma regra.
+1. **Agora, só documentação** (✅ feito em 569482a): trazer para a `main` o `estudo-extensao.md`, a seção E4 do `plano-mvp.md` e a linha do `estudo-mihon.md`. Isso conserta as referências do roteiro e não mexe em nenhuma regra.
 2. **Nas fundações, a `Network` refeita:**
    - **O que vem do PR:** `src/platform/network.ts`, `bridge.ts` e o teste.
    - **O protocolo da ponte** vai para um lugar neutro (por exemplo, `src/platform/bridge/protocol.ts`), para o `src/` não importar de `extension/`.
@@ -112,7 +112,7 @@ Estado em 20/10/2026:
    - os e2e `bridge*`;
    - os painéis `LabBridge*` do `#/lab`.
 
-   O PR continua em rascunho, renomeado para "extensão".
+   ✅ O PR continua em rascunho, renomeado para "feat: network bridge extension (waits for Catalogs and D2)", com um comentário explicando a decisão. O branch só será atualizado quando a extensão voltar.
 
 **Por que não mesclar a `Network` como está:** não quebraria nada, porque só o `#/lab` a usa. Mas fixaria o formato da interface antes de desenhar abrir, guardar e buscar juntos, e traria junto a dependência de `extension/`.
 
@@ -122,7 +122,7 @@ Estado em 20/10/2026:
 - **A ponte no `?file=` antes da D2:** usá-la como alternativa automática ali amplia em silêncio o que a regra 2 cobre.
 - **Antes de assinar no AMO:** é preciso fechar o endereço fixo do site na extensão e o `gecko.id`.
 
-**Limpeza:** o worktree da extensão tem um `node_modules` inteiro. Depois que os documentos chegarem à `main`, dá para remover o worktree e guardar só o branch.
+**Limpeza** (✅ 20/10/2026): a sessão da extensão já estava arquivada, e a pasta do worktree dela foi reaproveitada por outra sessão. O branch continua guardado, local e no GitHub, em `ad7ab20`. Quando a extensão voltar, uma sessão nova parte dele e do `estudo-extensao.md`.
 
 **Perguntas abertas no estudo da extensão, que vão para a D2:**
 

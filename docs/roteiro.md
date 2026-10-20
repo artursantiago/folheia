@@ -52,13 +52,13 @@ Os pontos que decidem a ordem:
 
 **Pré-propostas (20/10/2026):** D1, D2, D3 e D5 já têm recomendação em `pauta-decisoes.md`, para o Artur confirmar ou mudar. Também há rascunhos da spec das fundações (`spec-fundacoes.md`) e do pedido do protótipo v2 (`prototipo-v2-pedido.md`).
 
-| #   | Decisão                                                                                                                                     | Destrava                                    |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| D1  | ✅ **Revisão conjunta dos estudos** (o "quando começar" da biblioteca). Decidida em 20/10/2026: começar as fundações já                     | Etapa 1 da biblioteca                       |
-| D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                                                 | Frente 4, a parte de capas da etapa 2, G20  |
-| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8. ✅ L1–L12 em 20/10/2026; F1–F8 vão com a D2            | A frente 5 e o desenho da frente 4          |
-| D4  | ✅ **Direção do ícone e do tom dos textos** (início da frente 2). Decidida em 20/10/2026: monograma F e os textos de `identidade-visual.md` | Protótipo v2, README, página da organização |
-| D5  | **O PR #1:** mesclar em partes (a `Network` nas fundações, a extensão depois) ou fechar e refazer a partir do estudo                        | Frente 4                                    |
+| #   | Decisão                                                                                                                                                                                                                        | Destrava                                    |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| D1  | ✅ **Revisão conjunta dos estudos** (o "quando começar" da biblioteca). Decidida em 20/10/2026: começar as fundações já                                                                                                        | Etapa 1 da biblioteca                       |
+| D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                                                                                                                                    | Frente 4, a parte de capas da etapa 2, G20  |
+| D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8. ✅ L1–L12 em 20/10/2026; F1–F8 vão com a D2                                                                                               | A frente 5 e o desenho da frente 4          |
+| D4  | ✅ **Direção do ícone e do tom dos textos** (início da frente 2). Decidida em 20/10/2026: monograma F e os textos de `identidade-visual.md`                                                                                    | Protótipo v2, README, página da organização |
+| D5  | ✅ **O PR #1** (decidida em 20/10/2026: a `Network` refeita nas fundações, a extensão no branch até Catálogos e a D2): mesclar em partes (a `Network` nas fundações, a extensão depois) ou fechar e refazer a partir do estudo | Frente 4                                    |
 
 ## 4. A ordem proposta
 

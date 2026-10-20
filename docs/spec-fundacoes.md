@@ -68,7 +68,7 @@ Todo caminho de abertura termina em `openBook` (`session.ts:43`). É ali que ent
 
 - **Abrir arquivo:** o seletor, o soltar e o `launchQueue` saem da `HomeScreen` e do `pwa.ts` e vão para uma interface só.
 - **Guardar arquivo:** o `FileStore` (§2.4).
-- **Buscar:** a `Network` do PR #1, refeita como na D5 (`pauta-decisoes.md`), com leitura por intervalos. O `src/sources/http.ts` passa a usá-la.
+- **Buscar:** a `Network` do PR #1, refeita como decidido na D5 (`pauta-decisoes.md`; opção A), com leitura por intervalos. As peças estão no branch `claude/extension-bridge-poc-6ec4b9`: `src/platform/network.ts`, `bridge.ts`, `network.test.ts` e `extension/src/protocol.ts`, que vai para `src/platform/bridge/protocol.ts`. O `src/sources/http.ts` passa a usá-la.
 
 ### 2.7 Cortes de tela
 
