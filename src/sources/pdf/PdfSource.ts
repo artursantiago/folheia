@@ -148,6 +148,10 @@ export class PdfSource implements PageSource {
     return this.sizes[index] ?? this.fallbackSize;
   }
 
+  knownPageSize(index: number): PageSize | undefined {
+    return this.sizes[index];
+  }
+
   onSizesChanged(listener: () => void) {
     this.sizeListeners.add(listener);
     return () => this.sizeListeners.delete(listener);

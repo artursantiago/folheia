@@ -60,6 +60,8 @@ export interface PageSource {
   readonly pageCount: number;
   /** Best known size; may be refined after the page is first loaded. */
   getPageSize(index: number): PageSize;
+  /** Size only if actually measured (not a fallback guess). */
+  knownPageSize(index: number): PageSize | undefined;
   /** Renders the page (or a region of it) into a canvas the caller owns and must release. */
   render(index: number, target: RenderTarget, signal: AbortSignal): Promise<HTMLCanvasElement>;
   getMetadata(): Promise<BookMetadata>;

@@ -20,6 +20,7 @@ function fakeSource(pageCount = 10) {
     kind: 'pdf',
     pageCount,
     getPageSize: () => ({ width: 600, height: 800 }),
+    knownPageSize: () => ({ width: 600, height: 800 }),
     render: async (page, target) => {
       calls.push({ page, target });
       return { width: target.width, height: target.height } as HTMLCanvasElement;
