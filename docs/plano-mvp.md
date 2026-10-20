@@ -261,6 +261,17 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
 16. Efeito **3D** (three.js, carregado sob demanda).
 17. Temas alternativos: **Cordel**, HQ, mangá.
 18. Exportar flipbook autônomo (.zip).
+    18b. **Opção "qualidade máxima (sem perda)"**, desligada por padrão; o padrão continua o de hoje (JPEG/WebP). Pedida pelo Artur em 20/10/2026, depois da comparação de qualidade com a Invincible: a diferença é pequena, mas visível nos traços.
+    - **Como fazer sem perda:** não recomprimir. JPEG 1,0 ainda perde um pouco e ocupa 2–3× mais no cache. A saída é o **P2** do `estudo-mihon.md` §6.5: a janela quente (spread visível + vizinhos) fica como bitmap descomprimido, exibido num canvas `bitmaprenderer`, e só o que sai da janela é comprimido. No CBZ, o **P3**: o arquivo original é o cache, sem nenhuma recompressão.
+    - **Memória:** uma página decodificada custa o mesmo num `<img>` ou num bitmap (largura × altura × 4 bytes, ~6 MB numa página da Invincible no iPad). O risco é segurar páginas demais, não o formato. As defesas:
+      - orçamento explícito de pixels descomprimidos (no iPad, cerca de 3 spreads), com despejo por distância (**P5**) e as páginas da virada presas;
+      - durante o zoom, só o spread visível (já é assim);
+      - zerar o canvas de toda página que sai;
+      - se o navegador recusar um canvas (o `getContext` volta nulo no iOS quando o teto de memória de canvas estoura), voltar sozinho para o modo comprimido e avisar.
+    - **Como os outros fazem:**
+      - o **Mihon** decodifica direto do arquivo, já reduzido para a tela, sem recomprimir. Mantém 1 página decodificada de cada lado e despeja a mais distante;
+      - o **BookReader** recebe do servidor imagens prontas em escalas fixas e não despeja nada: deixa a memória por conta do navegador, o que não serve para o iPad (`estudo-referencias.md` §12.2).
+    - **Depende de:** P0 (medir no `#/lab`) e da triagem do Artur dos candidatos de desempenho do Mihon (§8 E3). P2, P3 e P5 também melhoram o modo padrão.
 
 ### F. App nativo (mais para frente)
 
