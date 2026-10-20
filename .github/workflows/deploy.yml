@@ -104,7 +104,10 @@ jobs:
         run: FOLHEIA_CHANNEL=next npx vite build --outDir site/next
       - name: Put the latest release at the root
         run: |
-          if gh release download --repo "$GITHUB_REPOSITORY" --pattern 'folheia-site-*.tar.gz' --output stable.tar.gz; then
+          # On a tag, take that release by name: right after it is published,
+          # "latest" can still point at the previous one (seen with v0.2.0).
+          tag=$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo "$GITHUB_REF_NAME" || true)
+          if gh release download $tag --repo "$GITHUB_REPOSITORY" --pattern 'folheia-site-*.tar.gz' --output stable.tar.gz; then
             tar -xzf stable.tar.gz -C site
           else
             echo "No release yet: building main as the stable site."
