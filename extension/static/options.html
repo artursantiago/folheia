@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="name"></title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      body {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 1.5rem 1rem;
+      }
+      ul {
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-height: 44px;
+        border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+      }
+      code {
+        word-break: break-all;
+      }
+      button,
+      input {
+        min-height: 44px;
+        font: inherit;
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: end;
+      }
+      label {
+        display: grid;
+        flex: 1 1 16rem;
+      }
+      #request {
+        padding: 1rem;
+        border: 2px solid;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 data-i18n="optionsTitle"></h1>
+    <p data-i18n="optionsIntro"></p>
+
+    <section id="request" hidden>
+      <h2 data-i18n="requestTitle"></h2>
+      <ul id="requested"></ul>
+      <button id="allow" type="button" data-i18n="allow"></button>
+    </section>
+
+    <h2 data-i18n="approvedTitle"></h2>
+    <ul id="approved"></ul>
+
+    <form id="add">
+      <label>
+        <span data-i18n="addLabel"></span>
+        <input id="site" name="site" autocomplete="off" spellcheck="false" />
+      </label>
+      <button type="submit" data-i18n="add"></button>
+    </form>
+    <p id="status" role="status"></p>
+
+    <script src="options.js"></script>
+  </body>
+</html>

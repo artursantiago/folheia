@@ -1,0 +1,21 @@
+{
+  "name": { "message": "Folheia Bridge" },
+  "description": {
+    "message": "Lets the Folheia reader fetch from sites you approve, without CORS limits. Never sends your cookies."
+  },
+  "optionsTitle": { "message": "Sites the Folheia bridge can reach" },
+  "optionsIntro": {
+    "message": "Only Folheia pages can use this bridge, only for the sites below, and never with your cookies."
+  },
+  "requestTitle": { "message": "Folheia asked to reach:" },
+  "allow": { "message": "Allow" },
+  "approvedTitle": { "message": "Approved sites" },
+  "none": { "message": "None yet." },
+  "remove": { "message": "Remove" },
+  "addLabel": { "message": "Add a site (e.g. api.mangadex.org or *.archive.org)" },
+  "add": { "message": "Add" },
+  "invalid": { "message": "That is not a valid site." },
+  "granted": { "message": "Access granted." },
+  "denied": { "message": "The browser did not grant access." },
+  "cannotRemove": { "message": "This one comes with the extension and cannot be removed here." }
+}

@@ -1,0 +1,21 @@
+{
+  "name": { "message": "Ponte do Folheia" },
+  "description": {
+    "message": "Deixa o leitor Folheia buscar nos sites que você aprovar, sem as limitações de CORS. Nunca envia seus cookies."
+  },
+  "optionsTitle": { "message": "Sites que a ponte do Folheia pode acessar" },
+  "optionsIntro": {
+    "message": "Só páginas do Folheia usam esta ponte, só para os sites abaixo, e nunca com os seus cookies."
+  },
+  "requestTitle": { "message": "O Folheia pediu acesso a:" },
+  "allow": { "message": "Permitir" },
+  "approvedTitle": { "message": "Sites aprovados" },
+  "none": { "message": "Nenhum ainda." },
+  "remove": { "message": "Remover" },
+  "addLabel": { "message": "Adicionar um site (ex.: api.mangadex.org ou *.archive.org)" },
+  "add": { "message": "Adicionar" },
+  "invalid": { "message": "Endereço inválido." },
+  "granted": { "message": "Acesso concedido." },
+  "denied": { "message": "O navegador não concedeu o acesso." },
+  "cannotRemove": { "message": "Este vem com a extensão e não pode ser removido aqui." }
+}

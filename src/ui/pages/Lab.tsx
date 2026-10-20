@@ -6,6 +6,7 @@ import { PageRenderer, refKey, type PageRef } from '../../render/PageRenderer';
 import { openPdf, type PdfSource } from '../../sources/pdf/PdfSource';
 import { Button, IconButton, Overline, Switch, TextField } from '../components';
 import styles from './Lab.module.css';
+import { LabBridge } from './LabBridge';
 import { measureP0, summarizeP0 } from './labP0';
 
 type Loaded = { source: PdfSource; renderer: PageRenderer; openedIn: number };
@@ -230,6 +231,8 @@ export default function Lab() {
           </section>
         </>
       )}
+
+      <LabBridge />
     </main>
   );
 }

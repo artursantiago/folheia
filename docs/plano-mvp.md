@@ -336,10 +336,37 @@ Os candidatos estão em **`estudo-mihon.md` §8**, aguardando a triagem do Artur
 - leitor: L1–L12;
 - desempenho: P0–P11. **P0 medido em 20/10/2026**, e a ordem dos próximos passos está na seção A2;
 - interface e biblioteca: I0–I16. **Triados em 20/10/2026** e virados na seção C2;
-- fontes e catálogos: F1–F8;
+- fontes e catálogos: F1–F8. **A rede (F6/F7) foi estudada em 20/10/2026**: ver a seção E4 e o `estudo-extensao.md`;
 - plataforma e repositórios: O1–O2.
 
 O que for aprovado entra nas seções certas deste backlog.
+
+### E4. Ponte de rede e fontes (estudo de 20/10/2026)
+
+Estudo e prova de conceito em **`estudo-extensao.md`**, com o PR em rascunho na branch `claude/extension-bridge-poc-6ec4b9`. A extensão e o userscript ficam em `extension/`; a interface `Network`, em `src/platform/`; os testes, no `#/lab`.
+
+**O que já se sabe:**
+
+- Chrome e Firefox, com a nossa extensão: leem as fontes e põem `Referer`/`User-Agent`, inclusive nas `<img>`. 9 de 12 fontes famosas do Mihon funcionam.
+- iPad (Safari): funciona pelo app Userscripts (grátis) ou por uma extensão Safari (precisa do Xcode), mas o Safari **nunca** deixa definir o `Referer`. As fontes que exigem `Referer` nas imagens não funcionam no iPad.
+- Capas em qualquer ambiente: um catálogo de metadados (AniList, MangaDex) e a capa tipográfica como reserva.
+
+**Próximos passos, em ordem (cada um sabatinado antes):**
+
+1. **Decidir a regra 2 do `CLAUDE.md`.** A sugestão de texto está no §11 do estudo, e isso libera os itens seguintes.
+2. **Revisar e mesclar o PR da POC**, ou reaproveitar as peças: protocolo, `Network` e os testes de ponta a ponta no Chrome e no Firefox.
+3. **Interface `CatalogSource` + cliente OPDS** (F1/F2 do `estudo-mihon.md` §8.4) usando a `Network`. É a parte que funciona igual em todo lugar.
+4. **Capas por catálogo de metadados** (AniList), com a capa tipográfica como reserva. Liga com o item 6 (capas na biblioteca).
+5. **Extensão para o Firefox**, assinada como unlisted no AMO, e teste no Firefox de verdade e no Firefox Android.
+6. **Userscript no iPad Air real** (passo a passo no §10.4 do estudo).
+7. **Limite de requisições por site e cache** na camada de fontes, para não bloquearem o IP de casa.
+
+**Na migração do repositório para uma organização:** o endereço do site está fixo na extensão. Mudam juntos:
+
+- `FOLHEIA_MATCHES` em `extension/src/patterns.ts` e `isFolheiaPage()` em `extension/src/protocol.ts`;
+- o `@match` e o `@namespace` do userscript (gerados por `scripts/build-extension.mjs`);
+- o `gecko.id` do Firefox, que é melhor decidir antes de assinar no AMO, porque depois não muda;
+- os testes de ponta a ponta que usam `artursantiago.github.io/folheia/`.
 
 ### G. Se houver demanda
 
