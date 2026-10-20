@@ -174,6 +174,24 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
      | Chromium     | 1190 ms   | 2008 ms   |
      | WebKit       | 886 ms    | 1620 ms   |
      | iPad emulado | 858 ms    | 1574 ms   |
+
+   - _Linha de base da virada (20/10/2026)_, mesma HQ, teste `e2e/flip.spec.ts`. Ele usa o leitor de verdade e vira páginas pelo teclado em dois ritmos:
+     - **leitura:** 12 viradas, uma a cada 1,8 s;
+     - **apressado:** 10 viradas, uma a cada 0,45 s.
+
+     A cada quadro, o teste anota o que cada página mostra (nítida, prévia ou nada). "Fim" é o estado das páginas quando a virada termina. "Vazio na virada" conta os quadros em que alguma página em movimento estava sem imagem.
+
+     | Navegador    | Ritmo     | Fim: nítida / prévia / nada | Até ficar nítida (mediana · p90) | Vazio na virada |
+     | ------------ | --------- | --------------------------- | -------------------------------- | --------------- |
+     | Chromium     | leitura   | 6 / 4 / 2                   | 300 · 967 ms                     | 108 de 457      |
+     | Chromium     | apressado | 0 / 2 / 8                   | 1383 ms (só a última)            | 199 de 312      |
+     | WebKit       | leitura   | 12 / 0 / 0                  | 0 ms                             | 0 de 383        |
+     | WebKit       | apressado | 0 / 2 / 8                   | 1200 ms                          | 168 de 263      |
+     | iPad emulado | leitura   | 12 / 0 / 0                  | 0 ms                             | 0 de 383        |
+     | iPad emulado | apressado | 0 / 3 / 7                   | 701 ms                           | 148 de 259      |
+     - O WebKit headless não mostra o quadro vazio de decodificação que aparece no iPad real: lá, `img.complete` já é verdadeiro antes da pintura. O Chromium mostra.
+     - A fluidez não dá para comparar no WebKit headless, que já fica em ~20 ms por quadro parado.
+
 4. **Ponta e sombra aparecem secas.** A ponta levantada no hover e as sombras da dobra surgem de uma vez, sem transição.
    - _Ideia:_ animar a ponta até a posição de "espiada" com easing e fazer as sombras crescerem conforme o tamanho da dobra.
 
