@@ -148,68 +148,83 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 
 > Reescrito em 20/10/2026 depois do primeiro teste do Artur no iPad Air M1 (PWA instalado) e no navegador. Cada item é para ser **sabatinado numa sessão própria** antes de implementar. As notas técnicas são pistas do que provavelmente causa cada problema, não decisões.
 
-### A. Correções vistas no teste (prioridade alta)
+### A. Correções vistas no teste (feito em 20/10/2026)
 
-1. **Barra de status do iPad por cima do app (PWA).** No modo instalado, a barra do sistema (hora, bateria) fica sobre o conteúdo, com blur.
-   - _Pista:_ o `index.html` usa `apple-mobile-web-app-status-bar-style: black-translucent` com `viewport-fit=cover`, e o topo das telas (início e leitor) não reserva `env(safe-area-inset-top)`.
-   - _Decidir:_ reservar o espaço (padding no topo) ou trocar o estilo da barra para `default`.
-2. **"Piscada" quando a página fica nítida.** Ao virar, aparece a imagem, e depois ela pisca quando a versão melhor chega.
-   - _Pista:_ a troca de prévia para nítida muda o `src` da mesma `<img>`, e o navegador mostra um quadro vazio enquanto decodifica.
-   - _Ideia:_ decodificar a nova imagem fora da tela (`img.decode()`) e fazer um crossfade curto por cima da prévia.
-   - _Referência:_ o leitor do Internet Archive deixa o spread vizinho já carregado no DOM, invisível, e por isso não pisca (ver `estudo-referencias.md` §11).
-3. **Lentidão e "folha de caderno" ao virar.** A sequência visível é: pauta de caderno (o placeholder de carregamento) → texto em baixa qualidade → nítida, depois de um tempo.
-   - _Pistas:_ o placeholder com pautas (`.fx-page[data-loading]`) parece conteúdo errado. Hoje só 1 spread à frente é preparado em nitidez. Cada página nítida passa por canvas → WebP/JPEG → `<img>`, e esse ciclo de codificar/decodificar custa caro no iPad.
-   - _Ideias:_
-     - preparar 2 spreads à frente;
-     - manter prévias de ±6 páginas;
-     - mostrar a página visível direto como `ImageBitmap`;
-     - codificar em um worker (`OffscreenCanvas`);
-     - trocar o placeholder por papel liso.
-   - _Ideia (Internet Archive):_ versões nítidas em **degraus de escala fixos**, em vez do tamanho exato de tela, para reaproveitar mais e re-renderizar menos.
-   - _Medir antes e depois:_ no iPad real, com o Web Inspector.
-   - _Linha de base (20/10/2026)_, com `fixtures/personal/invincible-vol-1.pdf` (HQ real, 100 MB) no teste `e2e/engine.spec.ts` (`FOLHEIA_FIXTURE=...`). A HQ real é 2 a 3 vezes mais lenta que o PDF sintético.
+Sabatinadas e implementadas na mesma sessão. O que foi decidido:
 
-     | Navegador    | 1ª prévia | 1ª nítida |
-     | ------------ | --------- | --------- |
-     | Chromium     | 1190 ms   | 2008 ms   |
-     | WebKit       | 886 ms    | 1620 ms   |
-     | iPad emulado | 858 ms    | 1574 ms   |
+1. **Barra de status do iPad por cima do app (PWA).** Feito.
+   - **iOS:** o estilo da barra passou de `black-translucent` para `default`. Com `black-translucent`, o texto da barra é sempre branco e some no tema claro.
+   - **Android:** a barra pega a cor do `theme-color`, que já acompanha o tema escolhido no app (claro ou escuro forçado).
+   - **Safe areas:** início, telas de status e gaveta do índice respeitam as safe areas (o leitor já respeitava). Continua `viewport-fit=cover`, por causa do notch do iPhone e da barra de gestos do Android.
+   - Com o tema forçado diferente do sistema, a barra do iOS segue o sistema. Não há como controlar.
+2. **"Piscada" ao virar e ao ficar nítida.** Feito.
+   - **Causa principal:** o Flip2D recriava todos os `<img>` no começo e no fim de cada virada, e cada imagem nova decodificava de novo, mostrando um quadro vazio.
+   - **Agora:** as imagens são decodificadas fora da tela (`img.decode()`) e o **mesmo elemento** passa de um nó para outro (página parada → virando → parada).
+   - **Troca de versão:** uma imagem melhor só substitui a atual depois de decodificada.
+   - **Vizinhos:** o spread anterior e os dois seguintes ficam decodificados de antemão (a lição do Internet Archive).
+3. **Lentidão e "folha de caderno" ao virar.** Feito.
+   - **Placeholder:** papel liso; o número da página aparece em fade só se a espera passar de 300 ms (`--delay-waiting`).
+   - **Janela:** nítidas no spread atual, nos **dois** seguintes e no anterior; prévias de ±6 páginas.
+   - **Prévia derivada da nítida:** numa HQ, a prévia custa quase o mesmo que a nítida (~400 ms cada), porque o caro é o PDF.js decodificar a imagem da página, não o tamanho da saída. O renderer mede o custo das duas. Quando a prévia não compensa, cada página da janela nítida é renderizada **uma vez**, e a prévia sai da própria nítida, reduzida (~5 ms). Em PDFs de texto continua prévia primeiro.
+   - **Degraus de escala:** as nítidas usam degraus fixos (×1,25, constante `SCALE_STEP`) com a regra "nunca piorar". Uma versão igual ou maior que a necessária é reaproveitada, e uma menor fica na tela até a nova chegar. Comparado com potências de 2 (como no Internet Archive), o ×2 não economizou nenhuma renderização e usou até ~80% mais pixels:
 
-   - _Linha de base da virada (20/10/2026)_, mesma HQ, teste `e2e/flip.spec.ts`. Ele usa o leitor de verdade e vira páginas pelo teclado em dois ritmos:
+     | Situação (iPad horizontal emulado, DPR 2) | ×1,25             | ×2                |
+     | ----------------------------------------- | ----------------- | ----------------- |
+     | Abrir                                     | 6 render., 8,8 MP | 6 render., 9,7 MP |
+     | Entrar no imersivo                        | 2, 2,9 MP         | 2, 3,2 MP         |
+     | Sair do imersivo                          | 0                 | 0                 |
+     | Girar para vertical                       | 4, 14,3 MP        | 4, 25,8 MP        |
+
+   - **Folha que vira:** saiu o `filter: drop-shadow` (recalculado a cada quadro).
+   - **Codificação:** custa 10–40 ms por página no Chromium, então `ImageBitmap` e o worker de codificação (opções b e c da sabatina) **ficaram de fora**. Só voltam se a medição no iPad real mostrar que a codificação pesa.
+   - **Linha de base de abertura (20/10/2026)**, com `fixtures/personal/invincible-vol-1.pdf` (HQ real, 100 MB) no `e2e/engine.spec.ts` (`FOLHEIA_FIXTURE=...`). A HQ real é 2 a 3 vezes mais lenta que o PDF sintético.
+
+     | Navegador    | 1ª prévia (antes → depois) | 1ª nítida (antes → depois) |
+     | ------------ | -------------------------- | -------------------------- |
+     | Chromium     | 1190 → 1041 ms             | 2008 → 1821 ms             |
+     | WebKit       | 886 → 842 ms               | 1620 → 1548 ms             |
+     | iPad emulado | 858 → 864 ms               | 1574 → 1586 ms             |
+
+   - **Métrica de virada**, mesma HQ, `e2e/flip.spec.ts`. Ela usa o leitor de verdade e vira páginas pelo teclado em dois ritmos:
      - **leitura:** 12 viradas, uma a cada 1,8 s;
      - **apressado:** 10 viradas, uma a cada 0,45 s.
 
-     A cada quadro, o teste anota o que cada página mostra (nítida, prévia ou nada). "Fim" é o estado das páginas quando a virada termina. "Vazio na virada" conta os quadros em que alguma página em movimento estava sem imagem.
+     A cada quadro, o teste anota o que cada página mostra (nítida, prévia ou nada). "Fim" é o estado quando a virada termina. "Vazio na virada" conta os quadros em que alguma página em movimento estava sem imagem.
 
-     | Navegador    | Ritmo     | Fim: nítida / prévia / nada | Até ficar nítida (mediana · p90) | Vazio na virada |
-     | ------------ | --------- | --------------------------- | -------------------------------- | --------------- |
-     | Chromium     | leitura   | 6 / 4 / 2                   | 300 · 967 ms                     | 108 de 457      |
-     | Chromium     | apressado | 0 / 2 / 8                   | 1383 ms (só a última)            | 199 de 312      |
-     | WebKit       | leitura   | 12 / 0 / 0                  | 0 ms                             | 0 de 383        |
-     | WebKit       | apressado | 0 / 2 / 8                   | 1200 ms                          | 168 de 263      |
-     | iPad emulado | leitura   | 12 / 0 / 0                  | 0 ms                             | 0 de 383        |
-     | iPad emulado | apressado | 0 / 3 / 7                   | 701 ms                           | 148 de 259      |
-     - O WebKit headless não mostra o quadro vazio de decodificação que aparece no iPad real: lá, `img.complete` já é verdadeiro antes da pintura. O Chromium mostra.
+     | Navegador    | Ritmo     | Fim: nítida / prévia / nada | Até ficar nítida (mediana) | Vazio na virada        |
+     | ------------ | --------- | --------------------------- | -------------------------- | ---------------------- |
+     | Chromium     | leitura   | 6/4/2 → **12/0/0**          | 300 → **0 ms**             | 108 → **0** (de ~457)  |
+     | Chromium     | apressado | 0/2/8 → 1/1/8               | 1383 → 900 ms (a última)   | 199 → 198 (de 312)     |
+     | WebKit       | leitura   | 12/0/0 → 12/0/0             | 0 → 0 ms                   | 0 → 0                  |
+     | WebKit       | apressado | 0/2/8 → 1/1/8               | 1200 → 799 ms              | 168 → 168 (de 263)     |
+     | iPad emulado | leitura   | 12/0/0 → 12/0/0             | 0 → 0 ms                   | 0 → 0                  |
+     | iPad emulado | apressado | 0/3/7 → **3/4/3**           | 701 → **0 ms**             | 148 → **44** (de ~255) |
+     - O WebKit headless não mostra o quadro vazio de decodificação que aparece no iPad real: lá, `img.complete` já é verdadeiro antes da pintura. O Chromium mostra, e foi onde a piscada sumiu.
      - A fluidez não dá para comparar no WebKit headless, que já fica em ~20 ms por quadro parado.
+     - **Apressado em página dupla:** fica limitado pela regra de pausar a fila durante a virada. Com viradas emendadas, quase não sobra tempo de renderizar, e ~400 ms por página não cabem.
+4. **Ponta e sombra secas.** Feito.
+   - A ponta sobe até a espiada em 180 ms com desaceleração e desce do mesmo jeito.
+   - **No toque**, um dedo perto do canto levanta a ponta do mesmo modo. Arrastar ou tocar continua dali, sem voltar a ficar plana.
+   - As sombras da dobra crescem com a dobra e voltam a zero quando a folha assenta.
+   - A espiada na capa sozinha não desliza mais o livro inteiro para o lado.
 
-4. **Ponta e sombra aparecem secas.** A ponta levantada no hover e as sombras da dobra surgem de uma vez, sem transição.
-   - _Ideia:_ animar a ponta até a posição de "espiada" com easing e fazer as sombras crescerem conforme o tamanho da dobra.
+### B. Leitura imersiva (feito em 20/10/2026)
 
-### B. Leitura imersiva (prioridade alta)
+5. **Modo imersivo, "só o livro".** Feito.
+   - **Um botão só**, no lugar do de tela cheia. Ele tira o cabeçalho e as margens do palco e pede a Fullscreen API onde existe (iPad, Android, desktop). No iPhone, que não tem a API para páginas, fica só o layout. Sair da tela cheia pelo sistema também sai do modo.
+   - **Lembrado** entre livros. Na reabertura não volta a tela cheia, porque o navegador exige um gesto.
+   - **Barra:** a bolinha flutuante foi descartada, porque ficaria por cima do livro. No lugar dela, uma **faixa embaixo** com: sair, anterior, contador, **slider de páginas**, próxima, zoom (telas largas), índice e ajustes.
+     - **Fixa** (padrão): reserva o espaço dela.
+     - **"Some sozinha"** (opção nos Ajustes): o livro ocupa 100% e a barra flutua por cima. Some depois de 3 s; um toque no meio da página (que espera 250 ms para não confundir com o toque duplo do zoom) ou o mouse perto da borda de baixo traz de volta.
+   - **Slider:** enquanto arrasta, só o rótulo muda; o salto acontece ao soltar. O marcador é uma fita de marcar página, e o slider inverte em livros da direita para a esquerda.
+   - **Teclado:** `F` alterna, `Esc` sai. A ficha do livro fica nos Ajustes enquanto o cabeçalho está escondido.
+   - Medido: num iPad na horizontal (1180 × 820), o spread de HQ passa de ~650 para ~750 px de altura (+15%).
 
-5. **Modo "só o livro", em todos os dispositivos.** Além da tela cheia atual, um modo em que o livro ocupa a tela inteira: sem título, sem barra e sem as margens do palco. Num iPad na horizontal ou num notebook, as duas páginas usam todo o espaço e não é preciso ficar dando zoom.
-   - Os controles saem de um **botão flutuante** (uma "bolinha"), que pode ser **arrastado** para um canto e abre todas as opções.
-   - **Referência que o Artur mostrou:** o leitor do Internet Archive em tela cheia; as notas estão em `estudo-referencias.md` §11:
-     - o spread ocupa quase toda a tela, com só uma margem fina;
-     - uma faixa estreita embaixo, escura e discreta, traz um slider de páginas ("17/1117"), anterior/próxima, modos de página (única, dupla, grade), áudio, zoom e sair da tela cheia;
-     - uma coluna fina de ícones fica na lateral esquerda (biblioteca, páginas, busca, mais).
-     - O que importa da referência é a **proporção**: o livro como protagonista absoluto e os controles finos e escuros encostados nas bordas. Não é para copiar o layout; a solução tem que sair na nossa identidade (Ex-libris), possivelmente combinando com a bolinha arrastável.
-     - O **slider de páginas** é uma boa ideia a considerar para livros longos.
-   - _Decidir:_
-     - se é um ajuste persistente ou um botão;
-     - como sair do modo;
-     - se a bolinha some sozinha;
-     - como combina com a API de tela cheia e com o PWA instalado.
+### B2. Próximos passos da leitura imersiva
+
+- **Controles na sobra lateral.** Depois de encaixar o livro, colocar os controles onde sobra espaço. Numa HQ em página dupla com o iPad na horizontal sobram ~57 pt de cada lado, e um trilho vertical ali não tira nada do livro. Quando não houver sobra lateral, a barra volta para baixo. Ficou para uma próxima fase.
+- **Slider também na barra normal**, junto com uma revisão da barra do modo normal.
+- Marcadores de capítulos (sumário do PDF) e de resultados de busca no trilho do slider (ver `estudo-referencias.md` §12.4).
 
 ### C. Tela inicial (prioridade média)
 

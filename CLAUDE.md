@@ -28,7 +28,8 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
 4. **Performance is a requirement** (iPad with big image-heavy files):
    - Render only the current spread + 1–2 neighbors; evict the rest (LRU with a pixel budget).
    - One prioritized, cancelable render queue, paused while a page is flipping.
-   - Low-res preview first, then the sharp version.
+   - Low-res preview first, then the sharp version. Exception, measured: in image-heavy files (comics, scans) a preview costs about as much as the sharp page, so there the sharp render also makes the preview (the renderer measures both).
+   - Never show an undecoded image: decode off screen and move the same `<img>` between page nodes.
    - devicePixelRatio capped at 2; ~5 MP max per canvas on iOS. Zero a canvas's width/height after converting it, then drop it.
    - Off-screen pages are kept as compressed images (WebP where encoding is supported, JPEG on Safari).
    - PDF.js runs in a Web Worker and uses range requests. CBZ is read with random access, never the whole ZIP in memory.
