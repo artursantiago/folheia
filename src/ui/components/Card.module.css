@@ -1,0 +1,60 @@
+.card {
+  position: relative;
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-ink);
+}
+
+.perforated {
+  outline: var(--border-width) dashed var(--color-perforation);
+  outline-offset: -8px;
+}
+
+.punched {
+  padding-bottom: var(--space-8);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 46px;
+  padding: 0 var(--space-5);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.body {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.ruled {
+  line-height: var(--rule-step);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--rule-step) - 1px),
+    var(--color-rule) calc(var(--rule-step) - 1px) var(--rule-step)
+  );
+  background-position: 0 var(--space-4);
+}
+
+.hole {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  box-shadow: inset 0 1px 2px var(--color-shadow);
+}

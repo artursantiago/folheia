@@ -1,0 +1,28 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch);
+  height: var(--size-touch);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.iconButton:hover {
+  background: var(--color-paper);
+}
+
+.iconButton[aria-pressed='true'] {
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 var(--border-width) var(--color-ink);
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

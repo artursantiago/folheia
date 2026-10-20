@@ -1,0 +1,27 @@
+.icon {
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.md {
+  width: var(--size-icon);
+  height: var(--size-icon);
+}
+
+.sm {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.lg {
+  width: calc(var(--size-icon) * 2);
+  height: calc(var(--size-icon) * 2);
+}
+
+.icon[data-icon='more'] {
+  stroke-width: 3;
+}

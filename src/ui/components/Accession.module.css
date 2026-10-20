@@ -1,0 +1,6 @@
+.accession {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+}

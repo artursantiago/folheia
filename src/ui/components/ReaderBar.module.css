@@ -1,0 +1,36 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px var(--space-2);
+  border-top: var(--border-width) dashed var(--color-perforation);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-float);
+  color: var(--color-ink);
+}
+
+.separator {
+  width: var(--border-hair);
+  height: 26px;
+  margin: 0 var(--space-1);
+  background: var(--color-rule);
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: var(--border-hair) solid var(--color-rule);
+  border-radius: var(--radius-control);
+  background: var(--color-paper);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.total {
+  color: var(--color-ink-muted);
+}
