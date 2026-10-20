@@ -143,15 +143,18 @@ export function ReaderScreen({
 
   const state = useStore((reader?.state ?? emptyState) as Store<ReaderState | undefined>);
 
-  // Keep the page in the address and in the book's loan card.
+  // Keep the page in the address and in the book's loan card. Only when the
+  // page changes: the state also changes on every step of a pinch zoom, and
+  // Safari throws after 100 replaceState calls in 10 s.
+  const page = state?.page;
   useEffect(() => {
-    if (!state) return;
+    if (page === undefined) return;
     const url = new URL(window.location.href);
-    url.hash = `p=${state.page}`;
-    history.replaceState(history.state, '', url);
+    url.hash = `p=${page}`;
+    if (url.href !== window.location.href) history.replaceState(history.state, '', url);
     if (sessionStart.current !== undefined)
-      bookMemory.recordProgress(source.id, sessionStart.current, state.page);
-  }, [state?.page, state, source.id]);
+      bookMemory.recordProgress(source.id, sessionStart.current, page);
+  }, [page, source.id]);
 
   const setImmersive = useCallback((on: boolean) => {
     preferences.set((p) => ({ ...p, immersive: on }));

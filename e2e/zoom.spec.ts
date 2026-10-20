@@ -34,3 +34,29 @@ test('zooms in with a sharp tile and pans instead of turning', async ({ page, is
   await page.getByRole('button', { name: /Ajustar à tela|Fit to screen/ }).click();
   await expect(page.locator('img.fx-tile')).toHaveCount(0);
 });
+
+test('zooming in and out a lot leaves the address alone', async ({ page }) => {
+  await page.goto('./');
+  await page.locator('input[type=file]').setInputFiles(FIXTURE);
+  const counter = page.getByRole('button', { name: /Ir para página|Go to page/ });
+  await expect(counter).toBeVisible({ timeout: 15_000 });
+  // Safari throws after 100 replaceState calls in 10 s (it broke pinch zoom on the iPad).
+  await page.evaluate(() => {
+    const original = history.replaceState.bind(history);
+    const counted = window as unknown as { __replaced: number };
+    counted.__replaced = 0;
+    history.replaceState = (...args: Parameters<History['replaceState']>) => {
+      counted.__replaced++;
+      original(...args);
+    };
+  });
+  for (let i = 0; i < 30; i++) {
+    await page.keyboard.press('+');
+    await page.keyboard.press('-');
+  }
+  const replaced = await page.evaluate(
+    () => (window as unknown as { __replaced: number }).__replaced,
+  );
+  expect(replaced).toBe(0);
+  await expect(counter).toBeVisible();
+});
