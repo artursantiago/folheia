@@ -17,6 +17,7 @@ import {
   IconButton,
   Notice,
   PageCounter,
+  PageSlider,
   ReaderBar,
   ReaderBarSeparator,
   TextField,
@@ -32,6 +33,8 @@ import type { OpenRequest } from '../session';
 import styles from './ReaderScreen.module.css';
 
 const IDLE_MS = 3000;
+/** In immersive mode the mouse brings the bar back near the bottom edge only. */
+const REVEAL_EDGE = 96;
 const TOAST_MS = 3500;
 const emptyState = createStore<ReaderState | undefined>(undefined);
 
@@ -67,8 +70,12 @@ export function ReaderScreen({
   const [goToValue, setGoToValue] = useState('');
   const [panel, setPanel] = useState<'none' | 'index' | 'settings' | 'card'>('none');
   const [toast, setToast] = useState<string>();
-  const [fullscreen, setFullscreen] = useState(isFullscreen());
+  const [sliderPage, setSliderPage] = useState<number>();
   const hoveringBar = useRef(false);
+  /** We put the page in full screen ourselves (so leaving it also leaves immersive mode). */
+  const ownsFullscreen = useRef(false);
+  const immersive = prefs.immersive;
+  const barMode = immersive ? prefs.immersiveBar : undefined;
   const budget = useMemo(() => createBudget(currentEnvironment()), []);
   const tRef = useRef(t);
   useEffect(() => {
@@ -144,7 +151,39 @@ export function ReaderScreen({
       bookMemory.recordProgress(source.id, sessionStart.current, state.page);
   }, [state?.page, state, source.id]);
 
+  const setImmersive = useCallback((on: boolean) => {
+    preferences.set((p) => ({ ...p, immersive: on }));
+    if (on && fullscreenSupported() && !isFullscreen()) {
+      ownsFullscreen.current = true;
+      void toggleFullscreen().then(() => (ownsFullscreen.current = isFullscreen()));
+    } else if (!on && ownsFullscreen.current) {
+      ownsFullscreen.current = false;
+      if (isFullscreen()) void toggleFullscreen();
+    }
+  }, []);
+
+  // Leaving full screen from the system (Esc, a gesture) also leaves immersive mode.
+  useEffect(
+    () =>
+      onFullscreenChange(() => {
+        if (isFullscreen() || !ownsFullscreen.current) return;
+        ownsFullscreen.current = false;
+        preferences.set((p) => ({ ...p, immersive: false }));
+      }),
+    [],
+  );
+  useEffect(
+    () => () => {
+      if (ownsFullscreen.current && isFullscreen()) void toggleFullscreen();
+    },
+    [],
+  );
+
   // Arrow keys follow the visual direction; RTL books turn the other way.
+  const keyContext = useRef({ busy: false, immersive });
+  useEffect(() => {
+    keyContext.current = { busy: panel !== 'none' || goToOpen, immersive };
+  }, [panel, goToOpen, immersive]);
   useEffect(() => {
     if (!reader) return;
     const onKey = (event: KeyboardEvent) => {
@@ -156,6 +195,16 @@ export function ReaderScreen({
       )
         return;
       if (document.querySelector('dialog[open]')) return;
+      const { busy, immersive: inImmersive } = keyContext.current;
+      if (event.key === 'f' || event.key === 'F') {
+        event.preventDefault();
+        setImmersive(!inImmersive);
+        return;
+      }
+      if (event.key === 'Escape' && inImmersive && !busy) {
+        setImmersive(false);
+        return;
+      }
       const rtl = reader.state.get().direction === 'rtl';
       const actions: Record<string, () => void> = {
         ArrowRight: () => (rtl ? reader.prev() : reader.next()),
@@ -175,36 +224,60 @@ export function ReaderScreen({
         event.preventDefault();
         action();
       }
-      setChromeVisible(true);
+      // Turning pages in immersive mode shouldn't bring the bar back; Tab should.
+      if (!inImmersive || event.key === 'Tab') setChromeVisible(true);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [reader]);
+  }, [reader, setImmersive]);
 
-  // The bar fades out after a few idle seconds and comes back on any movement.
+  // When the bar shows. Normal mode: it fades after a few idle seconds and comes
+  // back on any movement. Immersive with a fixed bar: always. Immersive with a
+  // hiding bar: a tap in the middle of the book (or the mouse near the bottom
+  // edge) brings it back for a while; another tap in the middle hides it.
   useEffect(() => {
-    let timer = window.setTimeout(() => setChromeVisible(false), IDLE_MS);
-    const wake = () => {
-      setChromeVisible(true);
+    // A fixed bar is kept visible by `keepChrome`.
+    if (barMode === 'fixed') return;
+    let visible = true;
+    let timer = 0;
+    const set = (next: boolean) => {
+      visible = next;
+      setChromeVisible(next);
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        if (!hoveringBar.current) setChromeVisible(false);
-      }, IDLE_MS);
+      if (next)
+        timer = window.setTimeout(() => {
+          if (!hoveringBar.current) set(false);
+        }, IDLE_MS);
     };
-    window.addEventListener('pointermove', wake);
-    window.addEventListener('pointerdown', wake);
+    set(true);
+    const disposers: (() => void)[] = [];
+    const listen = <K extends keyof WindowEventMap>(
+      type: K,
+      handler: (event: WindowEventMap[K]) => void,
+    ) => {
+      window.addEventListener(type, handler);
+      disposers.push(() => window.removeEventListener(type, handler));
+    };
+    if (barMode === 'auto') {
+      listen('pointermove', (event) => {
+        if (event.pointerType === 'mouse' && event.clientY > window.innerHeight - REVEAL_EDGE)
+          set(true);
+      });
+      const off = reader?.onCenterTap(() => set(!visible));
+      if (off) disposers.push(() => void off());
+    } else {
+      listen('pointermove', () => set(true));
+      listen('pointerdown', () => set(true));
+    }
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener('pointermove', wake);
-      window.removeEventListener('pointerdown', wake);
+      disposers.forEach((dispose) => dispose());
     };
-  }, []);
-
-  useEffect(() => onFullscreenChange(() => setFullscreen(isFullscreen())), []);
+  }, [barMode, reader]);
 
   const title = metadata.title ?? name;
   const details = [metadata.author, metadata.date].filter(Boolean).join(' · ');
-  const keepChrome = panel !== 'none' || goToOpen;
+  const keepChrome = panel !== 'none' || goToOpen || barMode === 'fixed';
 
   const submitGoTo = (event: FormEvent) => {
     event.preventDefault();
@@ -235,6 +308,8 @@ export function ReaderScreen({
     if (await copyText(report)) notify(t('settings.diagnosticsCopied'));
   };
 
+  const goToSliderPage = useCallback((page: number) => reader?.goToPage(page), [reader]);
+
   const closeSettings = useCallback(() => setPanel((p) => (p === 'settings' ? 'none' : p)), []);
   const closeIndex = useCallback(() => setPanel('none'), []);
 
@@ -243,9 +318,10 @@ export function ReaderScreen({
       ref={rootRef}
       className={styles.reader}
       data-chrome={chromeVisible || keepChrome ? 'visible' : 'hidden'}
+      data-immersive={barMode}
     >
       <div className={styles.lamp} aria-hidden="true" />
-      <header className={styles.top}>
+      <header className={styles.top} hidden={immersive}>
         <button
           type="button"
           className={styles.back}
@@ -291,22 +367,36 @@ export function ReaderScreen({
           onPointerLeave={() => (hoveringBar.current = false)}
         >
           {panel === 'settings' && (
-            <SettingsMenu
-              id="reader-settings"
-              direction={direction ?? state.direction}
-              onDirection={changeDirection}
-              onCopyDiagnostics={() => void copyDiagnostics()}
-              onClose={closeSettings}
-            />
+            <div className={styles.settingsSlot}>
+              <SettingsMenu
+                id="reader-settings"
+                direction={direction ?? state.direction}
+                onDirection={changeDirection}
+                onCopyDiagnostics={() => void copyDiagnostics()}
+                onBookCard={immersive ? () => setPanel('card') : undefined}
+                onClose={closeSettings}
+              />
+            </div>
           )}
-          <ReaderBar label={t('reader.controls')}>
-            <IconButton
-              icon="first"
-              label={t('reader.first')}
-              disabled={state.atStart}
-              onClick={() => reader?.first()}
-              className={styles.wideOnly}
-            />
+          <ReaderBar label={t('reader.controls')} variant={immersive ? 'strip' : 'floating'}>
+            {immersive ? (
+              <>
+                <IconButton
+                  icon="collapse"
+                  label={t('reader.exitImmersive')}
+                  onClick={() => setImmersive(false)}
+                />
+                <ReaderBarSeparator />
+              </>
+            ) : (
+              <IconButton
+                icon="first"
+                label={t('reader.first')}
+                disabled={state.atStart}
+                onClick={() => reader?.first()}
+                className={styles.wideOnly}
+              />
+            )}
             <IconButton
               icon="prev"
               label={t('reader.prev')}
@@ -327,10 +417,21 @@ export function ReaderScreen({
               </form>
             ) : (
               <PageCounter
-                current={state.label}
+                current={sliderPage === undefined ? state.label : String(sliderPage)}
                 total={state.total}
                 label={t('reader.counter', { label: state.label, total: state.total })}
                 onClick={() => setGoToOpen(true)}
+              />
+            )}
+            {immersive && (
+              <PageSlider
+                value={state.page}
+                total={state.total}
+                label={t('reader.position')}
+                valueText={(number) => t('reader.pageOf', { number, total: state.total })}
+                onPreview={setSliderPage}
+                onCommit={goToSliderPage}
+                dir={state.direction}
               />
             )}
             <IconButton
@@ -339,13 +440,15 @@ export function ReaderScreen({
               disabled={state.atEnd}
               onClick={() => reader?.next()}
             />
-            <IconButton
-              icon="last"
-              label={t('reader.last')}
-              disabled={state.atEnd}
-              onClick={() => reader?.last()}
-              className={styles.wideOnly}
-            />
+            {!immersive && (
+              <IconButton
+                icon="last"
+                label={t('reader.last')}
+                disabled={state.atEnd}
+                onClick={() => reader?.last()}
+                className={styles.wideOnly}
+              />
+            )}
             <ReaderBarSeparator />
             <IconButton
               icon="zoomOut"
@@ -371,7 +474,7 @@ export function ReaderScreen({
               pressed={panel === 'index'}
               onClick={() => setPanel(panel === 'index' ? 'none' : 'index')}
             />
-            {request.kind === 'url' && (
+            {request.kind === 'url' && !immersive && (
               <IconButton
                 icon="share"
                 label={t('reader.share')}
@@ -379,13 +482,12 @@ export function ReaderScreen({
                 className={styles.wideOnly}
               />
             )}
-            {fullscreenSupported() && (
+            {!immersive && (
               <IconButton
                 icon="fullscreen"
-                label={fullscreen ? t('reader.exitFullscreen') : t('reader.fullscreen')}
-                pressed={fullscreen}
-                onClick={() => void toggleFullscreen()}
-                className={styles.wideOnly}
+                label={t('reader.immersive')}
+                pressed={false}
+                onClick={() => setImmersive(true)}
               />
             )}
             <IconButton

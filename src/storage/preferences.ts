@@ -4,6 +4,8 @@ import type { Locale } from '../i18n/messages';
 
 export type ThemePreference = 'system' | 'light' | 'dark';
 export type LayoutPreference = 'auto' | 'single' | 'double';
+/** In immersive mode the bar either keeps its own strip or floats over the book and hides. */
+export type ImmersiveBar = 'fixed' | 'auto';
 
 export interface Preferences {
   theme: ThemePreference;
@@ -12,6 +14,9 @@ export interface Preferences {
   layout: LayoutPreference;
   coverAlone: boolean;
   hoverPeek: boolean;
+  /** "Just the book": remembered, so the next book opens the same way. */
+  immersive: boolean;
+  immersiveBar: ImmersiveBar;
 }
 
 export const defaultPreferences: Preferences = {
@@ -20,6 +25,8 @@ export const defaultPreferences: Preferences = {
   layout: 'auto',
   coverAlone: true,
   hoverPeek: true,
+  immersive: false,
+  immersiveBar: 'fixed',
 };
 
 const KEY = 'preferences';
@@ -38,6 +45,8 @@ function parse(raw: string | null): Preferences {
       layout: oneOf(data.layout, ['auto', 'single', 'double'], 'auto'),
       coverAlone: typeof data.coverAlone === 'boolean' ? data.coverAlone : true,
       hoverPeek: typeof data.hoverPeek === 'boolean' ? data.hoverPeek : true,
+      immersive: data.immersive === true,
+      immersiveBar: oneOf(data.immersiveBar, ['fixed', 'auto'], 'fixed'),
     };
   } catch {
     return defaultPreferences;

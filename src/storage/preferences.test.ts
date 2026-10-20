@@ -17,7 +17,7 @@ describe('preferences', () => {
 
   it('ignores corrupt or unknown values', () => {
     const storage = memoryStorage();
-    storage.set('preferences', '{"theme":"neon","locale":"fr"}');
+    storage.set('preferences', '{"theme":"neon","locale":"fr","immersiveBar":"sideways"}');
     expect(createPreferencesStore(storage).get()).toEqual(defaultPreferences);
     storage.set('preferences', 'not json');
     expect(createPreferencesStore(storage).get()).toEqual(defaultPreferences);

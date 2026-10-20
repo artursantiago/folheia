@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { ReadingDirection } from '../../sources/types';
 import {
   preferences,
+  type ImmersiveBar,
   type LayoutPreference,
   type ThemePreference,
 } from '../../storage/preferences';
@@ -15,6 +16,8 @@ export interface SettingsMenuProps {
   direction: ReadingDirection;
   onDirection: (direction: ReadingDirection) => void;
   onCopyDiagnostics: () => void;
+  /** Immersive mode hides the header, so the book card is reached from here. */
+  onBookCard?: (() => void) | undefined;
   onClose: () => void;
 }
 
@@ -23,6 +26,7 @@ export function SettingsMenu({
   direction,
   onDirection,
   onCopyDiagnostics,
+  onBookCard,
   onClose,
 }: SettingsMenuProps) {
   const { t, locale } = useI18n();
@@ -95,6 +99,18 @@ export function SettingsMenu({
           />
         </PopoverRow>
         <PopoverRow>
+          <span>{t('settings.immersiveBar')}</span>
+          <Segmented<ImmersiveBar>
+            label={t('settings.immersiveBar')}
+            value={prefs.immersiveBar}
+            onChange={(immersiveBar) => set({ immersiveBar })}
+            options={[
+              { value: 'fixed', label: t('settings.immersiveBar.fixed') },
+              { value: 'auto', label: t('settings.immersiveBar.auto') },
+            ]}
+          />
+        </PopoverRow>
+        <PopoverRow>
           <span>{t('theme.label')}</span>
           <Segmented<ThemePreference>
             label={t('theme.label')}
@@ -119,6 +135,13 @@ export function SettingsMenu({
             ]}
           />
         </PopoverRow>
+        {onBookCard && (
+          <PopoverRow>
+            <button type="button" className={styles.link} onClick={onBookCard}>
+              {t('reader.bookCard')}
+            </button>
+          </PopoverRow>
+        )}
         <div className={styles.footer}>
           <span className={styles.muted}>{t('settings.trouble')}</span>
           <button type="button" className={styles.link} onClick={onCopyDiagnostics}>

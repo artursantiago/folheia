@@ -197,3 +197,61 @@
 .fit:hover {
   background: var(--color-paper);
 }
+
+/* ---- Immersive mode: just the book --------------------------------------- */
+
+.top[hidden] {
+  display: none;
+}
+
+.reader[data-immersive] {
+  /* Room the fixed strip takes at the bottom (none when it floats over the book). */
+  --strip-space: var(--space-2);
+}
+
+.reader[data-immersive='fixed'] {
+  --strip-space: calc(var(--size-touch) + var(--space-4));
+}
+
+.reader[data-immersive] .stage {
+  margin: var(--space-2) var(--space-2) var(--strip-space);
+}
+
+.reader[data-immersive] .barWrap {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: var(--color-card);
+  transform: none;
+}
+
+.reader[data-immersive][data-chrome='hidden'] .barWrap {
+  transform: translateY(100%);
+}
+
+/* Keyboard users tabbing into a hidden bar get it back. */
+.reader[data-immersive] .barWrap:focus-within {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* Normal mode: the settings popover anchors to the floating bar itself. */
+.settingsSlot {
+  display: contents;
+}
+
+/* The strip spans the screen: keep the popover off the edge. */
+.reader[data-immersive] .settingsSlot {
+  position: absolute;
+  right: var(--space-3);
+  bottom: 100%;
+  display: block;
+}
+
+.reader[data-immersive] .zoomPill,
+.reader[data-immersive] .toast {
+  top: calc(env(safe-area-inset-top) + var(--space-3));
+}
