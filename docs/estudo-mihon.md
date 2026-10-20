@@ -330,7 +330,7 @@ O Artur quer algo parecido para estudo e uso pessoal: **site estático e custo z
 | API MangaDex                                    | **Bloqueada.** Só libera `mangadex.org` e `localhost`. A documentação manda clientes de outros sites usarem proxy. |
 | Imagens MangaDex@Home                           | Liberadas, mas só se chega a elas pela API.                                                                        |
 | Internet Archive: busca, metadados e **IIIF**   | Liberados. O IIIF entrega páginas de livros escaneados como imagens, em vários tamanhos.                           |
-| Internet Archive: `download/`                   | Sem CORS.                                                                                                          |
+| Internet Archive: `download/`                   | Sem CORS. Num teste posterior no mesmo dia, respondeu com CORS (`estudo-extensao.md` §8).                          |
 | Wikimedia, Gutenberg OPDS                       | Liberados (Gutenberg é EPUB de texto).                                                                             |
 | GitHub Pages, `raw.githubusercontent`, jsDelivr | Liberados: um índice de fontes no GitHub pode ser lido do navegador.                                               |
 | Komga                                           | Fechado por padrão; libera com `KOMGA_CORS_ALLOWEDORIGINS`.                                                        |
