@@ -18,6 +18,7 @@ function fakeSource(pageCount = 10) {
   const calls: { page: number; target: RenderTarget }[] = [];
   const source: PageSource = {
     kind: 'pdf',
+    id: 'test',
     pageCount,
     getPageSize: () => ({ width: 600, height: 800 }),
     knownPageSize: () => ({ width: 600, height: 800 }),

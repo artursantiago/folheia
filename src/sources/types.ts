@@ -57,6 +57,8 @@ export type SourceKind = 'pdf' | 'cbz';
  */
 export interface PageSource {
   readonly kind: SourceKind;
+  /** Stable identifier of the file's content (used to remember the reading position). */
+  readonly id: string;
   readonly pageCount: number;
   /** Best known size; may be refined after the page is first loaded. */
   getPageSize(index: number): PageSize;

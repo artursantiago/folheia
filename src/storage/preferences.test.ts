@@ -6,8 +6,13 @@ describe('preferences', () => {
     const storage = memoryStorage();
     const prefs = createPreferencesStore(storage);
     expect(prefs.get()).toEqual(defaultPreferences);
-    prefs.set({ theme: 'dark', locale: 'en' });
-    expect(createPreferencesStore(storage).get()).toEqual({ theme: 'dark', locale: 'en' });
+    prefs.set({ ...defaultPreferences, theme: 'dark', locale: 'en', layout: 'single' });
+    expect(createPreferencesStore(storage).get()).toEqual({
+      ...defaultPreferences,
+      theme: 'dark',
+      locale: 'en',
+      layout: 'single',
+    });
   });
 
   it('ignores corrupt or unknown values', () => {

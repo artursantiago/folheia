@@ -112,6 +112,7 @@ function toSourceError(error: unknown): SourceError {
 
 export class PdfSource implements PageSource {
   readonly kind = 'pdf' as const;
+  readonly id: string;
   readonly pageCount: number;
   private sizes: (PageSize | undefined)[];
   private fallbackSize: PageSize = { width: 595, height: 842 };
@@ -122,6 +123,7 @@ export class PdfSource implements PageSource {
     private readonly task: PDFDocumentLoadingTask,
   ) {
     this.pageCount = doc.numPages;
+    this.id = `pdf:${doc.fingerprints[0] ?? 'unknown'}`;
     this.sizes = new Array<PageSize | undefined>(doc.numPages).fill(undefined);
   }
 
