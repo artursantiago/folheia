@@ -1,0 +1,141 @@
+.home {
+  position: relative;
+  min-height: 100dvh;
+  padding: 0 clamp(var(--space-5), 5vw, var(--space-16)) var(--space-12);
+  overflow: hidden;
+}
+
+.lamp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 52% 62% at 60% 40%,
+    var(--color-lamp-core) 0%,
+    var(--color-lamp-mid) 48%,
+    var(--color-paper) 78%
+  );
+  pointer-events: none;
+}
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 84px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-12) var(--space-16);
+  margin-top: var(--space-8);
+}
+
+.intro {
+  display: flex;
+  flex: 1 1 360px;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 480px;
+  padding-top: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-lg);
+}
+
+.privacy {
+  align-self: flex-start;
+  margin-top: var(--space-2);
+}
+
+.loanCard {
+  flex: 1 1 420px;
+  max-width: 600px;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.loanCard[data-dragging] {
+  outline-color: var(--color-accent);
+  transform: rotate(-1deg);
+}
+
+.bring {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: calc(var(--rule-step) * 2);
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.urlForm {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.urlField {
+  flex: 1;
+}
+
+.dropping {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  text-align: center;
+}
+
+@media (width <= 600px) {
+  .tagline {
+    display: none;
+  }
+
+  .hero {
+    margin-top: var(--space-2);
+  }
+}

@@ -1,0 +1,133 @@
+.reader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.lamp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 52% 62% at 50% 46%,
+    var(--color-lamp-core) 0%,
+    var(--color-lamp-mid) 48%,
+    var(--color-paper) 78%
+  );
+  pointer-events: none;
+}
+
+.top {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  height: 64px;
+  padding: 0 var(--space-4);
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-touch);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  cursor: pointer;
+}
+
+.back:hover {
+  background: var(--color-card);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.titleText {
+  max-width: 50vw;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details {
+  max-width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.topEnd {
+  justify-self: end;
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: var(--space-2) var(--space-4) 96px;
+}
+
+.barWrap {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom) + var(--space-6));
+  left: 50%;
+  transform: translateX(-50%);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.reader[data-chrome='hidden'] .barWrap {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+}
+
+.reader[data-chrome='hidden'] .top {
+  opacity: 0.35;
+}
+
+.goTo {
+  width: 120px;
+  padding: 0 var(--space-2);
+}
+
+@media (width <= 600px) {
+  .top {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 var(--space-2);
+  }
+
+  .backText {
+    display: none;
+  }
+
+  .titleText,
+  .details {
+    max-width: 62vw;
+  }
+
+  .stage {
+    margin: var(--space-2) var(--space-2) 88px;
+  }
+}

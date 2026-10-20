@@ -6,7 +6,7 @@ export interface StampProps {
   tone?: 'accent' | 'muted';
   /** Rotation in degrees; library stamps are never quite straight. */
   tilt?: number;
-  className?: string;
+  className?: string | undefined;
 }
 
 /** The "carimbo": marks states and seals ("Domínio público", "Pág. 87"). */
