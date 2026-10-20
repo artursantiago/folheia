@@ -157,6 +157,27 @@ describe('PageRenderer', () => {
     expect(renderer.getImage({ page: 1 })?.width).toBe(1000);
   });
 
+  it('drops a queued preview once the page is wanted sharp (comics)', async () => {
+    const { source, calls } = fakeSource();
+    const render = source.render;
+    source.render = async (page, target, signal) => {
+      await new Promise((resolve) => setTimeout(resolve, 15));
+      return render(page, target, signal);
+    };
+    const renderer = new PageRenderer(source, desktop, () => 1);
+    renderer.focus({ visible: [{ page: 0 }], ahead: [], behind: [], nearby: [] });
+    await vi.waitFor(() => expect(renderer.getImage({ page: 0 })?.tier).toBe('sharp'));
+    calls.length = 0;
+    // Page 3 waits for a preview while page 1 renders...
+    renderer.focus({ visible: [{ page: 1 }], ahead: [], behind: [], nearby: [{ page: 3 }] });
+    // ...then the reader moves on and page 3 is wanted sharp.
+    renderer.focus({ visible: [{ page: 2 }], ahead: [{ page: 3 }], behind: [], nearby: [] });
+    await vi.waitFor(() => expect(renderer.getImage({ page: 3 })?.tier).toBe('sharp'));
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    // Only sharp renders: page 3's preview came from its sharp page.
+    expect(calls.filter((c) => c.target.width < 300)).toEqual([]);
+  });
+
   it('renders half pages from the full sheet with a region', async () => {
     const { source, calls } = fakeSource();
     const renderer = new PageRenderer(source, desktop, () => 1);

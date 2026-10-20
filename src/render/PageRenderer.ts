@@ -150,11 +150,15 @@ export class PageRenderer {
     plan.nearby.forEach((ref, i) => this.requestPreview(ref, 45 + i, wantedPreview));
     plan.behind.forEach((ref, i) => this.requestSharp(ref, 70 + i, wantedSharp));
 
+    // Queued work the plan no longer asks for is dropped. A preview job stays
+    // only if a preview is still wanted: once the page is wanted sharp, the
+    // sharp render makes its preview.
+    this.queue.retain(
+      (key) =>
+        key.startsWith('thumb:') || (key.includes('@') ? wantedSharp : wantedPreview).has(key),
+    );
     // Sharp images far from the reader are dropped right away; previews stay
     // (they are tiny and double as thumbnails) until their own budget is hit.
-    this.queue.retain(
-      (key) => wantedSharp.has(key) || wantedPreview.has(key) || key.startsWith('thumb:'),
-    );
     this.sharp.retain((key) => {
       const ref = key.slice(0, key.indexOf('@'));
       return wantedSharp.has(ref) || this.turnPinned.has(ref);
@@ -311,6 +315,8 @@ export class PageRenderer {
   }
 
   private async renderPreview(ref: PageRef, signal: AbortSignal) {
+    // A sharp render may have made it since this job was queued.
+    if (this.previews.peek(refKey(ref))) return;
     const size = previewSize(this.sizeOf(ref), this.budget);
     await this.renderInto(ref, size, 'preview', signal, {
       store: (image) => this.previews.set(refKey(ref), image.blob, image.width, image.height),
