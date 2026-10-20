@@ -11,6 +11,7 @@ import {
 } from '../../platform/network';
 import { Button, Overline, Segmented, TextField } from '../components';
 import styles from './LabBridge.module.css';
+import { LabBridgeBatch } from './LabBridgeBatch';
 
 const PRESETS = [
   {
@@ -163,6 +164,8 @@ export function LabBridge() {
           Cancelar
         </Button>
       </div>
+
+      <LabBridgeBatch network={network} />
 
       {busy && <p className={styles.mono}>recebidos {mb(received)}…</p>}
 
