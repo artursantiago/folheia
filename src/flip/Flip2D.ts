@@ -94,6 +94,8 @@ export class Flip2D implements FlipEngine {
   private flipListeners = new Set<(flipping: boolean) => void>();
   private pending: (() => void) | undefined;
   private decorations: (() => void)[] = [];
+  /** Where repeated next/prev presses want to end up; turns run one after another. */
+  private wanted: number | undefined;
 
   constructor(container: HTMLElement) {
     this.stage = el('fx-stage', container);
@@ -147,14 +149,39 @@ export class Flip2D implements FlipEngine {
   }
 
   next() {
-    void this.goTo(this.current + 1);
+    this.request((this.wanted ?? this.current) + 1);
   }
 
   prev() {
-    void this.goTo(this.current - 1);
+    this.request((this.wanted ?? this.current) - 1);
+  }
+
+  /** Queues a relative move; quick presses add up instead of being dropped. */
+  private request(target: number) {
+    const count = this.host?.spreads.length ?? 0;
+    this.wanted = Math.max(0, Math.min(target, count - 1));
+    if (this.peeking) this.endPeek();
+    if (!this.turn) this.continueToWanted();
+  }
+
+  private continueToWanted() {
+    const wanted = this.wanted;
+    if (wanted === undefined || wanted === this.current) {
+      this.wanted = undefined;
+      return;
+    }
+    const step = this.current + Math.sign(wanted - this.current);
+    // Turns queued behind others go a little faster.
+    const hurry = Math.abs(wanted - this.current) > 1;
+    void this.turnTo(step, hurry ? TURN_MS * 0.55 : TURN_MS);
   }
 
   async goTo(target: number, options: { animate?: boolean } = {}) {
+    this.wanted = undefined;
+    return this.turnTo(target, TURN_MS, options);
+  }
+
+  private async turnTo(target: number, duration: number, options: { animate?: boolean } = {}) {
     const host = this.host;
     if (!host) return;
     const to = Math.max(0, Math.min(target, host.spreads.length - 1));
@@ -168,6 +195,7 @@ export class Flip2D implements FlipEngine {
     const animate = options.animate ?? Math.abs(to - this.current) === 1;
     if (!animate || this.reducedMotion || this.needsCrossfade(this.current, to)) {
       this.crossfade(to, animate);
+      if (this.wanted !== undefined) requestAnimationFrame(() => this.continueToWanted());
       return;
     }
     const forward = to > this.current;
@@ -179,7 +207,7 @@ export class Flip2D implements FlipEngine {
     const t = this.turnedPoint('bottom');
     const lift = { x: 0, y: this.size.height * 0.82 };
     turn.point = forward ? c : t;
-    await this.animatePoint(forward ? [c, lift, t] : [t, lift, c], TURN_MS);
+    await this.animatePoint(forward ? [c, lift, t] : [t, lift, c], duration);
     this.finishTurn(forward);
   }
 
@@ -346,6 +374,15 @@ export class Flip2D implements FlipEngine {
     }
     const url = host.imageOf(page);
     let img = node.querySelector<HTMLImageElement>('img:not(.fx-tile)');
+    if (!url && host.isFailed?.(page)) {
+      node.removeAttribute('data-loading');
+      node.setAttribute('data-failed', '');
+      if (!node.querySelector('.fx-failed')) {
+        const note = el('fx-failed', node);
+        note.textContent = host.failedText ?? '';
+      }
+      return;
+    }
     if (!url) {
       node.setAttribute('data-loading', '');
       return;
@@ -582,7 +619,8 @@ export class Flip2D implements FlipEngine {
     if (changed) this.emitChange();
     const pending = this.pending;
     this.pending = undefined;
-    pending?.();
+    if (pending) pending();
+    else if (this.wanted !== undefined) this.continueToWanted();
   }
 
   private cancelTurn() {

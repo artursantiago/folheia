@@ -12,6 +12,10 @@ export interface FlipHost {
   direction: ReadingDirection;
   isBlank(page: number): boolean;
   isWide(page: number): boolean;
+  /** The page couldn't be drawn (e.g. an image format this browser can't decode). */
+  isFailed?(page: number): boolean;
+  /** Text shown on a page that failed. */
+  failedText?: string;
   /** Best image available for a logical page, or undefined while it renders. */
   imageOf(page: number): string | undefined;
   /** Accessible text for a page image ("Página 12"). */

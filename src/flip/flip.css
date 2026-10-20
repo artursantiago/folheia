@@ -72,6 +72,18 @@
   object-fit: fill;
 }
 
+.fx-failed {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  color: var(--color-page-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
 .fx-page[data-blank] {
   background: var(--color-page);
 }

@@ -44,6 +44,8 @@ export interface ReaderState {
   splitSpreads: boolean;
   /** 1 = fit; up to 4. */
   zoom: number;
+  /** Most pages are long vertical strips (webtoon). */
+  tallStrips: boolean;
 }
 
 export interface ReaderConfig {
@@ -56,6 +58,8 @@ export interface ReaderConfig {
   /** 1-based page to open at. */
   initialPage?: number | undefined;
   pageLabel: (page: number) => string;
+  /** Shown on pages that can't be drawn. */
+  failedText?: string;
 }
 
 /**
@@ -117,6 +121,9 @@ export class Reader {
       settle: () => this.renderTiles(),
       takeOver: () => this.flip.cancelGesture(),
     });
+
+    this.disposers.push(source.onSizesChanged(this.onSizesChanged));
+    this.updateTallStrips();
 
     this.resizeObserver = new ResizeObserver(() => this.onResize());
     this.resizeObserver.observe(container);
@@ -254,9 +261,36 @@ export class Reader {
         pageCount: this.config.source.pageCount,
         sizeOf: this.sizeOf,
         splitSpreads: this.splitSpreads,
+        isWide: (index) => this.config.source.isWidePage?.(index) ?? false,
       },
       { mode, coverAlone: this.options.coverAlone, direction: this.direction },
     );
+  }
+
+  /** CBZ page sizes arrive as headers are read: re-lay out if double pages appear. */
+  private onSizesChanged = () => {
+    const { source } = this.config;
+    if (!source.isWidePage) return;
+    const wide = this.book.pages.filter((page) => page.wide).length;
+    let now = 0;
+    for (let i = 0; i < source.pageCount; i++) if (source.isWidePage(i)) now++;
+    this.updateTallStrips();
+    if (now !== wide && !this.flip.isFlipping) this.rebuild(this.book.options.mode);
+  };
+
+  /** Webtoon strips (much taller than wide) aren't meant to be flipped. */
+  private updateTallStrips() {
+    const { source } = this.config;
+    let tall = 0;
+    let known = 0;
+    for (let i = 0; i < Math.min(source.pageCount, 12); i++) {
+      const size = source.knownPageSize(i);
+      if (!size) continue;
+      known++;
+      if (size.height > size.width * 3) tall++;
+    }
+    const tallStrips = known > 0 && tall / known > 0.5;
+    if (tallStrips !== this.state.get().tallStrips) this.state.set((s) => ({ ...s, tallStrips }));
   }
 
   private rebuild(mode: 'single' | 'double') {
@@ -277,12 +311,17 @@ export class Reader {
       direction: book.options.direction,
       isBlank: (page) => !book.pages[page]?.ref,
       isWide: (page) => book.pages[page]?.wide ?? false,
+      isFailed: (page) => {
+        const ref = book.pages[page]?.ref;
+        return ref ? this.renderer.hasFailed(ref) : false;
+      },
       imageOf: (page) => {
         const ref = book.pages[page]?.ref;
         return ref ? this.renderer.getImage(ref)?.url : undefined;
       },
       pageLabel: (page) => this.config.pageLabel(book.pages[page]?.label ?? page + 1),
       decorate: (page, node, slot) => this.decorate(page, node, slot),
+      ...(this.config.failedText ? { failedText: this.config.failedText } : {}),
     };
   }
 
@@ -459,6 +498,7 @@ export class Reader {
       atEnd: spread === book.spreads.length - 1,
       splitSpreads: this.splitSpreads,
       zoom: this.zoomer?.scale ?? 1,
+      tallStrips: this.state?.get().tallStrips ?? false,
     };
   }
 }
