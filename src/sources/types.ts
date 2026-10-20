@@ -78,6 +78,8 @@ export interface PageSource {
     cssWidth: number,
     signal: AbortSignal,
   ): Promise<void>;
+  /** Pages stored as one double-page image (CBZ spreads). Optional. */
+  isWidePage?(index: number): boolean;
   /** Clickable areas of the page (web links and links to other pages). Optional. */
   getLinks?(index: number): Promise<PageLink[]>;
   /** Fired when page sizes become known. */

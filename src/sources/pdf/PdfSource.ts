@@ -9,9 +9,10 @@ import {
   type PasswordPrompt,
   type RenderTarget,
 } from '../types';
+import { fetchRange, probe, type RangeProbe } from '../http';
 import { pdfjs, pdfjsDataUrls } from './pdfjs';
 
-export type PdfInput = { file: Blob } | { url: string };
+export type PdfInput = { file: Blob } | { url: string; probe?: RangeProbe | undefined };
 
 export interface OpenPdfOptions {
   onPassword?: PasswordPrompt;
@@ -36,11 +37,7 @@ class BlobRangeTransport extends pdfjs.PDFDataRangeTransport {
 
 const RANGE_CHUNK = 256 * 1024;
 
-/**
- * Ranged reads over HTTP. PDF.js only uses ranges when it can read
- * Accept-Ranges, which many CORS servers (Wikimedia included) don't expose;
- * Content-Range usually is, so we drive the ranges ourselves.
- */
+/** Ranged reads over HTTP (see sources/http.ts for why we drive them ourselves). */
 class UrlRangeTransport extends pdfjs.PDFDataRangeTransport {
   constructor(
     private readonly url: string,
@@ -51,8 +48,7 @@ class UrlRangeTransport extends pdfjs.PDFDataRangeTransport {
   }
 
   override requestDataRange(begin: number, end: number) {
-    // no-store: the HTTP cache can answer a range with the wrong (whole) body.
-    fetch(this.url, { headers: { Range: `bytes=${begin}-${end - 1}` }, cache: 'no-store' })
+    fetchRange(this.url, begin, end)
       .then(async (response) => {
         const data = new Uint8Array(await response.arrayBuffer());
         if (response.status === 206) this.onDataRange(begin, data);
@@ -62,26 +58,6 @@ class UrlRangeTransport extends pdfjs.PDFDataRangeTransport {
       })
       .catch(() => this.abort());
   }
-}
-
-/** Probes the server with a first ranged request; null when ranges aren't usable. */
-async function probeRanges(url: string): Promise<{ length: number; initial: Uint8Array } | null> {
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      headers: { Range: `bytes=0-${RANGE_CHUNK - 1}` },
-      cache: 'no-store',
-    });
-  } catch (error) {
-    throw new SourceError('network', 'Could not download the file', error);
-  }
-  if (!response.ok) throw new SourceError('http', `The server answered ${response.status}`);
-  const total = Number(response.headers.get('Content-Range')?.match(/\/(\d+)$/)?.[1]);
-  if (response.status !== 206 || !Number.isFinite(total) || total <= 0) {
-    await response.body?.cancel();
-    return null;
-  }
-  return { length: total, initial: new Uint8Array(await response.arrayBuffer()) };
 }
 
 export async function openPdf(input: PdfInput, options: OpenPdfOptions = {}): Promise<PdfSource> {
@@ -96,13 +72,14 @@ export async function openPdf(input: PdfInput, options: OpenPdfOptions = {}): Pr
   if ('file' in input) {
     task = pdfjs.getDocument({ ...common, range: new BlobRangeTransport(input.file) });
   } else {
-    const ranges = await probeRanges(input.url);
-    task = ranges
+    const head = input.probe ?? (await probe(input.url, RANGE_CHUNK));
+    // Without range support the probe already holds the whole file.
+    task = head.length
       ? pdfjs.getDocument({
           ...common,
-          range: new UrlRangeTransport(input.url, ranges.length, ranges.initial),
+          range: new UrlRangeTransport(input.url, head.length, head.head),
         })
-      : pdfjs.getDocument({ ...common, url: input.url });
+      : pdfjs.getDocument({ ...common, data: head.head });
   }
 
   if (options.onProgress) {
