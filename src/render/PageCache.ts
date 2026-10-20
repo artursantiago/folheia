@@ -17,8 +17,14 @@ const browserUrls: UrlFactory = {
 };
 
 /**
- * Compressed page images, least recently used first out, within a byte budget.
- * Pinned keys (what's on screen) are never evicted.
+ * How far an entry is from the reader: over budget, the farthest goes first.
+ * Entries at the same distance go least recently used first.
+ */
+export type CacheDistance = (key: string) => number;
+
+/**
+ * Compressed page images within a byte budget. Without a distance, least
+ * recently used first out. Pinned keys (what's on screen) are never evicted.
  */
 export class PageCache {
   private entries = new Map<string, CachedImage>();
@@ -27,6 +33,7 @@ export class PageCache {
   constructor(
     private maxBytes: number,
     private readonly urls: UrlFactory = browserUrls,
+    private readonly distance: CacheDistance = () => 0,
   ) {}
 
   get(key: string): CachedImage | undefined {
@@ -105,9 +112,15 @@ export class PageCache {
   }
 
   private evict(pinned: ReadonlySet<string>) {
-    for (const key of [...this.entries.keys()]) {
+    if (this.bytes <= this.maxBytes) return;
+    // Map order is recency order, and the sort is stable.
+    const candidates = [...this.entries.keys()]
+      .filter((key) => !pinned.has(key))
+      .map((key) => ({ key, distance: this.distance(key) }))
+      .sort((a, b) => b.distance - a.distance);
+    for (const { key } of candidates) {
       if (this.bytes <= this.maxBytes) return;
-      if (!pinned.has(key)) this.delete(key);
+      this.delete(key);
     }
   }
 }

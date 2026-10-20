@@ -106,6 +106,32 @@ describe('PageRenderer', () => {
     expect(renderer.stats().previewCount).toBe(3);
   });
 
+  it('over budget, drops the sharp page farthest from the reader, never a turning one', async () => {
+    const { source } = fakeSource();
+    // Room for three 1000-byte sharp pages.
+    const renderer = new PageRenderer(source, { ...desktop, maxCacheBytes: 3000 }, () => 1);
+    const sharp = (page: number) => renderer.getImage({ page })?.tier === 'sharp';
+    renderer.focus({
+      visible: [{ page: 2 }],
+      ahead: [{ page: 3 }],
+      behind: [{ page: 1 }],
+      nearby: [],
+    });
+    await vi.waitFor(() => expect([1, 2, 3].every(sharp)).toBe(true));
+
+    // Turning from 2 to 3: page 2 leaves the plan's visible set but is pinned until the turn lands.
+    renderer.pinTurn([{ page: 2 }, { page: 3 }]);
+    renderer.focus({
+      visible: [{ page: 3 }],
+      ahead: [{ page: 4 }],
+      behind: [{ page: 2 }, { page: 1 }],
+      nearby: [],
+    });
+    await vi.waitFor(() => expect(sharp(4)).toBe(true));
+    // Page 1 is farthest (behind the page behind); the page ahead, rendered last, stays.
+    expect([sharp(1), sharp(2), sharp(3), sharp(4)]).toEqual([false, true, true, true]);
+  });
+
   it('renders half pages from the full sheet with a region', async () => {
     const { source, calls } = fakeSource();
     const renderer = new PageRenderer(source, desktop, () => 1);

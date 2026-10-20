@@ -66,6 +66,13 @@ export class PageRenderer {
   private display: PixelSize = { width: 400, height: 560 };
   /** Refs on screen: their sharp images are never evicted. */
   private pinned = new Set<string>();
+  /** Refs of the turn in progress: also never evicted until it lands. */
+  private turnPinned = new Set<string>();
+  /**
+   * How far each planned ref is from the reader, in planning order: the way
+   * ahead counts as nearer than the way back. Over budget, the farthest goes.
+   */
+  private distance = new Map<string, number>();
   private destroyed = false;
   /** Running average of how long the source takes per tier, in ms. */
   private cost: Record<Tier, number> = { preview: 0, sharp: 0 };
@@ -77,7 +84,9 @@ export class PageRenderer {
     private readonly scaleStep = SCALE_STEP,
   ) {
     this.previews = new PageCache(Math.round(budget.maxCacheBytes / 4));
-    this.sharp = new PageCache(budget.maxCacheBytes);
+    this.sharp = new PageCache(budget.maxCacheBytes, undefined, (key) =>
+      this.distanceOf(key.slice(0, key.indexOf('@'))),
+    );
     // Zoom tiles are large and short-lived: room for about two of them.
     this.tiles = new PageCache(Math.round(budget.maxCacheBytes / 6));
   }
@@ -116,6 +125,7 @@ export class PageRenderer {
     const wantedSharp = new Set<string>();
     const wantedPreview = new Set<string>();
     this.pinned = new Set(plan.visible.map(refKey));
+    this.distance = new Map();
 
     // Pages that get a sharp render only need their own preview job when previews are cheap.
     const previewFirst = this.previewsPay;
@@ -138,7 +148,15 @@ export class PageRenderer {
     this.queue.retain(
       (key) => wantedSharp.has(key) || wantedPreview.has(key) || key.startsWith('thumb:'),
     );
-    this.sharp.retain((key) => wantedSharp.has(key.slice(0, key.indexOf('@'))));
+    this.sharp.retain((key) => {
+      const ref = key.slice(0, key.indexOf('@'));
+      return wantedSharp.has(ref) || this.turnPinned.has(ref);
+    });
+  }
+
+  /** Pages of the turn in progress (none once it lands): kept until it ends. */
+  pinTurn(refs: PageRef[]) {
+    this.turnPinned = new Set(refs.map(refKey));
   }
 
   /** Preview-size image for the thumbnail panel; low priority. */
@@ -231,6 +249,16 @@ export class PageRenderer {
     this.listeners.clear();
   }
 
+  private isPinned(ref: string) {
+    return this.pinned.has(ref) || this.turnPinned.has(ref);
+  }
+
+  /** Unplanned refs are the farthest of all. */
+  private distanceOf(ref: string) {
+    if (this.isPinned(ref)) return -1;
+    return this.distance.get(ref) ?? Infinity;
+  }
+
   private get previewsPay() {
     const { preview, sharp } = this.cost;
     return !preview || !sharp || preview < sharp * PREVIEW_PAYS_RATIO;
@@ -259,6 +287,7 @@ export class PageRenderer {
   private requestSharp(ref: PageRef, priority: number, wanted: Set<string>) {
     const prefix = sharpPrefix(ref);
     wanted.add(refKey(ref));
+    if (!this.distance.has(refKey(ref))) this.distance.set(refKey(ref), priority);
     const size = this.sharpTarget(ref);
     const existing = this.sharp.findByPrefix(prefix);
     if (existing && existing.width >= size.width) {
@@ -294,7 +323,7 @@ export class PageRenderer {
         // Replaces the smaller version this page had, if any.
         this.sharp.retain((k) => !k.startsWith(prefix));
         const pinned = new Set(
-          this.sharp.keys().filter((k) => this.pinned.has(k.slice(0, k.indexOf('@')))),
+          this.sharp.keys().filter((k) => this.isPinned(k.slice(0, k.indexOf('@')))),
         );
         this.sharp.set(`${prefix}${size.width}`, image.blob, image.width, image.height, pinned);
       },

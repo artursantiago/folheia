@@ -173,6 +173,14 @@ export class Flip2D implements FlipEngine {
     return this.turn !== undefined;
   }
 
+  get target() {
+    return this.wanted ?? this.current;
+  }
+
+  get turning(): readonly number[] {
+    return this.turn ? [this.turn.from, this.turn.from + 1] : [];
+  }
+
   setBook(host: FlipHost, spread: number) {
     this.cancelTurn();
     this.host = host;
@@ -830,8 +838,9 @@ export class Flip2D implements FlipEngine {
     const changed = this.current !== (completed ? turn.from + 1 : turn.from);
     this.current = completed ? turn.from + 1 : turn.from;
     this.renderStatic();
-    this.emitFlipping(false);
+    // The reader re-plans on the change, so the render queue resumes on the new plan.
     if (changed) this.emitChange();
+    this.emitFlipping(false);
     const pending = this.pending;
     this.pending = undefined;
     if (pending) pending();

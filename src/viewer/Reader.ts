@@ -107,6 +107,8 @@ export class Reader {
         this.plan();
       }),
       this.flip.onFlipStateChange((flipping) => {
+        // The pages of a turn stay cached until it lands, whatever the budget.
+        this.renderer.pinTurn(this.flip.turning.flatMap((spread) => this.refs(spread)));
         if (flipping) this.renderer.pause();
         else this.renderer.resume();
         this.state.set((s) => ({ ...s, flipping }));
@@ -473,6 +475,11 @@ export class Reader {
   /**
    * Re-plans rendering around the current spread: sharp for this spread, the
    * next two and the previous one; previews for about six pages each way.
+   *
+   * With turns queued (quick presses), the plan moves on to the spread the
+   * next turn reveals and heads toward where the turns end: the spread on
+   * screen now is about to be covered, and the queue only gets a moment
+   * between turns.
    */
   private plan() {
     const s = this.flip.spread;
@@ -481,15 +488,20 @@ export class Reader {
       this.queueRefresh();
       return;
     }
-    const ahead = [...this.refs(s + 1), ...this.refs(s + 2)];
-    const behind = this.refs(s - 1);
+    const target = this.flip.target;
+    const step = target < s ? -1 : 1;
+    const focus = target === s ? s : s + step;
+    // The destination comes first when it lies beyond the usual reach.
+    const far = Math.abs(target - focus) > 2 ? this.refs(target) : [];
+    const ahead = [...far, ...this.refs(focus + step), ...this.refs(focus + 2 * step)];
+    const behind = this.refs(focus - step);
     this.renderer.focus({
-      visible: this.refs(s),
+      visible: this.refs(focus),
       ahead,
       behind,
       nearby: [
-        ...this.previewRefs(s + 3, 1, PREVIEW_PAGES - ahead.length),
-        ...this.previewRefs(s - 2, -1, PREVIEW_PAGES - behind.length),
+        ...this.previewRefs(focus + 3 * step, step, PREVIEW_PAGES - ahead.length),
+        ...this.previewRefs(focus - 2 * step, -step as 1 | -1, PREVIEW_PAGES - behind.length),
       ],
     });
     this.queueRefresh();

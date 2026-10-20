@@ -41,6 +41,18 @@ describe('PageCache', () => {
     expect(cache.peek('visible')).toBeDefined();
   });
 
+  it('with a distance, evicts the farthest entry first, whatever its recency', () => {
+    const distance: Record<string, number> = { behind: 3, ahead: 1, far: 2 };
+    const cache = new PageCache(300, fakeUrls(), (key) => distance[key] ?? Infinity);
+    cache.set('ahead', blob(100), 1, 1);
+    cache.set('behind', blob(100), 1, 1);
+    cache.set('far', blob(100), 1, 1);
+    cache.get('behind');
+    cache.set('visible', blob(100), 1, 1, new Set(['visible']));
+    expect(cache.peek('behind')).toBeUndefined();
+    expect(cache.keys().sort()).toEqual(['ahead', 'far', 'visible']);
+  });
+
   it('replacing a key frees the old image', () => {
     const urls = fakeUrls();
     const cache = new PageCache(1000, urls);

@@ -28,6 +28,10 @@ export interface FlipHost {
 export interface FlipEngine {
   readonly spread: number;
   readonly isFlipping: boolean;
+  /** Where queued turns will end up (the current spread when none are queued). */
+  readonly target: number;
+  /** Spreads the turn in progress moves between (empty at rest). */
+  readonly turning: readonly number[];
   setBook(host: FlipHost, spread: number): void;
   setSize(size: PageSlotSize): void;
   goTo(spread: number, options?: { animate?: boolean }): Promise<void>;
