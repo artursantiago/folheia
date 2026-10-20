@@ -33,7 +33,7 @@ Open source (MIT) personal reading collection: books, comics, manga and magazine
    - Low-res preview first, then the sharp version. Exception, measured: in image-heavy files (comics, scans) a preview costs about as much as the sharp page, so there the sharp render also makes the preview (the renderer measures both).
    - Never show an undecoded image: decode off screen and move the same `<img>` between page nodes.
    - devicePixelRatio capped at 2; ~5 MP max per canvas on iOS. Zero a canvas's width/height after converting it, then drop it.
-   - Off-screen pages are kept as compressed images (WebP where encoding is supported, JPEG on Safari).
+   - Off-screen pages are kept as compressed images: JPEG in every browser (WebP was dropped, P11: Chromium's encoder costs 10–13× as much for little gain).
    - PDF.js runs in a Web Worker and uses range requests. CBZ is read with random access, never the whole ZIP in memory.
 5. **Visual identity is a feature.** The default theme is "Ex-libris" (library language: catalog cards, accession numbers, perforated borders, typewriter numerals). Light uses the Ateliê palette, dark uses the Sebo-à-noite palette.
    - Every screen is built only from our own components in `src/ui/components/`.

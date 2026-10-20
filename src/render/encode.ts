@@ -6,7 +6,11 @@ export interface EncodedImage {
 
 let webpSupport: Promise<boolean> | undefined;
 
-/** Safari can't encode WebP (it silently returns PNG), so we probe once. */
+/**
+ * Safari can't encode WebP (it silently returns PNG), so we probe once. Only
+ * the lab uses it: page images are JPEG everywhere, since Chromium's WebP
+ * encoder costs 10–13× as much for little gain (measured in the lab, P0).
+ */
 export function supportsWebpEncoding(): Promise<boolean> {
   webpSupport ??= new Promise((resolve) => {
     const canvas = document.createElement('canvas');
@@ -16,12 +20,12 @@ export function supportsWebpEncoding(): Promise<boolean> {
   return webpSupport;
 }
 
-/** Compresses a rendered canvas and releases its pixels. */
+/** Compresses a rendered canvas (JPEG unless told otherwise) and releases its pixels. */
 export async function encodeCanvas(
   canvas: HTMLCanvasElement,
   quality: number,
+  type: 'image/jpeg' | 'image/png' = 'image/jpeg',
 ): Promise<EncodedImage> {
-  const type = (await supportsWebpEncoding()) ? 'image/webp' : 'image/jpeg';
   const { width, height } = canvas;
   const blob = await new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(

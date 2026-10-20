@@ -61,7 +61,7 @@ A identidade é um **ponto forte do produto**: bater o olho e reconhecer "isso �
 - Fila única de renderização com prioridade (atual > próxima > anterior > miniaturas), cancelável e **pausada durante a animação**.
 - Prévia em baixa resolução primeiro, depois a nítida.
 - DPR limitado a 2; ~5 MP por canvas no iOS; canvas zerado e liberado depois de convertido.
-- Páginas fora da tela guardadas como imagem comprimida (WebP onde houver _encoder_; JPEG no Safari, que não codifica WebP).
+- Páginas fora da tela guardadas como imagem comprimida, em JPEG em todos os navegadores. O WebP saiu no P11 (20/10/2026): no Chromium ele custava 10–13× mais que o JPEG e quase não economizava espaço.
 - PDF.js em Web Worker; PDFs por URL com _range requests_ (só baixa os bytes necessários).
 - CBZ com leitura de acesso aleatório: só a imagem pedida é lida do arquivo, sem carregar o ZIP inteiro.
 - **Metas:** 1ª página (prévia) em menos de 1,5 s e nítida em menos de 3 s; virada a ~60 fps; no máximo ~6 páginas nítidas mais as miniaturas vivas ao mesmo tempo; nenhum recarregamento forçado no iPad ao folhear 300 páginas pesadas com zoom de 4x. Régua de memória: iPads de 3–4 GB. Teste final no **iPad Air M1** do Artur.
