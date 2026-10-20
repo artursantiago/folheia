@@ -51,6 +51,7 @@ export class PageRenderer {
   private queue = new RenderQueue(1);
   private previews: PageCache;
   private sharp: PageCache;
+  private tiles: PageCache;
   private listeners = new Set<Listener>();
   private failures = new Set<string>();
   private display: PixelSize = { width: 400, height: 560 };
@@ -64,6 +65,8 @@ export class PageRenderer {
   ) {
     this.previews = new PageCache(Math.round(budget.maxCacheBytes / 4));
     this.sharp = new PageCache(budget.maxCacheBytes);
+    // Zoom tiles are large and short-lived: room for about two of them.
+    this.tiles = new PageCache(Math.round(budget.maxCacheBytes / 6));
   }
 
   /** Logical size of a ref (a half page is half as wide). */
@@ -135,6 +138,56 @@ export class PageRenderer {
     });
   }
 
+  /**
+   * Renders just the visible part of a zoomed page at screen resolution.
+   * Only one tile per page is kept; a new request replaces the old one.
+   */
+  renderTile(ref: PageRef, region: PageRegion, tile: PixelSize, onReady: (url: string) => void) {
+    const key = `zoom:${refKey(ref)}`;
+    this.queue.cancel(key);
+    // Keep within the per-canvas budget.
+    const pixels = tile.width * tile.height;
+    const shrink =
+      pixels > this.budget.maxCanvasPixels ? Math.sqrt(this.budget.maxCanvasPixels / pixels) : 1;
+    const width = Math.max(1, Math.floor(tile.width * shrink));
+    const height = Math.max(1, Math.floor(tile.height * shrink));
+    const half = regionOf(ref);
+    // Compose with the half-page region when the sheet holds two pages.
+    const sheetRegion = half
+      ? {
+          x: half.x + region.x * half.width,
+          y: region.y,
+          width: region.width * half.width,
+          height: region.height,
+        }
+      : region;
+    const target = {
+      width: width / sheetRegion.width,
+      height: height / sheetRegion.height,
+      region: sheetRegion,
+    };
+    this.queue.schedule({
+      key,
+      priority: -1,
+      run: async (signal) => {
+        const canvas = await this.source.render(ref.page, target, signal);
+        if (signal.aborted || this.destroyed) {
+          canvas.width = canvas.height = 0;
+          return;
+        }
+        const image = await encodeCanvas(canvas, SHARP_QUALITY);
+        if (signal.aborted || this.destroyed) return;
+        const entry = this.tiles.set(key, image.blob, image.width, image.height);
+        onReady(entry.url);
+      },
+    });
+  }
+
+  clearTiles() {
+    this.queue.retain((key) => !key.startsWith('zoom:'));
+    this.tiles.clear();
+  }
+
   pause() {
     this.queue.pause();
   }
@@ -158,6 +211,7 @@ export class PageRenderer {
     this.queue.clear();
     this.previews.clear();
     this.sharp.clear();
+    this.tiles.clear();
     this.listeners.clear();
   }
 
