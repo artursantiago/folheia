@@ -167,6 +167,13 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
      - trocar o placeholder por papel liso.
    - _Ideia (Internet Archive):_ versões nítidas em **degraus de escala fixos**, em vez do tamanho exato de tela, para reaproveitar mais e re-renderizar menos.
    - _Medir antes e depois:_ no iPad real, com o Web Inspector.
+   - _Linha de base (20/10/2026)_, com `fixtures/personal/invincible-vol-1.pdf` (HQ real, 100 MB) no teste `e2e/engine.spec.ts` (`FOLHEIA_FIXTURE=...`). A HQ real é 2 a 3 vezes mais lenta que o PDF sintético.
+
+     | Navegador    | 1ª prévia | 1ª nítida |
+     | ------------ | --------- | --------- |
+     | Chromium     | 1190 ms   | 2008 ms   |
+     | WebKit       | 886 ms    | 1620 ms   |
+     | iPad emulado | 858 ms    | 1574 ms   |
 4. **Ponta e sombra aparecem secas.** A ponta levantada no hover e as sombras da dobra surgem de uma vez, sem transição.
    - _Ideia:_ animar a ponta até a posição de "espiada" com easing e fazer as sombras crescerem conforme o tamanho da dobra.
 
