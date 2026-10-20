@@ -306,6 +306,14 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
    - **Proposta (A, preferida):** pedir em paralelo, enquanto a fila desenha, os bytes das páginas que o plano já quer (~6 à frente). Baixa só o que está para ser lido.
    - **Alternativa (B):** baixar o arquivo inteiro em segundo plano depois de abrir. Mais simples, mas gasta dados: 17 MB no Mágico de Oz, 100 MB ou mais numa HQ.
    - Arquivos locais não têm esse custo.
+8. **Backlog: a primeira abertura de um PDF de HQ é lenta no iPad** (visto em 20/10/2026, depois do A2; não é regressão).
+   - **Medido:** no lab do iPad, com a Invincible, a 1ª prévia saiu em 3,7 s e a 1ª nítida em 7,3 s. As três versões do dia abrem igual (Chrome com perfil de iPad).
+   - **Causas:**
+     - o PDF.js leva ~1 s por página no aparelho;
+     - a primeira página ainda paga o início do worker e dos decodificadores (WebAssembly);
+     - numa HQ, a primeira página é renderizada **duas vezes**, primeiro a prévia e depois a nítida, porque o app ainda não sabe que a prévia custa o mesmo que a nítida.
+   - **Ideia (parte do P4):** antes do primeiro render, ver se a página é uma imagem só cobrindo tudo (`getOperatorList`). Se for, ir direto para a nítida e tirar a prévia dela. A nítida chegaria em ~3,7 s em vez de 7,3 s, e a primeira imagem no mesmo tempo de hoje.
+   - Na primeira visita à `/next/` (ou depois de uma atualização), o motor de PDF e os decodificadores também são baixados de novo.
 
 **A confirmar no iPad Air M1** (PWA, em HTTPS):
 
