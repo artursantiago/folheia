@@ -676,6 +676,8 @@ Página em pé (1803×2773): WebP 285 ms (397 KB); JPEG 22 ms (718 KB) no Chromi
 
 **Nova ordem sugerida:** P11 → P1 + P5 → P3 → 18b em PNG → P6/P4 → P7 → P2 (só se ainda fizer falta) → P8 → P9 → P10.
 
+**Feito em 20/10/2026:** P11, P1 + P5, P3 e P6, cada um com medição antes e depois em `plano-mvp.md` §8 A2. O 18b espera a medição no iPad. Um achado novo: em página dupla, as viradas apressadas ficam limitadas pela pausa da fila (só um job cabe entre duas viradas emendadas), seja qual for o custo do render. Isso puxa o **P8** para cima.
+
 ## 7. O que encaixa no Folheia
 
 **Mangá encaixa.** Um volume de mangá em CBZ ou PDF é um livro paginado da direita para a esquerda, e o Folheia já tem:

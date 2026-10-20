@@ -218,17 +218,80 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
 
 O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% do render é o PDF.js decodificar as imagens embutidas (~170 ms por página); pintar e guardar custa pouco. A ordem abaixo segue a recomendação do P0, e cada passo é uma melhoria separada, com medição antes e depois (`e2e/flip.spec.ts` e `e2e/engine.spec.ts` com a Invincible):
 
-1. **P11: JPEG também no Chromium.** Hoje o Chrome do computador grava a página em WebP, que é 10–13× mais lento que JPEG (140–290 ms por página) e quase não economiza espaço. Não muda o iPad, que já usa JPEG. Esforço mínimo.
-2. **P1 + P5: menos página em branco ao virar rápido.**
-   - **P1:** calcular o plano novo **antes** de retomar a fila no fim da virada (hoje um job do plano velho roda primeiro) e planejar pelo destino das viradas enfileiradas.
-   - **P5:** despejar do cache pela distância da página atual (hoje o LRU pode jogar fora a página da frente antes da de trás) e prender as páginas da virada.
-   - Alvo: o ritmo "apressado" do `flip.spec`, que hoje termina em branco 8 de 10 vezes no desktop e 3 de 10 no iPad.
-3. **P3: CBZ sem recompressão.** O arquivo original vira o cache e é exibido com `createImageBitmap`. Fica sem perda e 70–200 ms mais rápido por página, sem memória extra.
-4. **18b: opção "qualidade máxima (sem perda)" em PNG.** Ver o item 18b, em E. Antes, medir no iPad real, em HTTPS, quanto o `toBlob` PNG custa no Safari.
-5. **P6: manter a página visível decodificada durante o zoom.** Tiles e re-renders ficam ~10× mais baratos (de ~170 para 2–17 ms). Custa ~25–30 MB por página segurada no worker, a medir no aparelho.
+**Como foi medido (20/10/2026):** `e2e/engine.spec.ts` e `e2e/flip.spec.ts` com a Invincible em PDF (`FOLHEIA_FIXTURE=...`), mesma máquina do P0, um projeto por vez (`--workers=1`), e cada "antes" rodado do commit anterior numa cópia separada do repositório. Para o CBZ, as primeiras 160 páginas da mesma HQ exportadas em JPEG 0,9 a 1988×3058 (`fixtures/personal/`, fora do git). "Apressado" é o ritmo de 10 viradas a cada 0,45 s; "nítida depois" é quanto a última página leva para ficar nítida depois que a virada acaba.
+
+1. **P11: JPEG também no Chromium.** Feito. As páginas guardadas são JPEG em todos os navegadores; o WebP saiu.
+   - No Chrome de tela comum (1×) a página é pequena e quase não muda: 1ª nítida 1512 → 1503 ms.
+   - No Chrome Retina (2×, 1440×900), onde a página tem o tamanho do P0:
+
+     | Chrome Retina                     | Antes   | Depois  |
+     | --------------------------------- | ------- | ------- |
+     | 1ª nítida (`engine`)              | 1574 ms | 1450 ms |
+     | Apressado: nítida depois (última) | 967 ms  | 683 ms  |
+
+   - Não muda nada no iPad, que já usava JPEG.
+
+2. **P1 + P5: menos página em branco ao virar rápido.** Feito.
+   - **P1:** o motor da virada avisa da página nova **antes** de dizer que a virada acabou, então a fila volta a andar já com o plano novo. Com viradas enfileiradas, o plano passa para o spread que a próxima virada vai mostrar e segue na direção de onde as viradas vão parar.
+   - **P5:** a cache nítida despeja a página mais longe do leitor (a ordem do plano: a da frente conta como mais perto que a de trás), não a usada há mais tempo. As páginas da virada em andamento ficam presas até ela assentar. Com JPEG, a cache quase nunca enche; o P5 protege o PNG do 18b e as páginas grandes.
+
+     | Navegador    | Apressado: fim nítida / prévia / nada | Nítida depois | Vazio na virada      |
+     | ------------ | ------------------------------------- | ------------- | -------------------- |
+     | Chromium     | 1/1/8 → 1/1/8                         | 717 → 267 ms  | 198 → 198 (de 312)   |
+     | WebKit       | 1/1/8 → 1/1/8                         | 652 → 227 ms  | 320 → 318 (de ~500)  |
+     | iPad emulado | 3/4/3 → **10/0/0**                    | 0 → 0 ms      | 63 → **0** (de ~460) |
+
+   - Leitura calma continua 12/12 nítidas em todos. Abrir não muda (1ª nítida 1250–1449 ms).
+   - **Em página dupla (desktop), o apressado não melhora:** a fila fica pausada durante a virada, e com viradas emendadas só cabe um job entre uma e outra. Cada virada mostra duas páginas novas, então uma fica sempre em branco. Isso não depende do custo do render: no CBZ, com render de 16 ms, dá o mesmo 1/1/8. Quem resolve é o **P8** (deixar trabalhar durante a virada o que não pesa na thread principal); ler a imagem original de um CBZ seria o primeiro candidato.
+
+3. **P3: CBZ sem recompressão.** Feito.
+   - A imagem da página dentro do CBZ **é** a página nítida, sem decodificar, desenhar e comprimir de novo: sem perda, e o único custo que sobra é o navegador decodificar a imagem.
+   - Vale para JPEG, PNG, WebP e AVIF de até `maxOriginalPixels`: **8 MP no iOS**, 16 MP no resto (uma HQ escaneada a ~2400 px de largura). Imagens maiores, ou em formatos que nem todo navegador abre (GIF, JXL, BMP), continuam pelo canvas.
+   - Não faz mais prévia separada para as páginas nítidas (a original fica pronta antes). As miniaturas preferem a prévia.
+   - CBZ da Invincible (1988×3058):
+
+     | Navegador    | 1ª nítida (`engine`) | Apressado: fim nítida / prévia / nada |
+     | ------------ | -------------------- | ------------------------------------- |
+     | Chromium     | 101 → **16 ms**      | 1/1/8 → 1/1/8                         |
+     | WebKit       | 223 → **60 ms**      | 1/1/8 → 1/1/8                         |
+     | iPad emulado | 209 → **32 ms**      | 10/0/0 → 10/0/0                       |
+
+   - **Memória:** a imagem original é decodificada inteira na tela. No iPad deitado, uma página dessas tem 6 MP (24 MB decodificada) contra 2,3 MP (9 MB) da nítida de antes. O leitor mantém decodificados até 4 spreads (o visível, 1 atrás e 2 à frente), então o pior caso sobe de ~72 MB para ~190 MB. É memória de imagem, fora do teto de canvas do iOS, mas **precisa ser conferida no iPad** (Web Inspector → Timelines → Memory). Se pesar, basta baixar `maxOriginalPixels` no iOS (abaixo dele, volta o caminho do canvas).
+
+4. **18b: opção "qualidade máxima (sem perda)" em PNG.** Ver o item 18b, em E. **Esperando a medição no iPad.**
+   - O `#/lab` ganhou o botão **Medir PNG sem perda (18b)** (`e2e/lossless.spec.ts` roda o mesmo no desktop, com `FOLHEIA_18B=1`). Ele mede, nos tamanhos do iPad, quanto o `toBlob` JPEG e o PNG levam, **quanto travam a thread principal**, o tamanho e o tempo de decodificar.
+   - No desktop (Invincible, mediana de 5 páginas):
+
+     | Página (iPad)       | Chromium: JPEG / PNG                      | WebKit: JPEG / PNG                         |
+     | ------------------- | ----------------------------------------- | ------------------------------------------ |
+     | deitada (1221×1877) | 20 / 30 ms (trava 9 / 29), 407 / 1555 KB  | 26 / 70 ms (trava 26 / 70), 656 / 2173 KB  |
+     | em pé (1803×2773)   | 39 / 55 ms (trava 22 / 30), 718 / 2374 KB | 45 / 85 ms (trava 45 / 85), 1209 / 2416 KB |
+
+   - **No WebKit, o `toBlob` trava a thread principal o tempo todo** (a codificação não sai dela). O PNG custa +40–45 ms de trava por página nítida, além de 2–3× mais tempo para decodificar. No iPad de verdade deve ser mais.
+
+5. **P6: manter a página visível decodificada durante o zoom.** Feito.
+   - Com zoom, as páginas do spread na tela ficam analisadas e decodificadas no PDF.js, e cada tile novo só pinta. Ao sair do zoom, virar ou fechar, elas são liberadas.
+   - Só o spread visível e só enquanto há zoom: nessa hora os vizinhos já devolveram as imagens deles.
+   - `e2e/zoom-tiles.spec.ts`: depois de cada arraste com zoom de 200%, quanto até todos os tiles novos chegarem (inclui os 220 ms que o zoom espera o gesto parar):
+
+     | Navegador    | Antes  | Depois     |
+     | ------------ | ------ | ---------- |
+     | Chromium     | 890 ms | **270 ms** |
+     | WebKit       | 767 ms | **276 ms** |
+     | iPad emulado | 492 ms | **258 ms** |
+
+     Tirando a espera fixa, o trabalho cai de 270–670 ms para 40–55 ms.
+
+   - **Memória:** ~25–30 MB por página segurada (estimativa do P0), até 2 páginas. **A conferir no iPad.**
+
 6. **Depois, só se ainda fizer falta:** P7 (`enableHWA` A/B), P2 (janela quente em bitmap), P8, P9, P10, na ordem do §6.5.
 
 **A confirmar no iPad Air M1** (PWA, em HTTPS):
+
+- **18b:** no site publicado, abrir a Invincible no `#/lab`, avançar alguns spreads e tocar em **Medir PNG sem perda (18b)**. Mandar as linhas que aparecem (uma foto basta). Elas decidem se o PNG entra.
+- **P3:** a memória com um CBZ grande no iPad deitado, virando páginas (Web Inspector → Timelines → Memory). Esperado: até ~190 MB de imagens.
+- **P6:** a memória com zoom numa HQ em PDF, e se o zoom continua sem derrubar a página.
+- **P1 + P5:** virar rápido (toques seguidos) numa HQ em pé deve terminar nítido quase sempre.
 
 - O zoom por pinça não derruba mais a página (corrigido em 20/10/2026; parecia ok no primeiro teste). Se cair de novo, conectar no Mac e ver o motivo no Web Inspector.
 - O modo imersivo, depois de atualizar o PWA: barra do sistema some, barra fixa com slider, opção "some sozinha" nos Ajustes.
@@ -308,7 +371,7 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 16. Efeito **3D** (three.js, carregado sob demanda).
 17. Temas alternativos: **Cordel**, HQ, mangá.
 18. Exportar flipbook autônomo (.zip).
-    18b. **Opção "qualidade máxima (sem perda)"**, desligada por padrão; o padrão continua o de hoje (JPEG/WebP). Pedida pelo Artur em 20/10/2026, depois da comparação de qualidade com a Invincible: a diferença é pequena, mas visível nos traços.
+    18b. **Opção "qualidade máxima (sem perda)"**, desligada por padrão; o padrão continua o de hoje (JPEG). Pedida pelo Artur em 20/10/2026, depois da comparação de qualidade com a Invincible: a diferença é pequena, mas visível nos traços.
     - **Como fazer sem perda:** não recomprimir. JPEG 1,0 ainda perde um pouco e ocupa 2–3× mais no cache. A saída é o **P2** do `estudo-mihon.md` §6.5: a janela quente (spread visível + vizinhos) fica como bitmap descomprimido, exibido num canvas `bitmaprenderer`, e só o que sai da janela é comprimido. No CBZ, o **P3**: o arquivo original é o cache, sem nenhuma recompressão.
     - **Memória:** uma página decodificada custa o mesmo num `<img>` ou num bitmap (largura × altura × 4 bytes: na Invincible no iPad, 8,7 MB por página do spread deitado e 19,1 MB em pé, medido no P0). O risco é segurar páginas demais, não o formato. As defesas:
       - orçamento explícito de pixels descomprimidos (no iPad, cerca de 3 spreads), com despejo por distância (**P5**) e as páginas da virada presas;
