@@ -18,6 +18,8 @@ export interface OpenPdfOptions {
   onPassword?: PasswordPrompt;
   /** Bytes downloaded / total, for URL sources. */
   onProgress?: (loaded: number, total: number) => void;
+  /** Lab only: false makes PDF.js decode JPEGs in JS, as it does outside a secure context. */
+  imageDecoder?: boolean;
 }
 
 /** Ranged reads straight from a local File, so big PDFs are never loaded whole. */
@@ -67,6 +69,7 @@ export async function openPdf(input: PdfInput, options: OpenPdfOptions = {}): Pr
     disableAutoFetch: true,
     isEvalSupported: false,
     enableXfa: false,
+    ...(options.imageDecoder === false && { isImageDecoderSupported: false }),
   };
   let task;
   if ('file' in input) {
@@ -151,6 +154,11 @@ export class PdfSource implements PageSource {
   private sizes: (PageSize | undefined)[];
   private fallbackSize: PageSize = { width: 595, height: 842 };
   private sizeListeners = new Set<() => void>();
+  /**
+   * Drops PDF.js' parsed page (operator list and decoded images) after each
+   * render. Off, a second render of the page only paints; the lab uses it.
+   */
+  cleanupAfterRender = true;
 
   constructor(
     private readonly doc: PDFDocumentProxy,
@@ -226,13 +234,19 @@ export class PdfSource implements PageSource {
       throw error;
     } finally {
       signal.removeEventListener('abort', onAbort);
-      page.cleanup();
+      if (this.cleanupAfterRender) page.cleanup();
     }
     if (!this.sizes[index]) {
       this.sizes[index] = { width: base.width, height: base.height };
       for (const listener of this.sizeListeners) listener();
     }
     return canvas;
+  }
+
+  /** Frees what PDF.js keeps for a page rendered with cleanupAfterRender off. */
+  async releasePage(index: number) {
+    const page = await this.doc.getPage(index + 1);
+    page.cleanup();
   }
 
   private textCache = new Map<number, Promise<unknown>>();
