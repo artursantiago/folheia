@@ -31,6 +31,7 @@ O site tem dois endereços. Os dois são montados a cada deploy:
 - **Service workers:** cada canal tem o seu. O da estável não responde pelas páginas de `/next/`.
 - **Regra para o futuro:** **todo armazenamento novo** (IndexedDB, OPFS, caches) usa um nome por canal, como o `localStorage` já faz. Os dois canais estão na mesma origem e, sem isso, uma migração de dados da prévia estragaria a estável.
 - **Build local:** usa o canal `dev`, com o mesmo prefixo da estável.
+- **Transição (uma vez só):** quem abriu o app antes da 0.1.0 tem um service worker antigo, que ainda não sabe ignorar `/next/`. Antes de abrir a prévia, aceite o aviso "Nova edição do Folheia disponível" na estável. Visto no teste de 20/10/2026.
 
 ## 3. Changelog
 
