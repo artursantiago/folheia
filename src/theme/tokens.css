@@ -105,6 +105,9 @@
   --duration-base: 200ms;
   --duration-slow: 400ms;
   --duration-flip: 600ms;
+
+  /* How long a wait can last before a loading hint shows up. */
+  --delay-waiting: 300ms;
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in-out: cubic-bezier(0.45, 0, 0.25, 1);
 }

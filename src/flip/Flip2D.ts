@@ -96,6 +96,16 @@ export class Flip2D implements FlipEngine {
   private decorations: (() => void)[] = [];
   /** Where repeated next/prev presses want to end up; turns run one after another. */
   private wanted: number | undefined;
+  /**
+   * Page images by URL, decoded before they ever reach the screen. The same
+   * element moves between page nodes (resting, turning, resting again), so a
+   * turn never shows a frame where the browser is still decoding.
+   */
+  private images = new Map<string, HTMLImageElement>();
+  private decoded = new WeakSet<HTMLImageElement>();
+  /** Image each page showed last: stays up until a better one is decoded. */
+  private shown = new Map<number, HTMLImageElement>();
+  private refreshQueued = false;
 
   constructor(container: HTMLElement) {
     this.stage = el('fx-stage', container);
@@ -262,12 +272,15 @@ export class Flip2D implements FlipEngine {
     for (const node of this.book.querySelectorAll<HTMLElement>('.fx-page[data-page]')) {
       this.fillPage(node, Number(node.dataset.page));
     }
+    this.warmNeighbors();
   }
 
   destroy() {
     this.cancelTurn();
     this.clearDecorations();
     this.stage.remove();
+    this.images.clear();
+    this.shown.clear();
     this.changeListeners.clear();
     this.flipListeners.clear();
   }
@@ -367,13 +380,13 @@ export class Flip2D implements FlipEngine {
   private fillPage(node: HTMLElement, page: number) {
     const host = this.host;
     if (!host) return;
+    const current = node.querySelector<HTMLImageElement>('img.fx-img');
     if (host.isBlank(page)) {
       node.setAttribute('data-blank', '');
-      node.querySelector('img:not(.fx-tile)')?.remove();
+      current?.remove();
       return;
     }
     const url = host.imageOf(page);
-    let img = node.querySelector<HTMLImageElement>('img:not(.fx-tile)');
     if (!url && host.isFailed?.(page)) {
       node.removeAttribute('data-loading');
       node.setAttribute('data-failed', '');
@@ -383,19 +396,88 @@ export class Flip2D implements FlipEngine {
       }
       return;
     }
-    if (!url) {
+    const wanted = url ? this.imageFor(url) : undefined;
+    const best = wanted && this.decoded.has(wanted) ? wanted : this.shown.get(page);
+    if (!best) {
+      // Plain paper; the page number fades in if the wait drags on (CSS).
       node.setAttribute('data-loading', '');
+      node.dataset.label = host.pageLabel(page);
       return;
     }
     node.removeAttribute('data-loading');
-    if (!img) {
-      img = document.createElement('img');
-      img.alt = host.pageLabel(page);
-      img.decoding = 'async';
-      img.draggable = false;
-      node.appendChild(img);
+    if (current === best) return;
+    best.alt = host.pageLabel(page);
+    // Moving the element keeps its decoded pixels; the old one just leaves.
+    node.insertBefore(best, node.firstChild);
+    current?.remove();
+    this.shown.set(page, best);
+  }
+
+  /** The image element for a URL, decoding it off screen the first time. */
+  private imageFor(url: string): HTMLImageElement {
+    let img = this.images.get(url);
+    if (img) return img;
+    img = document.createElement('img');
+    img.className = 'fx-img';
+    img.alt = '';
+    img.draggable = false;
+    img.decoding = 'async';
+    img.src = url;
+    this.images.set(url, img);
+    const created = img;
+    created.decode().then(
+      () => {
+        if (this.images.get(url) !== created) return;
+        this.decoded.add(created);
+        this.queueRefresh();
+      },
+      () => undefined,
+    );
+    return img;
+  }
+
+  private queueRefresh() {
+    if (this.refreshQueued) return;
+    this.refreshQueued = true;
+    requestAnimationFrame(() => {
+      this.refreshQueued = false;
+      if (this.host) this.refreshImages();
+    });
+  }
+
+  /** Spreads whose images are kept decoded: the next turn, either way, finds them ready. */
+  private warmSpreads(): number[] {
+    return [this.current - 1, this.current, this.current + 1, this.current + 2];
+  }
+
+  /**
+   * Decodes the neighbors' images ahead of time and lets go of the ones far
+   * away (their URLs are revoked by the renderer's cache anyway).
+   */
+  private warmNeighbors() {
+    const host = this.host;
+    if (!host) return;
+    const pages = new Set<number>();
+    const urls = new Set<string>();
+    for (const spread of this.warmSpreads()) {
+      for (const page of host.spreads[spread]?.pages ?? []) {
+        pages.add(page);
+        if (host.isBlank(page)) continue;
+        const image = host.imageOf(page);
+        if (image) {
+          urls.add(image);
+          this.imageFor(image);
+        }
+      }
     }
-    if (img.getAttribute('src') !== url) img.src = url;
+    for (const [page, img] of this.shown) {
+      if (pages.has(page)) urls.add(img.getAttribute('src') ?? '');
+      else if (!img.isConnected) this.shown.delete(page);
+    }
+    for (const [url, img] of this.images) {
+      if (urls.has(url) || img.isConnected) continue;
+      this.images.delete(url);
+    }
   }
 
   private needsCrossfade(a: number, b: number): boolean {

@@ -89,15 +89,24 @@
 }
 
 .fx-page[data-loading]::after {
-  content: '';
+  content: attr(data-label);
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 22px,
-    var(--color-page-line) 22px 23px
-  );
-  opacity: 0.35;
+  display: grid;
+  place-items: center;
+  color: var(--color-page-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  opacity: 0;
+
+  /* Plain paper first; the page number only shows if the wait drags on. */
+  animation: fx-waiting var(--duration-base) var(--ease-out) var(--delay-waiting) forwards;
+}
+
+@keyframes fx-waiting {
+  to {
+    opacity: 0.45;
+  }
 }
 
 /* Gentle shading toward the spine, like a real binding. */
@@ -139,7 +148,6 @@
   inset: 0;
   overflow: visible;
   pointer-events: none;
-  filter: drop-shadow(-4px 2px 10px var(--color-page-fold));
 }
 
 .fx-strip {
