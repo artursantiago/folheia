@@ -144,20 +144,88 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
 - **Range requests próprios para URLs**: servidores como o Wikimedia não expõem `Accept-Ranges` via CORS; sem isso, o PDF.js baixava o arquivo inteiro (Peter Pan: ~2 MB baixados para abrir, em vez de 30 MB).
 - **Viradas rápidas se acumulam**: três toques seguidos viram três páginas.
 
-## 8. Backlog (por prioridade aproximada)
+## 8. Backlog
 
-1. Biblioteca local "Recentes" (IndexedDB/OPFS) e **estante de lombadas** na lateral, que também serve aos exemplos.
-2. Busca de texto no PDF.
-3. Som de virar página (asset próprio).
-4. Painel **Paginação**: interruptor manual de spreads + "deslocar uma página".
-5. Modo **rolagem vertical** (webtoon e PDF).
-6. Efeito **3D** (three.js, carregado sob demanda).
-7. Temas alternativos: **Cordel**, HQ, mangá.
-8. Exportar flipbook autônomo (.zip).
-9. GoatCounter (métricas sem cookies), se houver interesse.
-10. CBR/CB7 com build própria do libarchive (BSD-2), se houver demanda.
-11. Exemplo de HQ em CBZ no carrossel; logo/ícone.
-12. **App nativo com Capacitor** (APK Android primeiro, depois iOS); ver §6.
+> Reescrito em 20/10/2026 depois do primeiro teste do Artur no iPad Air M1 (PWA instalado) e no navegador. Cada item é para ser **sabatinado numa sessão própria** antes de implementar. As notas técnicas são pistas do que provavelmente causa cada problema, não decisões.
+
+### A. Correções vistas no teste (prioridade alta)
+
+1. **Barra de status do iPad por cima do app (PWA).** No modo instalado, a barra do sistema (hora, bateria) fica sobre o conteúdo, com blur.
+   - _Pista:_ o `index.html` usa `apple-mobile-web-app-status-bar-style: black-translucent` com `viewport-fit=cover`, e o topo das telas (início e leitor) não reserva `env(safe-area-inset-top)`.
+   - _Decidir:_ reservar o espaço (padding no topo) ou trocar o estilo da barra para `default`.
+2. **"Piscada" quando a página fica nítida.** Ao virar, aparece a imagem, e depois ela pisca quando a versão melhor chega.
+   - _Pista:_ a troca de prévia para nítida muda o `src` da mesma `<img>`, e o navegador mostra um quadro vazio enquanto decodifica.
+   - _Ideia:_ decodificar a nova imagem fora da tela (`img.decode()`) e fazer um crossfade curto por cima da prévia.
+3. **Lentidão e "folha de caderno" ao virar.** A sequência visível é: pauta de caderno (o placeholder de carregamento) → texto em baixa qualidade → nítida, depois de um tempo.
+   - _Pistas:_ o placeholder com pautas (`.fx-page[data-loading]`) parece conteúdo errado. Hoje só 1 spread à frente é preparado em nitidez. Cada página nítida passa por canvas → WebP/JPEG → `<img>`, e esse ciclo de codificar/decodificar custa caro no iPad.
+   - _Ideias:_
+     - preparar 2 spreads à frente;
+     - manter prévias de ±6 páginas;
+     - mostrar a página visível direto como `ImageBitmap`;
+     - codificar em um worker (`OffscreenCanvas`);
+     - trocar o placeholder por papel liso.
+   - _Medir antes e depois:_ no iPad real, com o Web Inspector.
+4. **Ponta e sombra aparecem secas.** A ponta levantada no hover e as sombras da dobra surgem de uma vez, sem transição.
+   - _Ideia:_ animar a ponta até a posição de "espiada" com easing e fazer as sombras crescerem conforme o tamanho da dobra.
+
+### B. Leitura imersiva (prioridade alta)
+
+5. **Modo "só o livro", em todos os dispositivos.** Além da tela cheia atual, um modo em que o livro ocupa a tela inteira: sem título, sem barra e sem as margens do palco. Num iPad na horizontal ou num notebook, as duas páginas usam todo o espaço e não é preciso ficar dando zoom.
+   - Os controles saem de um **botão flutuante** (uma "bolinha"), que pode ser **arrastado** para um canto e abre todas as opções.
+   - _Decidir:_
+     - se é um ajuste persistente ou um botão;
+     - como sair do modo;
+     - se a bolinha some sozinha;
+     - como combina com a API de tela cheia e com o PWA instalado.
+
+### C. Tela inicial (prioridade média)
+
+6. **"Recentes" como conteúdo principal do início.** Os livros abertos ficam guardados no aparelho e aparecem primeiro. Isso substitui o antigo item "biblioteca local + estante de lombadas"; a estante continua uma opção de visual.
+   - **Capas:**
+     - gerar a capa a partir da 1ª página do próprio arquivo, guardada localmente;
+     - sem página utilizável, usar a capa tipográfica de hoje (título, ornamento, autor), que o Artur aprovou;
+     - _Decidir:_ buscar capa na internet (ex.: Open Library) ou não. Isso faz requisições externas e conflita com a privacidade, então precisa de decisão explícita.
+   - _Decidir:_
+     - o que guardar (só metadados e a capa, ou o arquivo inteiro para reabrir sem escolher de novo);
+     - quanto espaço usar;
+     - como remover um livro;
+     - o que fazer quando o arquivo original não existe mais.
+   - _Técnica:_ IndexedDB/OPFS na web, atrás da camada `platform/` (ver item 13).
+7. **Exemplos com menos destaque.** O carrossel "Do acervo · obras em domínio público" está grande demais para o papel dele. A ideia é um acesso secundário, como um link ou botão "Ver exemplos" que abre só essa parte. O visual do carrossel em si ficou bom.
+8. **Menos menções a "PDF e CBZ".** O texto aparece no cabeçalho, na frase de abertura e na área de soltar, além do README e da descrição do repositório. O certo é dizer uma vez, num lugar discreto, principalmente o "CBZ".
+9. **Carimbos com menos ênfase.** O estilo do carimbo (`Stamp`) agradou e combina com a identidade, mas "Seu arquivo não sai deste aparelho" e "Domínio público" estão em destaque demais; privacidade não é o foco do app.
+   - Manter o componente.
+   - Rever onde ele aparece. Por exemplo: privacidade só no "Sobre" ou numa linha pequena; "domínio público" só na ficha do livro.
+
+### D. Identidade (prioridade média)
+
+10. **Ícone e logo do app.** O ícone atual (ficha em branco) é provisório.
+11. **Splash screen.**
+    - No PWA do iOS, o splash vem de `apple-touch-startup-image`, uma imagem por tamanho de tela. No Android, vem das cores do manifesto.
+    - O Capacitor também vai precisar de um (`@capacitor/splash-screen`).
+
+### E. Recursos de leitura (prioridade normal)
+
+12. Busca de texto no PDF (a camada de texto já existe).
+13. Som de virar página (asset próprio).
+14. Painel **Paginação**: interruptor manual de spreads + "deslocar uma página".
+15. Modo **rolagem vertical** (webtoon e PDF).
+16. Efeito **3D** (three.js, carregado sob demanda).
+17. Temas alternativos: **Cordel**, HQ, mangá.
+18. Exportar flipbook autônomo (.zip).
+
+### F. App nativo (mais para frente)
+
+19. **App com Capacitor** (APK Android primeiro, depois iOS); ver §6.
+    - A tela inicial precisa virar a **biblioteca pessoal** ("meus livros"), não só um site para abrir um arquivo.
+    - Os dados do app (biblioteca, progresso) provavelmente vão para **SQLite** no aparelho (ex.: `@capacitor-community/sqlite`, MIT) e os arquivos para o Filesystem. A camada `src/platform/` já isola armazenamento, abrir arquivo e compartilhar.
+    - Inclui splash e ícones nativos (itens 10 e 11).
+
+### G. Se houver demanda
+
+20. GoatCounter (métricas sem cookies).
+21. CBR/CB7 com build própria do libarchive (BSD-2).
+22. Exemplo de HQ em CBZ no acervo.
 
 ## 9. Ações externas depois da aprovação
 
