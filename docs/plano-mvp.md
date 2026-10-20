@@ -351,7 +351,7 @@ O que for aprovado entra nas seções certas deste backlog.
 
 - Criar o repositório **público** `artursantiago/folheia` com `gh` e fazer o push.
 - Ativar o GitHub Pages com a fonte "GitHub Actions".
-- ✅ **Feito em 20/10/2026:** o repositório foi para a organização `folheia-app` (o site agora está em `https://folheia-app.github.io/folheia/`). O que estava previsto:
+- ✅ **Feito em 20/10/2026:** o repositório foi para a organização `folheia-app` (o site agora está em `https://folheia-app.github.io/folheia/`). O endereço antigo **não redireciona** (dá 404), então o PWA do iPad precisa ser reinstalado pelo endereço novo. O PR #1 (extensão) veio junto e já responde no endereço novo. A organização ganhou o repositório `.github` com a página de apresentação. O que estava previsto:
 - **Mudar o repositório para a organização `folheia-app`** (decidido em 20/10/2026, `estudo-interface.md`): depois da revisão conjunta dos estudos e **antes** de a etapa 1 da biblioteca (C2) ir para a `main`, para o acervo já nascer na origem nova. Só com nenhuma outra sessão trabalhando no repositório. Na hora:
   - conferir se o GitHub Pages redireciona o endereço antigo;
   - reinstalar o PWA do iPad. O endereço novo é outra origem, então preferências, progresso de leitura e o PWA instalado ficam na antiga e não passam para a nova;
