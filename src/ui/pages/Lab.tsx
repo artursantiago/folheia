@@ -3,12 +3,18 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { createBudget, currentEnvironment } from '../../render/budget';
 import { PageRenderer, refKey, type PageRef } from '../../render/PageRenderer';
-import { openPdf, type PdfSource } from '../../sources/pdf/PdfSource';
+import { openSource, type SourceInput } from '../../sources/open';
+import type { PdfSource } from '../../sources/pdf/PdfSource';
+import type { PageSource } from '../../sources/types';
 import { Button, IconButton, Overline, Switch, TextField } from '../components';
 import styles from './Lab.module.css';
-import { measureP0, summarizeP0 } from './labP0';
+import { describeLossless, measureLossless, measureP0, summarizeP0 } from './labP0';
 
-type Loaded = { source: PdfSource; renderer: PageRenderer; openedIn: number };
+type Loaded = { source: PageSource; renderer: PageRenderer; openedIn: number };
+
+/** The P0 and lossless measurements need PDF.js' page lifecycle. */
+const asPdf = (source: PageSource | undefined) =>
+  source?.kind === 'pdf' ? (source as PdfSource) : undefined;
 
 function useRendererVersion(renderer: PageRenderer | undefined) {
   const [version, setVersion] = useState(0);
@@ -34,6 +40,7 @@ export default function Lab() {
   const [firstSharpMs, setFirstSharpMs] = useState<number>();
   const [imageDecoder, setImageDecoder] = useState(true);
   const [p0, setP0] = useState<string>();
+  const [lossless, setLossless] = useState<{ text: string; json?: string }>();
   const version = useRendererVersion(loaded?.renderer);
   useSyncExternalStore(
     (cb) => {
@@ -45,7 +52,7 @@ export default function Lab() {
 
   const budget = useMemo(() => createBudget(currentEnvironment()), []);
 
-  async function open(input: { file: Blob } | { url: string }) {
+  async function open(input: SourceInput) {
     setError(undefined);
     loaded?.renderer.destroy();
     await loaded?.source.destroy();
@@ -53,9 +60,10 @@ export default function Lab() {
     setFirstPreviewMs(undefined);
     setFirstSharpMs(undefined);
     setP0(undefined);
+    setLossless(undefined);
     const started = performance.now();
     try {
-      const source = await openPdf(input, {
+      const source = await openSource(input, {
         onPassword: async () => window.prompt('Senha do PDF'),
         imageDecoder,
       });
@@ -105,16 +113,21 @@ export default function Lab() {
     return () => window.removeEventListener('keydown', onKey);
   }, [pageCount]);
 
-  async function runP0() {
-    if (!loaded) return;
-    const from = spread * 2;
-    const pages = [0, 1, 2, 3, 4].map((i) => from + i).filter((p) => p < pageCount);
-    // The renderer shares PDF.js' worker: let it finish, then keep it quiet.
-    setP0('esperando a fila esvaziar…');
-    const { renderer, source } = loaded;
+  /** The renderer shares PDF.js' worker: let it finish, then keep it quiet. */
+  async function quiet(renderer: PageRenderer) {
     for (let i = 0; i < 300 && renderer.stats().queued > 0; i++)
       await new Promise((resolve) => setTimeout(resolve, 100));
     renderer.pause();
+  }
+
+  async function runP0() {
+    const source = asPdf(loaded?.source);
+    if (!loaded || !source) return;
+    const from = spread * 2;
+    const pages = [0, 1, 2, 3, 4].map((i) => from + i).filter((p) => p < pageCount);
+    setP0('esperando a fila esvaziar…');
+    const { renderer } = loaded;
+    await quiet(renderer);
     setP0(`medindo 0/${pages.length}…`);
     try {
       const result = await measureP0(source, pages, (done) =>
@@ -123,6 +136,26 @@ export default function Lab() {
       setP0(JSON.stringify({ summary: summarizeP0(result), raw: result }, null, 2));
     } catch (err) {
       setP0(`erro: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      renderer.resume();
+    }
+  }
+
+  async function runLossless() {
+    const source = asPdf(loaded?.source);
+    if (!loaded || !source) return;
+    const from = spread * 2;
+    const pages = [0, 1, 2, 3, 4].map((i) => from + i).filter((p) => p < pageCount);
+    setLossless({ text: 'esperando a fila esvaziar…' });
+    const { renderer } = loaded;
+    await quiet(renderer);
+    try {
+      const result = await measureLossless(source, pages, (done) =>
+        setLossless({ text: `medindo ${done}/${pages.length}…` }),
+      );
+      setLossless({ text: describeLossless(result), json: JSON.stringify(result) });
+    } catch (err) {
+      setLossless({ text: `erro: ${err instanceof Error ? err.message : String(err)}` });
     } finally {
       renderer.resume();
     }
@@ -221,7 +254,17 @@ export default function Lab() {
             </dd>
           </dl>
           <section className={styles.p0}>
-            <Button onClick={() => void runP0()}>Medir P0 (5 páginas a partir daqui)</Button>
+            <Button onClick={() => void runLossless()} disabled={!asPdf(loaded.source)}>
+              Medir PNG sem perda (18b)
+            </Button>
+            {lossless && (
+              <pre className={styles.mono} data-testid="lossless" data-json={lossless.json}>
+                {lossless.text}
+              </pre>
+            )}
+            <Button onClick={() => void runP0()} disabled={!asPdf(loaded.source)}>
+              Medir P0 (5 páginas a partir daqui)
+            </Button>
             {p0 && (
               <pre className={styles.mono} data-testid="p0">
                 {p0}

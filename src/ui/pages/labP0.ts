@@ -268,3 +268,125 @@ export function summarizeP0(result: P0Result) {
     },
   };
 }
+
+// ---- 18b: what the lossless option (PNG sharp cache) costs ----------------
+
+export interface LosslessCost {
+  type: string;
+  /** From toBlob() to its callback. */
+  ms: number;
+  /** Longest stretch the main thread was busy meanwhile (frames lost to encoding). */
+  blockMs: number;
+  bytes: number;
+  imgDecodeMs: number;
+}
+
+export interface LosslessResult {
+  engine: string;
+  secureContext: boolean;
+  sizes: { spread: PixelSize; single: PixelSize };
+  /** Per page: a cold PDF.js render, then JPEG (today) and PNG (18b) for each size. */
+  pages: {
+    page: number;
+    renderMs: number;
+    spread: LosslessCost[];
+    single: LosslessCost[];
+  }[];
+}
+
+/**
+ * Runs `work` while pinging the main thread with short timers; reports its
+ * duration and the longest stall. (A tighter message loop would starve
+ * Chromium's idle-time encoder and slow toBlob down.)
+ */
+async function blocking<T>(work: () => Promise<T>): Promise<[T, number, number]> {
+  let last = performance.now();
+  let longest = 0;
+  let timer: number | undefined;
+  const ping = () => {
+    const now = performance.now();
+    longest = Math.max(longest, now - last);
+    last = now;
+    timer = window.setTimeout(ping, 1);
+  };
+  timer = window.setTimeout(ping, 1);
+  const started = performance.now();
+  try {
+    const value = await work();
+    const ms = performance.now() - started;
+    longest = Math.max(longest, performance.now() - last);
+    return [value, ms, longest];
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+async function losslessCost(canvas: HTMLCanvasElement): Promise<LosslessCost[]> {
+  const costs = [];
+  for (const type of ['image/jpeg', 'image/png']) {
+    const [blob, ms, blockMs] = await blocking(() => toBlob(canvas, type, QUALITY));
+    const [, imgDecodeMs] = await time(() => decodeImg(blob));
+    costs.push({ type: blob.type, ms, blockMs, bytes: blob.size, imgDecodeMs });
+  }
+  return costs;
+}
+
+/** JPEG vs PNG for the sharp cache, at the iPad sizes; a couple of seconds per page. */
+export async function measureLossless(
+  source: PdfSource,
+  pages: number[],
+  onProgress?: (done: number) => void,
+): Promise<LosslessResult> {
+  const first = source.getPageSize(pages[0] ?? 0);
+  const sizes = {
+    spread: sharpSize(
+      first,
+      { width: IPAD.height / 2, height: IPAD.width },
+      IPAD.pixelRatio,
+      IPAD_BUDGET,
+      SCALE_STEP,
+    ),
+    single: sharpSize(first, IPAD, IPAD.pixelRatio, IPAD_BUDGET, SCALE_STEP),
+  };
+  const results: LosslessResult['pages'] = [];
+  for (const page of pages) {
+    const [spreadCanvas, renderMs] = await time(() => source.render(page, sizes.spread, never));
+    const spread = await losslessCost(spreadCanvas);
+    releaseCanvas(spreadCanvas);
+    const singleCanvas = await source.render(page, sizes.single, never);
+    const single = await losslessCost(singleCanvas);
+    releaseCanvas(singleCanvas);
+    results.push({ page, renderMs, spread, single });
+    onProgress?.(results.length);
+  }
+  return {
+    engine: navigator.userAgent,
+    secureContext: window.isSecureContext,
+    sizes,
+    pages: results,
+  };
+}
+
+/** A few lines to read off the device: medians across pages. */
+export function describeLossless(result: LosslessResult): string {
+  const m = (values: number[]) => Math.round(median(values));
+  const line = (tier: 'spread' | 'single', label: string) => {
+    const size = result.sizes[tier];
+    const parts = ['image/jpeg', 'image/png'].map((type, i) => {
+      const costs = result.pages.map((p) => p[tier][i]!);
+      const name = type === 'image/png' ? 'PNG' : 'JPEG';
+      return (
+        `${name} ${m(costs.map((c) => c.ms))} ms (trava ${m(costs.map((c) => c.blockMs))} ms), ` +
+        `${m(costs.map((c) => c.bytes / 1024))} KB, decode ${m(costs.map((c) => c.imgDecodeMs))} ms`
+      );
+    });
+    return `${label} ${size.width}×${size.height}\n  ${parts.join('\n  ')}`;
+  };
+  return [
+    `18b · ${result.pages.length} páginas · HTTPS: ${result.secureContext ? 'sim' : 'não'}`,
+    `render do PDF.js (frio): ${m(result.pages.map((p) => p.renderMs))} ms`,
+    line('spread', 'deitado'),
+    line('single', 'em pé'),
+    result.engine,
+  ].join('\n');
+}
