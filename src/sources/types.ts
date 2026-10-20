@@ -90,6 +90,12 @@ export interface PageSource {
     cssWidth: number,
     signal: AbortSignal,
   ): Promise<void>;
+  /**
+   * Physical pages whose decoded data (parsed page, embedded images) stays
+   * between renders, so zoom tiles of them only paint. Any page left out of
+   * the list is released. Optional.
+   */
+  keepDecoded?(pages: readonly number[]): void;
   /** Pages stored as one double-page image (CBZ spreads). Optional. */
   isWidePage?(index: number): boolean;
   /** Clickable areas of the page (web links and links to other pages). Optional. */

@@ -123,8 +123,12 @@ export class Reader {
         this.flip.setInteractive(scale === 1);
         const wasZoomed = this.state.get().zoom > 1;
         if (this.state.get().zoom !== scale) this.state.set((s) => ({ ...s, zoom: scale }));
-        // Zoom tiles are big: while zoomed in, the neighbors give their memory back.
-        if (wasZoomed !== scale > 1) this.plan();
+        // Zoom tiles are big: while zoomed in, the neighbors give their memory back,
+        // and the pages on screen stay decoded so each new tile only paints.
+        if (wasZoomed !== scale > 1) {
+          this.keepVisibleDecoded(scale > 1);
+          this.plan();
+        }
       },
       settle: () => this.renderTiles(),
       takeOver: () => this.flip.cancelGesture(),
@@ -226,6 +230,7 @@ export class Reader {
   }
 
   destroy() {
+    this.config.source.keepDecoded?.([]);
     this.zoomer.destroy();
     this.resizeObserver.disconnect();
     this.disposers.forEach((dispose) => dispose());
@@ -336,6 +341,11 @@ export class Reader {
       decorate: (page, node, slot) => this.decorate(page, node, slot),
       ...(this.config.failedText ? { failedText: this.config.failedText } : {}),
     };
+  }
+
+  private keepVisibleDecoded(zoomed: boolean) {
+    const pages = zoomed ? this.refs(this.flip.spread).map((ref) => ref.page) : [];
+    this.config.source.keepDecoded?.([...new Set(pages)]);
   }
 
   /** Renders the visible part of each zoomed page at screen resolution. */

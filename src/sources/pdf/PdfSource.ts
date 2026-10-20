@@ -159,6 +159,8 @@ export class PdfSource implements PageSource {
    * render. Off, a second render of the page only paints; the lab uses it.
    */
   cleanupAfterRender = true;
+  /** Pages kept decoded between renders (the zoomed-in spread). */
+  private kept = new Set<number>();
 
   constructor(
     private readonly doc: PDFDocumentProxy,
@@ -234,13 +236,20 @@ export class PdfSource implements PageSource {
       throw error;
     } finally {
       signal.removeEventListener('abort', onAbort);
-      if (this.cleanupAfterRender) page.cleanup();
+      if (this.cleanupAfterRender && !this.kept.has(index)) page.cleanup();
     }
     if (!this.sizes[index]) {
       this.sizes[index] = { width: base.width, height: base.height };
       for (const listener of this.sizeListeners) listener();
     }
     return canvas;
+  }
+
+  keepDecoded(pages: readonly number[]) {
+    const next = new Set(pages);
+    for (const index of this.kept)
+      if (!next.has(index)) this.releasePage(index).catch(() => undefined);
+    this.kept = next;
   }
 
   /** Frees what PDF.js keeps for a page rendered with cleanupAfterRender off. */
