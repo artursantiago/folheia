@@ -190,7 +190,7 @@ O empacotamento como app (APK Android primeiro, depois iOS) com **Capacitor** (M
      - quanto espaço usar;
      - como remover um livro;
      - o que fazer quando o arquivo original não existe mais.
-   - _Técnica:_ IndexedDB/OPFS na web, atrás da camada `platform/` (ver item 13).
+   - _Técnica:_ IndexedDB/OPFS na web, atrás da camada `platform/` (ver item 19).
 7. **Exemplos com menos destaque.** O carrossel "Do acervo · obras em domínio público" está grande demais para o papel dele. A ideia é um acesso secundário, como um link ou botão "Ver exemplos" que abre só essa parte. O visual do carrossel em si ficou bom.
 8. **Menos menções a "PDF e CBZ".** O texto aparece no cabeçalho, na frase de abertura e na área de soltar, além do README e da descrição do repositório. O certo é dizer uma vez, num lugar discreto, principalmente o "CBZ".
 9. **Carimbos com menos ênfase.** O estilo do carimbo (`Stamp`) agradou e combina com a identidade, mas "Seu arquivo não sai deste aparelho" e "Domínio público" estão em destaque demais; privacidade não é o foco do app.
