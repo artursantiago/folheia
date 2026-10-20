@@ -1,0 +1,37 @@
+/* Ex-libris theme tokens. The full design system lands in the next step;
+   these are the base values every component reads. */
+:root {
+  color-scheme: light dark;
+
+  --color-paper: #f3ede1;
+  --color-card: #fbf7ef;
+  --color-ink: #2b2420;
+  --color-ink-muted: #5f5045;
+  --color-accent: #a9481f;
+
+  --font-display: 'Young Serif', georgia, serif;
+  --font-ui: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-8: 2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #12161d;
+    --color-card: #1e242e;
+    --color-ink: #ede3cf;
+    --color-ink-muted: #a9b1bf;
+    --color-accent: #e2a84b;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+}
