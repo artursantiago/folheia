@@ -6,3 +6,4 @@ test-results/
 fixtures/generated/
 *.local
 .DS_Store
+.claude/launch.json
