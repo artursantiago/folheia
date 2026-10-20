@@ -68,6 +68,18 @@ export interface PageSource {
   render(index: number, target: RenderTarget, signal: AbortSignal): Promise<HTMLCanvasElement>;
   getMetadata(): Promise<BookMetadata>;
   getOutline(): Promise<OutlineItem[]>;
+  /**
+   * Fills `container` with selectable, invisible text matching the page drawn
+   * `cssWidth` CSS pixels wide (for copy and screen readers). Optional.
+   */
+  renderTextLayer?(
+    index: number,
+    container: HTMLElement,
+    cssWidth: number,
+    signal: AbortSignal,
+  ): Promise<void>;
+  /** Clickable areas of the page (web links and links to other pages). Optional. */
+  getLinks?(index: number): Promise<PageLink[]>;
   /** Fired when page sizes become known. */
   onSizesChanged(listener: () => void): () => void;
   destroy(): Promise<void>;

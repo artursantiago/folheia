@@ -3,6 +3,7 @@ import {
   SourceError,
   type BookMetadata,
   type OutlineItem,
+  type PageLink,
   type PageSize,
   type PageSource,
   type PasswordPrompt,
@@ -201,6 +202,79 @@ export class PdfSource implements PageSource {
     return canvas;
   }
 
+  private textCache = new Map<number, Promise<unknown>>();
+
+  async renderTextLayer(
+    index: number,
+    container: HTMLElement,
+    cssWidth: number,
+    signal: AbortSignal,
+  ) {
+    const page = await this.doc.getPage(index + 1);
+    if (signal.aborted) return;
+    const base = page.getViewport({ scale: 1 });
+    const viewport = page.getViewport({ scale: cssWidth / base.width });
+    let text = this.textCache.get(index);
+    if (!text) {
+      text = page.getTextContent();
+      this.textCache.set(index, text);
+      // Keep only a few pages of text around.
+      if (this.textCache.size > 8)
+        this.textCache.delete(this.textCache.keys().next().value as number);
+    }
+    const content = (await text) as Awaited<ReturnType<typeof page.getTextContent>>;
+    if (signal.aborted) return;
+    container.style.setProperty('--total-scale-factor', String(viewport.scale));
+    container.style.setProperty('--scale-round-x', '1px');
+    container.style.setProperty('--scale-round-y', '1px');
+    const layer = new pdfjs.TextLayer({ textContentSource: content, container, viewport });
+    signal.addEventListener('abort', () => layer.cancel(), { once: true });
+    await layer.render().catch(() => undefined);
+  }
+
+  async getLinks(index: number): Promise<PageLink[]> {
+    const page = await this.doc.getPage(index + 1);
+    const viewport = page.getViewport({ scale: 1 });
+    const annotations = (await page.getAnnotations({ intent: 'display' }).catch(() => [])) as {
+      subtype?: string;
+      rect?: number[];
+      url?: string;
+      dest?: string | unknown[] | null;
+    }[];
+    const links: PageLink[] = [];
+    for (const annotation of annotations) {
+      if (annotation.subtype !== 'Link' || !annotation.rect) continue;
+      const [ax, ay, bx, by] = annotation.rect as [number, number, number, number];
+      const [x1, y1] = viewport.convertToViewportPoint(ax, ay) as [number, number];
+      const [x2, y2] = viewport.convertToViewportPoint(bx, by) as [number, number];
+      const rect = {
+        x: Math.min(x1, x2) / viewport.width,
+        y: Math.min(y1, y2) / viewport.height,
+        width: Math.abs(x2 - x1) / viewport.width,
+        height: Math.abs(y2 - y1) / viewport.height,
+      };
+      if (annotation.url && /^(https?:|mailto:)/i.test(annotation.url)) {
+        links.push({ rect, url: annotation.url });
+      } else if (annotation.dest) {
+        const pageIndex = await this.resolveDest(annotation.dest);
+        if (pageIndex !== null) links.push({ rect, pageIndex });
+      }
+    }
+    return links;
+  }
+
+  private async resolveDest(dest: string | unknown[]): Promise<number | null> {
+    try {
+      const explicit = typeof dest === 'string' ? await this.doc.getDestination(dest) : dest;
+      const ref = explicit?.[0];
+      if (ref === undefined || ref === null) return null;
+      if (typeof ref === 'number') return ref;
+      return await this.doc.getPageIndex(ref as Parameters<PDFDocumentProxy['getPageIndex']>[0]);
+    } catch {
+      return null;
+    }
+  }
+
   async getMetadata(): Promise<BookMetadata> {
     const [{ info }, preferences] = await Promise.all([
       this.doc.getMetadata().catch(() => ({ info: {} })),
@@ -227,17 +301,8 @@ export class PdfSource implements PageSource {
     const outline = await this.doc.getOutline().catch(() => null);
     if (!outline) return [];
     type RawItem = { title: string; dest: string | unknown[] | null; items: RawItem[] };
-    const resolve = async (dest: RawItem['dest']): Promise<number | null> => {
-      try {
-        const explicit = typeof dest === 'string' ? await this.doc.getDestination(dest) : dest;
-        const ref = explicit?.[0];
-        if (ref === undefined || ref === null) return null;
-        if (typeof ref === 'number') return ref;
-        return await this.doc.getPageIndex(ref as Parameters<PDFDocumentProxy['getPageIndex']>[0]);
-      } catch {
-        return null;
-      }
-    };
+    const resolve = (dest: RawItem['dest']) =>
+      dest ? this.resolveDest(dest) : Promise.resolve(null);
     const walk = async (items: RawItem[]): Promise<OutlineItem[]> =>
       Promise.all(
         items.map(async (item) => ({
@@ -251,6 +316,7 @@ export class PdfSource implements PageSource {
 
   async destroy() {
     this.sizeListeners.clear();
+    this.textCache.clear();
     await this.task.destroy();
   }
 }
