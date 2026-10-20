@@ -9,9 +9,13 @@
 - **Funciona.** A POC no Chrome lê sites que bloqueiam o Folheia por CORS. Também põe `Referer` e `User-Agent`, transmite binários grandes em pedaços, cancela e recusa destinos não aprovados. Os testes automatizados (e2e) cobrem tudo isso.
 - **Com fontes de verdade:** testamos 12 das fontes mais conhecidas do repositório do Mihon, entre elas MangaDex, MANGA Plus, Webtoons, Weeb Central e Asura. **9 funcionam pela ponte**, catálogo e capa. Duas param no desafio do Cloudflare, e uma exige assinatura própria (§9). Sem a ponte, a página não lê quase nenhuma.
 - **iPad:** o único caminho gratuito é um **userscript nosso no app Userscripts** (grátis, App Store). Ele fura o CORS, mas com três limites:
-  - **não define `Referer`**, e provavelmente nem `User-Agent`;
-  - os **binários são lentos**, porque o app serializa cada byte como um número;
+  - **não define `Referer`** (o `User-Agent`, sim);
+  - os **binários custam mais**, porque o app serializa cada byte como um número. No simulador deu ~7 MB/s, aceitável para páginas de quadrinho;
   - o usuário precisa liberar a extensão em **"Todos os sites"**.
+- **Testado no simulador do iPad** (Safari do iPadOS 26.2, §9.1):
+  - o userscript no Userscripts funciona;
+  - **o `User-Agent` muda, o `Referer` não**;
+  - por isso as capas de Webtoons, MangaPill e MangaK não abrem por esse caminho.
 - **Desktop e Android:** uma **extensão MV3 nossa** (Chrome/Edge e Firefox, o mesmo código) faz tudo, inclusive `Referer`/`User-Agent` e binários rápidos.
   - **Distribuição grátis:** Firefox (assinatura "unlisted" no AMO, instala no Android por arquivo) e Edge Add-ons.
   - **Chrome:** modo desenvolvedor, ou a taxa única da Chrome Web Store.
@@ -41,9 +45,10 @@ O site do Folheia não consegue **ler** respostas de sites sem CORS nem definir 
   - Na prática: Ajustes → Safari → Extensões → Userscripts → **Todos os sites → Permitir**.
 - **Cabeçalhos:**
   - O background usa XHR, então valem os [cabeçalhos proibidos](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_request_header): **`Referer`, `Origin` e `Cookie` são descartados em silêncio** ([#420](https://github.com/quoid/userscripts/issues/420)).
-  - **`User-Agent`:** não confirmado; precisa de teste no iPad (§10.4).
+  - **`User-Agent`: muda.** Confirmado no simulador do iPad (§9.1), com um servidor de eco local.
+  - **`Referer`: não muda.** Também confirmado no simulador: a requisição sai sem `Referer`.
   - `Range` funciona, porque não é proibido.
-- **Cookies do Safari:** não confirmado se vão junto. O app não tem opção `anonymous`.
+- **Cookies do Safari:** o servidor de eco não recebeu cookie nenhum no teste do simulador, mas ele também não tinha cookies para enviar. Continua não confirmado se o Safari mandaria os cookies de um site em que você está logado. O app não tem opção `anonymous`.
 - **Binários:** o app converte a resposta em `Array.from(new Uint8Array(buf))`, um array JSON de números, para passar do background ao content script ([código](https://github.com/quoid/userscripts/blob/main/src/ext/background/main.js), [#212](https://github.com/quoid/userscripts/issues/212)).
   - Isso custa várias vezes o tamanho do arquivo em memória e CPU.
   - **Para imagens de 200 KB a 1 MB, deve servir. Para arquivos grandes, só em pedaços com `Range`.** O tempo real precisa ser medido no iPad (§10.4).
@@ -63,6 +68,10 @@ O site do Folheia não consegue **ler** respostas de sites sem CORS nem definir 
 - **Ganhos sobre o userscript:**
   - binários sem a serialização em números;
   - DNR `modifyHeaders` em requisições, desde o Safari 16.4 (`Referer`). Mas o Safari não aceita `tabIds` no DNR, e não está confirmado se ele aplica as regras às requisições da própria extensão ([BCD](https://github.com/mdn/browser-compat-data/blob/main/webextensions/api/declarativeNetRequest.json)).
+- **Testado no simulador do iPad** (§9.1): empacotada com `safari-web-extension-packager` e assinada "ad hoc" (sem conta Apple; só vale no simulador).
+  - **Funciona:** a ponte é detectada, o pedido de acesso abre a tela da extensão e o Safari mostra o próprio prompt de permissão por site, com "Permitir por um dia" e "Sempre permitir".
+  - **`User-Agent` muda. `Referer`, não:** a regra do declarativeNetRequest é aceita, mas o Safari não aplica o `Referer` às requisições da extensão.
+  - **Ajuste necessário:** o Safari precisa de `background.persistent: false` no manifesto. O build da POC já gera assim.
 - **Conclusão:** com o Artur sem pagar a Apple, **não vale** no iPad. Fica registrado como caminho se um dia houver a conta paga.
 
 ## 4. Chrome e Edge (MV3)
@@ -167,6 +176,7 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
 - `src/platform/bridge.ts`: o cliente da ponte no site.
 - `src/platform/network.ts`: a interface de rede. Usa `fetch` quando o CORS deixa, e a ponte quando não deixa ou quando a requisição pede `Referer`/`User-Agent`. Lembra por origem quais precisaram da ponte. O app nativo terá outra implementação da mesma interface.
 - `#/lab`: o painel **"Ponte de rede"** busca uma URL e mostra o caminho (fetch ou ponte), status, cabeçalhos, bytes e tempos, além de desenhar a imagem ou mostrar o texto. Tem atalhos para a MangaDex e o Internet Archive.
+  - **"Rodar lote"** lê uma lista local (`fixtures/personal/bridge-probes.json`, fora do git, no formato `[{ name, url, headers? }]`) e testa cada URL pela página e pela ponte, uma por vez, com 1 s de pausa. Serve para repetir o §9 no iPad de verdade.
 
 **Testes:**
 
@@ -200,6 +210,8 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
   - **"página"**: um `fetch` comum do Folheia, com origem `127.0.0.1`;
   - **"ponte"**: a extensão no Chromium do Playwright, com o IP de casa.
 - **Volume:** só a página 1 de cada catálogo e uma capa, no máximo 3 requisições por site, com pausa entre elas. Nenhuma página de capítulo foi baixada.
+  - **Total no dia:** umas 3 rodadas por site (Mac, curl e simulador). Bem abaixo de qualquer limite: a MangaDex aceita 5 por segundo e o Weeb Central pede 1 a cada 2 s.
+  - **Daqui para a frente:** as fontes de verdade vão precisar de limite por site (fila e intervalo mínimo) e cache, como o Mihon faz. Isso protege o IP de casa de bloqueio.
 
 **Achado geral:** as extensões do Mihon mandam `Referer: <site>/` em tudo, inclusive nas imagens. Algumas tiram o `Origin`. Todas contam com o resolvedor de Cloudflare do app, que roda num WebView.
 
@@ -240,6 +252,41 @@ O risco de uma ponte é virar um **proxy aberto**: qualquer página usando a ext
   - os sites mudam toda semana (`estudo-mihon` §5.4).
 - **Jurídico:** o mecanismo funciona; o conteúdo e os termos de uso continuam sendo dos sites. O repositório público fica só com o mecanismo e fontes legítimas (§11).
 
+### 9.1 No simulador do iPad (Safari de verdade)
+
+**Montagem:**
+
+- **Aparelho:** iPad Pro 11" no simulador do Xcode 26.3, iPadOS 26.2. O Safari do simulador é o mesmo WebKit do iPad, com extensões.
+- **Site:** o Folheia rodou do servidor de dev do Mac (`127.0.0.1`), acessado pelo Safari do simulador.
+- **Os dois caminhos testados, um de cada vez:**
+  1. **A nossa extensão como extensão Safari:** empacotada com `safari-web-extension-packager` e assinada "ad hoc", sem conta Apple; isso só funciona no simulador.
+  2. **O app Userscripts (quoid)** com o nosso `folheia-bridge.user.js`. O app foi compilado a partir do código aberto dele (v5.0.0-beta.23), porque o simulador não instala apps da App Store. O código ficou numa pasta temporária, fora do repositório. O iPad real usa a versão da App Store (1.8.6), que pode se comportar um pouco diferente.
+- **Cabeçalhos:** conferidos com um servidor de eco local, que mostra o que chegou.
+- **Sites:** depois, uma amostra pequena das fontes do §9, uma requisição por URL, com pausa entre elas.
+
+**Resultados:**
+
+| Teste                                                    | Extensão Safari                                      | Userscripts                                         |
+| -------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| Ponte detectada no `#/lab`                               | sim (`extension · safari`)                           | sim (`userscript · Userscripts`)                    |
+| Aprovação de site                                        | tela da extensão + prompt nativo do Safari, por site | "Todos os sites" nos Ajustes (sem lista própria)    |
+| `User-Agent` próprio                                     | **chega**                                            | **chega**                                           |
+| `Referer` próprio                                        | **não chega**                                        | **não chega**                                       |
+| Cookies enviados                                         | nenhum (o eco não recebeu cookie)                    | nenhum (o eco não recebeu cookie)                   |
+| MangaDex (API), MANGA Plus, Weeb Central (capa)          | 200                                                  | 200                                                 |
+| Capas que exigem `Referer` (Webtoons, MangaPill, MangaK) | 403                                                  | 403                                                 |
+| Velocidade de binários (servidor local)                  | —                                                    | 1 MB: 0,15 s · 5 MB: 0,7 s · 17 MB: 2,3 s (~7 MB/s) |
+
+**Leitura:**
+
+- **No iPad, a ponte funciona para APIs e imagens sem proteção de hotlink:** MangaDex, MANGA Plus, Weeb Central, Asura e os catálogos em HTML.
+- **As fontes que exigem `Referer` nas imagens não funcionam no iPad, por nenhum dos dois caminhos.** O Safari não deixa a extensão definir esse cabeçalho, nem por fetch nem pelo declarativeNetRequest.
+  - Isso só se resolveria com um intermediário: um proxy (estudo-mihon §5.5, item 3) ou o Suwayomi no Mac.
+- **A serialização em números do Userscripts custa menos do que se temia:** cerca de 7 MB/s no simulador de um Mac. Uma página de quadrinho (0,3 a 1 MB) leva de 50 a 150 ms a mais.
+  - O iPad Air M1 deve ser umas 2 a 3 vezes mais lento; precisa de medição no aparelho (§10.4).
+  - O PDF de 17 MB do Internet Archive estourou o limite de 40 s, mas por causa do servidor do IA, que já levava 22 s no Chromium.
+- **A extensão Safari própria não ganha nada no `Referer`.** A vantagem dela seria só a velocidade. Sem a conta paga da Apple, o Userscripts continua sendo o caminho do iPad.
+
 ## 10. Teste manual (passo a passo para o Artur)
 
 Primeiro, gerar os arquivos: `npm run build:extension`. Para testar com o `npm run dev` (localhost), use `npm run build:extension -- --dev`. Abrir `#/lab` e ir ao painel **"Ponte de rede"**.
@@ -273,7 +320,7 @@ Primeiro, gerar os arquivos: `npm run build:extension`. Para testar com o `npm r
 2. **iPad:** Ajustes → Apps → Safari → Extensões → Userscripts → ativar e **Todos os sites → Permitir**. **Mac:** Safari → Ajustes → Extensões → Userscripts → ativar e permitir em todos os sites. Sem o "todos os sites", o CORS não é furado (§3.1).
 3. Passar `extension/dist/folheia-bridge.user.js` para a pasta do Userscripts (no iPad, pelo app Arquivos; no Mac, a pasta escolhida no app). Também dá para abrir a URL `.user.js` no Safari e instalar pelo popup da extensão.
 4. Abrir `https://artursantiago.github.io/folheia/#/lab` (o build `--dev` também roda em `localhost`). A linha **"Ponte"** deve mostrar `userscript · Userscripts · …`.
-5. **Buscar:**
+5. **Buscar** (ou "Rodar lote" com a lista local):
    - **MangaDex API** → esperado: `via bridge`, 200.
    - **Capa do Internet Archive** → a imagem aparece.
    - **PDF de 17 MB** → **anotar o tempo** e se a aba aguentou. É o teste da serialização em números (§3.1).
