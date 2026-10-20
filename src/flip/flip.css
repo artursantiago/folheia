@@ -1,0 +1,120 @@
+/* Styles for the framework-free 2D flip engine (classes are prefixed fx-). */
+
+.fx-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari needs it */
+  -webkit-user-select: none;
+}
+
+.fx-book {
+  position: relative;
+  transition: transform var(--duration-slow) var(--ease-in-out);
+  filter: drop-shadow(0 22px 26px var(--color-shadow));
+}
+
+.fx-book[data-single] {
+  overflow: hidden;
+}
+
+.fx-page {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  background: var(--color-page);
+}
+
+.fx-page img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  /* stylelint-disable-next-line property-no-unknown -- WebKit-only */
+  -webkit-user-drag: none;
+}
+
+.fx-page[data-blank] {
+  background: var(--color-page);
+}
+
+.fx-page[data-loading]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 22px,
+    var(--color-page-line) 22px 23px
+  );
+  opacity: 0.35;
+}
+
+/* Gentle shading toward the spine, like a real binding. */
+.fx-spine-left::before,
+.fx-spine-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fx-spine-left::before {
+  right: 0;
+  background: linear-gradient(to left, var(--color-page-fold), transparent);
+}
+
+.fx-spine-right::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-page-fold), transparent);
+}
+
+.fx-leaf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform, clip-path;
+}
+
+.fx-paper {
+  background: var(--color-page);
+}
+
+.fx-back-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(-4px 2px 10px var(--color-page-fold));
+}
+
+.fx-strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.fx-strip-cast {
+  background: linear-gradient(to bottom, var(--color-page-fold), transparent);
+}
+
+.fx-strip-back {
+  background: linear-gradient(to bottom, var(--color-page-fold), transparent 70%);
+}
+
+.fx-strip-front {
+  background: linear-gradient(to bottom, var(--color-page-fold), transparent);
+  opacity: 0.5;
+}

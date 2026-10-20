@@ -4,8 +4,8 @@ export default {
   extends: ['stylelint-config-standard'],
   rules: {
     'selector-class-pattern': [
-      '^[a-z][a-zA-Z0-9]*$',
-      { message: 'Use camelCase class names (CSS Modules).' },
+      '^([a-z][a-zA-Z0-9]*|fx-[a-z0-9-]+)$',
+      { message: 'Use camelCase (CSS Modules) or the fx- prefix (flip engine).' },
     ],
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
     'custom-property-empty-line-before': null,
@@ -25,7 +25,7 @@ export default {
     ],
     'declaration-property-value-allowed-list': {
       'font-family': ['/^var\\(--/', 'inherit'],
-      'font-size': ['/^var\\(--/', 'inherit', '100%', '1em'],
+      'font-size': ['/^var\\(--/', '/^clamp\\(var\\(--/', 'inherit', '100%', '1em'],
       'border-radius': ['/^var\\(--/', '0', '50%', 'inherit'],
     },
   },
