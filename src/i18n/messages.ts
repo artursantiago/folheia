@@ -139,6 +139,8 @@ const pt = {
   'error.unknown.title': 'Não reconhecemos este formato.',
   'error.unknown.body': 'O Folheia lê arquivos PDF e HQs em CBZ.',
   'reader.pageFailed': 'Esta página usa um formato de imagem que este navegador não abre.',
+  'app.updateAvailable': 'Nova edição do Folheia disponível',
+  'app.reload': 'Recarregar',
   'reader.tallStrips': 'Tiras verticais (webtoon): o modo rolagem ainda não está disponível.',
 } as const;
 
@@ -286,6 +288,8 @@ const en: Messages = {
   'error.unknown.title': "We don't recognize this format.",
   'error.unknown.body': 'Folheia reads PDF files and CBZ comics.',
   'reader.pageFailed': "This page uses an image format this browser can't open.",
+  'app.updateAvailable': 'A new edition of Folheia is available',
+  'app.reload': 'Reload',
   'reader.tallStrips': "Vertical strips (webtoon): scrolling mode isn't available yet.",
 };
 

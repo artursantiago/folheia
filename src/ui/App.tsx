@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { exampleForUrl } from '../examples';
+import { applyUpdate, onLaunchFile, registerServiceWorker, updateAvailable } from '../platform/pwa';
 import { preferences } from '../storage/preferences';
 import { applyTheme } from '../theme/applyTheme';
 import { useI18n } from './hooks/useI18n';
@@ -10,6 +11,8 @@ import { HomeScreen, isAcceptableUrl } from './screens/HomeScreen';
 import { PasswordDialog } from './screens/PasswordDialog';
 import { ReaderScreen } from './screens/ReaderScreen';
 import { ErrorScreen, OpeningScreen } from './screens/StatusScreens';
+import { Notice } from './components';
+import styles from './App.module.css';
 
 const StyleGuide = lazy(() => import('./pages/StyleGuide'));
 const Lab = lazy(() => import('./pages/Lab'));
@@ -36,6 +39,11 @@ export function App() {
 
   useEffect(() => applyTheme(theme), [theme]);
   useEffect(openFromQuery, []);
+  useEffect(() => {
+    void registerServiceWorker();
+    onLaunchFile((file) => void openBook({ kind: 'file', file }));
+  }, []);
+  const hasUpdate = useStore(updateAvailable);
 
   if (current.name === 'lab' || current.name === 'styleguide') {
     const Page = current.name === 'lab' ? Lab : StyleGuide;
@@ -88,6 +96,13 @@ export function App() {
         />
       )}
       <PasswordDialog />
+      {hasUpdate && (
+        <div className={styles.update}>
+          <Notice action={{ label: t('app.reload'), onClick: applyUpdate }}>
+            {t('app.updateAvailable')}
+          </Notice>
+        </div>
+      )}
     </>
   );
 }
