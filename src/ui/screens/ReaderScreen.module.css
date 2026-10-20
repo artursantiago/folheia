@@ -131,3 +131,29 @@
     margin: var(--space-2) var(--space-2) 88px;
   }
 }
+
+.wideOnly {
+  display: inline-flex;
+}
+
+.toast {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  z-index: 4;
+  transform: translateX(-50%);
+  animation: drop var(--duration-base) var(--ease-out);
+}
+
+@keyframes drop {
+  from {
+    transform: translate(-50%, -8px);
+    opacity: 0;
+  }
+}
+
+@media (width <= 600px) {
+  .wideOnly {
+    display: none;
+  }
+}

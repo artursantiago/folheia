@@ -1,0 +1,35 @@
+.entry {
+  position: relative;
+  padding: var(--space-2) var(--space-4) 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--rule-step);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--rule-step) - 1px),
+    var(--color-rule) calc(var(--rule-step) - 1px) var(--rule-step)
+  );
+}
+
+.line {
+  margin: 0;
+}
+
+.indent {
+  padding-left: var(--space-6);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.muted {
+  color: var(--color-ink-muted);
+}
+
+.stamp {
+  position: absolute;
+  top: var(--space-16);
+  right: var(--space-4);
+}

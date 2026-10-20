@@ -7,7 +7,7 @@ export interface DrawerProps {
   closeLabel: string;
   onClose: () => void;
   children: ReactNode;
-  className?: string;
+  className?: string | undefined;
 }
 
 /** Side panel (the "card catalog drawer"), used for the book index. */

@@ -12,6 +12,7 @@ Open source (MIT) PDF/CBZ flipbook reader. 100% static site on GitHub Pages; eve
 - For now Artur prefers autonomy over heavy process. Before a significant chunk of work, show briefly **what you're about to do**; he'll speak up if something looks off. Then do it. Writing a spec (in `docs/`) is your call: do it when it helps you think through a piece or document how it works, not as a gate.
 - Talk to Artur in Portuguese (pt-BR). Code, identifiers, comments and commit messages in **English**.
 - Docs in `docs/` and `README.md` are in Portuguese; `README.en.md` is a short English summary.
+- You may commit and push to `main` without asking. Stop to ask only for genuinely important decisions; otherwise keep going and summarize at the end.
 - Small, descriptive commits, Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `perf:`, `ci:`), straight to `main`. Run lint, typecheck, tests and build before committing.
 - Anything not in the plan goes to the backlog (`docs/plano-mvp.md` §8) instead of being built on the side.
 

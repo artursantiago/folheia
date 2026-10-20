@@ -28,6 +28,7 @@
   background: var(--color-paper);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+  white-space: nowrap;
   cursor: pointer;
 }
 

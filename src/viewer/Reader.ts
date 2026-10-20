@@ -14,7 +14,9 @@ import type { RenderBudget } from '../render/budget';
 import { PageRenderer, type PageRef } from '../render/PageRenderer';
 import type { PageSize, PageSource, ReadingDirection } from '../sources/types';
 
-export type LayoutPreference = 'auto' | 'single' | 'double';
+import type { LayoutPreference } from '../storage/preferences';
+
+export type { LayoutPreference };
 
 export interface ReaderOptions {
   layout: LayoutPreference;
@@ -133,6 +135,45 @@ export class Reader {
       before.coverAlone !== this.options.coverAlone ||
       before.direction !== this.options.direction;
     if (needsRebuild) this.rebuild(this.resolveMode());
+  }
+
+  /** Real (non-blank) pages, for the thumbnail grid: label and logical index. */
+  pages(): { index: number; label: number }[] {
+    return this.book.pages.flatMap((page, index) =>
+      page.label === null ? [] : [{ index, label: page.label }],
+    );
+  }
+
+  /** Small image of a logical page (asks for it if needed). */
+  thumbnail(index: number): string | undefined {
+    const ref = this.book.pages[index]?.ref;
+    if (!ref) return undefined;
+    const image = this.renderer.getImage(ref);
+    if (!image) this.renderer.requestThumbnail(ref);
+    return image?.url;
+  }
+
+  /** Notifies when any page image becomes available. */
+  onImages(listener: () => void) {
+    return this.renderer.subscribe(() => listener());
+  }
+
+  /** Page label (1-based) of a physical page index from the file (outline links). */
+  labelForPhysical(pageIndex: number): number | undefined {
+    return this.book.pages.find((page) => page.ref?.page === pageIndex)?.label ?? undefined;
+  }
+
+  /** Visible logical page indices in reading order. */
+  visiblePages(): number[] {
+    return [...(this.book.spreads[this.flip.spread]?.pages ?? [])];
+  }
+
+  stats() {
+    return {
+      ...this.renderer.stats(),
+      mode: this.book.options.mode,
+      spreads: this.book.spreads.length,
+    };
   }
 
   destroy() {

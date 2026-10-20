@@ -64,6 +64,7 @@ export function App() {
           source={state.source}
           metadata={state.metadata}
           name={state.name}
+          request={state.request}
           onClose={back}
         />
       )}
