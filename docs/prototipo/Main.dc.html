@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · início claro</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="fx" style="width: 1280px; height: 800px; padding: 0 72px;">
+  <header class="row" style="height: 84px; justify-content: space-between;">
+    <div class="row" style="gap: 16px; align-items: baseline;">
+      <span class="wordmark">Folheia</span>
+      <span class="tag">leitor de livros · pdf e cbz</span>
+    </div>
+    <div class="row" style="gap: 8px;">
+      <div class="seg"><span class="on">PT</span><span>EN</span></div>
+      <button class="btn ib" aria-label="Tema escuro"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"></path></svg></button>
+    </div>
+  </header>
+
+  <section class="row" style="gap: 64px; align-items: flex-start; margin-top: 36px;">
+    <div class="col" style="width: 470px; padding-top: 18px; gap: 18px;">
+      <span class="tag">Biblioteca de bolso</span>
+      <h1 class="serif" style="margin: 0; font-size: 52px; line-height: 1.06;">Todo PDF merece ser folheado.</h1>
+      <p class="muted" style="margin: 0; font-size: 17px; max-width: 420px;">Abra um PDF ou uma HQ em CBZ e leia como um livro de verdade. Tudo acontece no seu navegador.</p>
+      <span class="carimbo" style="align-self: flex-start; margin-top: 10px;">Seu arquivo não sai deste aparelho</span>
+    </div>
+
+    <div class="ficha picote" style="width: 600px;">
+      <div class="ficha-h"><span class="tag">Ficha de empréstimo</span><span class="tombo">Nº ————</span></div>
+      <div class="ficha-b" style="padding: 18px 32px 40px;">
+        <p class="serif" style="margin: 6px 0 0; font-size: 26px; line-height: 56px;">Traga um livro para a mesa.</p>
+        <p class="muted" style="margin: 0;">Arraste um PDF ou CBZ até aqui, ou escolha no seu aparelho.</p>
+        <div class="row" style="gap: 12px; margin-top: 22px;">
+          <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>Escolher arquivo</button>
+          <span class="tag" style="margin-left: 8px;">ou por endereço</span>
+        </div>
+        <div class="row" style="gap: 12px; margin-top: 14px;">
+          <label style="flex: 1;"><span class="lbl">Endereço do arquivo</span><input class="field" placeholder="https://exemplo.org/revista.pdf"></label>
+          <button class="btn" style="align-self: flex-end;">Abrir</button>
+        </div>
+      </div>
+      <div class="furo"></div>
+    </div>
+  </section>
+
+  <section style="position: absolute; left: 72px; right: 72px; bottom: 34px;">
+    <div class="row" style="justify-content: space-between; border-bottom: 1.5px solid var(--ink); padding-bottom: 10px;">
+      <div class="row" style="gap: 14px; align-items: baseline;"><span class="serif" style="font-size: 22px;">Do acervo</span><span class="tag">obras em domínio público</span></div>
+      <div class="row" style="gap: 4px;">
+        <button class="btn ib" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+        <button class="btn ib" aria-label="Próximo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+      </div>
+    </div>
+    <div class="row" style="gap: 34px; align-items: flex-end; margin-top: 22px;">
+      <a class="col" style="gap: 10px; text-decoration: none; color: inherit;" href="Leitor-dupla.dc.html">
+        <div class="capa" style="width: 132px; height: 186px; background: #B4532A; outline: 2px solid var(--ink); outline-offset: 5px;">
+          <span class="t" style="font-size: 15px;">A Menina do Narizinho Arrebitado</span>
+          <svg viewBox="0 0 100 40" style="width: 70px;" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="#F2C46B"></circle><path d="M40 34c10-18 22-18 30 0M60 34c8-12 18-12 26 0" stroke="#F6EFE2" stroke-width="3" fill="none"></path></svg>
+          <span class="a">Monteiro Lobato</span>
+        </div>
+        <div><div class="tombo">Nº 0001 · 1920 · PT</div><div style="font-size: 14px;">A Menina do Narizinho…</div></div>
+      </a>
+      <div class="col" style="gap: 10px;">
+        <div class="capa" style="width: 112px; height: 158px; background: #3E5641;">
+          <span class="t" style="font-size: 13px;">The Wonderful Wizard of Oz</span>
+          <span class="a">L. Frank Baum</span>
+        </div>
+        <div><div class="tombo">Nº 0002 · 1900 · EN</div><div style="font-size: 14px;">The Wonderful Wizard…</div></div>
+      </div>
+      <div class="col" style="gap: 10px;">
+        <div class="capa" style="width: 112px; height: 158px; background: #2E4A5A;">
+          <span class="t" style="font-size: 13px;">Peter Pan in Kensington Gardens</span>
+          <span class="a">J. M. Barrie</span>
+        </div>
+        <div><div class="tombo">Nº 0003 · 1912 · EN</div><div style="font-size: 14px;">Peter Pan in Kensi…</div></div>
+      </div>
+      <div class="col" style="gap: 10px;">
+        <div class="capa" style="width: 112px; height: 158px; background: #6F5585;">
+          <span class="t" style="font-size: 13px;">Alice’s Adventures in Wonderland</span>
+          <span class="a">Lewis Carroll</span>
+        </div>
+        <div><div class="tombo">Nº 0004 · 1907 · EN</div><div style="font-size: 14px;">Alice’s Adventures…</div></div>
+      </div>
+      <div class="col" style="gap: 10px; opacity: .55;">
+        <div class="capa" style="width: 112px; height: 158px; background: transparent; box-shadow: none; outline: 1.5px dashed var(--perf); outline-offset: -1px; color: var(--ink2); justify-content: center; align-items: center; text-align: center;">
+          <span class="a" style="opacity: 1;">Lugar vago na estante</span>
+        </div>
+        <div><div class="tombo">Nº 0005</div><div style="font-size: 14px;">Em breve</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

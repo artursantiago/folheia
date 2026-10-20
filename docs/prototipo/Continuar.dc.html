@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · continuar de onde parou</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}
+.grade{display:grid;grid-template-columns:150px 1fr 1fr;border-top:1.5px solid var(--ink)}
+.grade div{height:38px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:13px}
+.grade div:nth-child(3n+1),.grade div:nth-child(3n+2){border-right:1px solid var(--rule)}
+</style>
+</helmet>
+<div class="fx" style="width: 1280px; height: 800px;">
+  <div class="livro" style="left: 460px; top: 110px; opacity: .5;">
+    <div class="pag dir" style="width: 360px; height: 500px; background: #2E4A5A;"></div>
+  </div>
+  <div class="veu"></div>
+
+  <div class="dialogo" role="dialog" aria-label="Continuar leitura" style="width: 520px;">
+    <div class="ficha" style="padding-bottom: 30px;">
+      <div class="ficha-h" style="min-height: 54px;"><span class="tag">Cartão de empréstimo</span><span class="tombo">Nº 0003</span></div>
+      <div style="padding: 18px 28px 0;">
+        <p class="serif" style="margin: 0; font-size: 24px; line-height: 1.2;">Peter Pan in Kensington Gardens</p>
+        <p class="muted" style="margin: 4px 0 18px;">Você já esteve com este livro. Quer continuar de onde parou?</p>
+        <div class="grade" role="table" aria-label="Histórico de leitura">
+          <div class="tag" style="font-size: 11px;">Data</div><div class="tag" style="font-size: 11px;">Retirado na pág.</div><div class="tag" style="font-size: 11px;">Devolvido na pág.</div>
+          <div>02 out. 2026</div><div>1</div><div>34</div>
+          <div>11 out. 2026</div><div>34</div><div>61</div>
+          <div>18 out. 2026</div><div>61</div><div style="position: relative;"><span class="carimbo" style="position: absolute; left: 10px; top: 3px; transform: rotate(-6deg);">Pág. 87</span></div>
+        </div>
+        <div class="row" style="gap: 12px; margin-top: 24px;">
+          <button class="btn pri" style="flex: 1;">Continuar da página 87</button>
+          <button class="btn">Começar do início</button>
+        </div>
+      </div>
+      <div class="furo"></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

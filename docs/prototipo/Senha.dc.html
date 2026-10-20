@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · PDF com senha</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="fx dark" style="width: 1280px; height: 800px;">
+  <div class="lamp"></div>
+  <div class="veu" style="background: rgba(6,8,12,.35);"></div>
+
+  <div class="dialogo" role="dialog" aria-label="PDF protegido por senha" style="width: 500px;">
+    <div class="ficha" style="padding-bottom: 32px;">
+      <div class="ficha-h" style="min-height: 54px;"><span class="tag">Acervo reservado</span><svg class="ic" viewBox="0 0 24 24" style="color: var(--accent);" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></div>
+      <div style="padding: 20px 28px 0;">
+        <p class="serif" style="margin: 0; font-size: 24px;">Este livro está trancado.</p>
+        <p class="muted" style="margin: 6px 0 4px;">Digite a senha para abrir <span class="mono" style="color: var(--ink); font-size: 14px;">extrato-setembro.pdf</span>.</p>
+        <label style="display: block; margin-top: 18px;">
+          <span class="lbl">Senha</span>
+          <div class="row" style="border-bottom: 1.5px solid var(--accent);">
+            <input class="field" type="password" value="••••••••" style="border: 0;">
+            <button class="btn ib" aria-label="Mostrar senha"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+          </div>
+        </label>
+        <p role="alert" style="margin: 8px 0 0; color: var(--accent); font-size: 14px;">Senha incorreta. Confira e tente de novo.</p>
+        <p class="muted" style="margin: 14px 0 0; font-size: 13px;">A senha fica só nesta aba. Ela não é guardada nem enviada para lugar nenhum.</p>
+        <div class="row" style="gap: 12px; margin-top: 22px;">
+          <button class="btn pri" style="flex: 1;">Abrir</button>
+          <button class="btn">Devolver à estante</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

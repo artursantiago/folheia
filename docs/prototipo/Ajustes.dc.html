@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · menu de ajustes</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="fx" style="width: 1280px; height: 800px;">
+  <div class="livro" style="left: 250px; top: 92px; opacity: .45;">
+    <div class="pag esq" style="width: 390px; height: 540px; padding: 56px 46px;">
+      <div class="ln" style="width: 60%; height: 9px; margin-bottom: 26px;"></div>
+      <div class="ln" style="width: 100%;"></div><div class="ln" style="width: 96%;"></div><div class="ln" style="width: 100%;"></div><div class="ln" style="width: 92%;"></div><div class="ln" style="width: 98%;"></div><div class="ln" style="width: 70%; margin-bottom: 22px;"></div>
+      <div class="ln" style="width: 100%;"></div><div class="ln" style="width: 94%;"></div><div class="ln" style="width: 100%;"></div><div class="ln" style="width: 97%;"></div>
+    </div>
+    <div class="pag dir" style="width: 390px; height: 540px; padding: 56px 46px;">
+      <div style="height: 200px; background: #CFD8C6; margin-bottom: 26px;"></div>
+      <div class="ln" style="width: 100%;"></div><div class="ln" style="width: 93%;"></div><div class="ln" style="width: 100%;"></div><div class="ln" style="width: 64%;"></div>
+    </div>
+  </div>
+
+  <nav class="barra" aria-label="Controles de leitura">
+    <button class="btn ib" aria-label="Página anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+    <button class="pg" style="font: inherit; font-family: 'IBM Plex Mono'; font-size: 14px;">12–13 <span class="muted">/ 51</span></button>
+    <button class="btn ib" aria-label="Próxima página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+    <span class="sep"></span>
+    <button class="btn ib" aria-label="Miniaturas"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg></button>
+    <button class="btn ib" aria-label="Sumário"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg></button>
+    <span class="sep"></span>
+    <button class="btn ib on" aria-label="Ajustes" aria-expanded="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></button>
+  </nav>
+
+  <div class="pop" style="left: 560px; bottom: 92px; width: 420px;">
+    <div class="ficha-h"><span class="serif" style="font-size: 19px;">Ajustes de leitura</span><span class="tombo">Nº 0001</span></div>
+    <div class="item"><span>Páginas</span><div class="seg"><span class="on">Auto</span><span>Uma</span><span>Duas</span></div></div>
+    <div class="item"><div class="col"><span>Capa sozinha</span><span class="muted" style="font-size: 13px;">Como num livro fechado</span></div><span class="sw on" role="switch" aria-checked="true"></span></div>
+    <div class="item"><span>Sentido da leitura</span><div class="seg"><span class="on">Esq. → dir.</span><span>Dir. → esq.</span></div></div>
+    <div class="item"><div class="col"><span>Ponta no canto</span><span class="muted" style="font-size: 13px;">Levanta a página ao passar o mouse</span></div><span class="sw on" role="switch" aria-checked="true"></span></div>
+    <div class="item"><span>Tema</span><div class="seg"><span class="on">Sistema</span><span>Claro</span><span>Escuro</span></div></div>
+    <div class="item"><span>Idioma</span><div class="seg"><span class="on">PT</span><span>EN</span></div></div>
+    <div class="item" style="background: var(--paper); border-radius: 0 0 4px 4px;"><span class="muted" style="font-size: 13px;">Algo deu errado?</span><button class="btn ghost" style="height: 36px; padding: 0 8px; text-decoration: underline;">Copiar diagnóstico</button></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

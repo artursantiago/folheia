@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · mensagens de erro</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}
+.err{position:relative;padding-bottom:22px}
+.err p{margin:0}
+.err .c{position:absolute;right:22px;top:66px}
+</style>
+</helmet>
+<div class="fx" style="width: 1280px; height: 800px; padding: 48px 72px;">
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px;">
+    <div class="ficha err">
+      <div class="ficha-h"><span class="tag">Endereço bloqueado</span><span class="tombo">CORS</span></div>
+      <div style="padding: 18px 24px 0;">
+        <p class="serif" style="font-size: 21px; max-width: 340px;">Esse endereço não deixou a gente entrar.</p>
+        <p class="muted" style="margin-top: 8px;">O site onde o arquivo está não permite que outros sites o abram. Baixe o arquivo e abra daqui: ele continua só no seu aparelho.</p>
+        <div class="row" style="gap: 10px; margin-top: 16px;"><button class="btn pri">Baixar o arquivo</button><button class="btn">Escolher arquivo</button></div>
+      </div>
+      <span class="carimbo c">Acesso negado</span>
+    </div>
+
+    <div class="ficha err">
+      <div class="ficha-h"><span class="tag">Formato fora do acervo</span><span class="tombo">CBR</span></div>
+      <div style="padding: 18px 24px 0;">
+        <p class="serif" style="font-size: 21px; max-width: 340px;">Ainda não lemos arquivos CBR.</p>
+        <p class="muted" style="margin-top: 8px;">Converta para CBZ: extraia as imagens, compacte-as em .zip sem compressão e troque a extensão para .cbz.</p>
+        <div class="row" style="gap: 10px; margin-top: 16px;"><button class="btn pri">Ver como converter</button><button class="btn">Escolher outro</button></div>
+      </div>
+      <span class="carimbo c">Não catalogado</span>
+    </div>
+
+    <div class="ficha err">
+      <div class="ficha-h"><span class="tag">Arquivo avariado</span><span class="tombo">revista.pdf</span></div>
+      <div style="padding: 18px 24px 0;">
+        <p class="serif" style="font-size: 21px; max-width: 340px;">Não conseguimos ler este arquivo.</p>
+        <p class="muted" style="margin-top: 8px;">Ele pode estar corrompido ou não ser um PDF ou CBZ de verdade. Se você acha que é um erro nosso, copie o diagnóstico e abra uma issue.</p>
+        <div class="row" style="gap: 10px; margin-top: 16px;"><button class="btn">Copiar diagnóstico</button><button class="btn ghost">Escolher outro</button></div>
+      </div>
+      <span class="carimbo c">Avariado</span>
+    </div>
+
+    <div class="ficha err">
+      <div class="ficha-h"><span class="tag">Navegador antigo</span><span class="tombo">Safari 16.6</span></div>
+      <div style="padding: 18px 24px 0;">
+        <p class="serif" style="font-size: 21px; max-width: 340px;">Este navegador ficou para trás.</p>
+        <p class="muted" style="margin-top: 8px;">O Folheia precisa do Safari 18 ou mais novo, ou das versões recentes de Chrome, Edge ou Firefox. No iPad, atualize o iPadOS em Ajustes › Geral.</p>
+      </div>
+      <span class="carimbo c ink">Fora de circulação</span>
+    </div>
+  </div>
+
+  <div class="row" style="position: absolute; left: 50%; bottom: 36px; transform: translateX(-50%); gap: 18px; background: var(--ink); color: var(--paper); border-radius: 4px; padding: 6px 8px 6px 18px; border-top: 1.5px dashed var(--perf);">
+    <span class="mono" style="font-size: 13px;">Nova edição do Folheia disponível</span>
+    <button class="btn" style="height: 36px; border-color: var(--paper); color: var(--paper);">Recarregar</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · zoom no celular, escuro</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="fx dark" style="width: 390px; height: 844px;">
+  <div class="pag" style="position: absolute; left: -40px; top: -20px; width: 860px; height: 1200px; padding: 0 0;">
+    <svg viewBox="0 0 300 200" style="position: absolute; left: 40px; top: 60px; width: 620px;" aria-hidden="true">
+      <rect width="300" height="200" fill="#EFE6D6"></rect>
+      <circle cx="236" cy="52" r="26" fill="#D9A441"></circle>
+      <path d="M0 150 C60 110 120 120 170 145 S260 170 300 140 V200 H0Z" fill="#7C9A6B"></path>
+      <path d="M0 175 C80 150 170 160 300 172 V200 H0Z" fill="#5B7A52"></path>
+      <rect x="88" y="98" width="8" height="58" fill="#6A4B32"></rect>
+      <circle cx="92" cy="86" r="32" fill="#4F7047"></circle>
+      <path d="M150 158 c0-16 6-28 14-28 s14 12 14 28z" fill="#B4532A"></path>
+      <circle cx="164" cy="122" r="9" fill="#E8C9A6"></circle>
+    </svg>
+    <div style="position: absolute; left: 40px; top: 500px; width: 620px;">
+      <div class="ln" style="height: 14px; margin-bottom: 24px; width: 100%;"></div><div class="ln" style="height: 14px; margin-bottom: 24px; width: 93%;"></div><div class="ln" style="height: 14px; margin-bottom: 24px; width: 100%;"></div><div class="ln" style="height: 14px; margin-bottom: 24px; width: 96%;"></div><div class="ln" style="height: 14px; margin-bottom: 24px; width: 100%;"></div>
+    </div>
+  </div>
+
+  <div class="row" style="position: absolute; top: 22px; left: 12px; right: 12px; justify-content: space-between;">
+    <div class="row" style="gap: 6px; background: var(--card); border-radius: 4px; padding: 4px 6px 4px 12px; box-shadow: 0 10px 24px -14px var(--shadow);">
+      <span class="mono" style="font-size: 14px; color: var(--accent);">250%</span>
+      <button class="btn ghost" style="height: 36px; padding: 0 10px; font-size: 14px;">Ajustar à tela</button>
+    </div>
+    <div style="width: 70px; height: 98px; background: var(--card); border-radius: 3px; padding: 5px; box-shadow: 0 10px 24px -14px var(--shadow);">
+      <div style="position: relative; width: 60px; height: 88px; background: #FBF8F1;">
+        <div style="position: absolute; left: 4px; top: 6px; width: 52px; height: 34px; background: #CFD8C6;"></div>
+        <div style="position: absolute; left: 0; top: 0; width: 28px; height: 58px; outline: 2px solid var(--accent);"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carimbo" style="position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%) rotate(-2deg); background: var(--card);">arraste para mover · pince para ampliar</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

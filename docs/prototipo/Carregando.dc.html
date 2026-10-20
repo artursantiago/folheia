@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · abrindo um livro</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="fx" style="width: 1280px; height: 800px;">
+  <div class="topo">
+    <a class="btn ghost" href="Main.dc.html" style="padding: 0 12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Devolver à estante</a>
+    <div class="col" style="align-items: center;"><span class="serif" style="font-size: 17px;">A Menina do Narizinho Arrebitado</span><span class="tombo">Monteiro Lobato · 1920</span></div>
+    <span style="width: 190px;"></span>
+  </div>
+
+  <div class="livro" style="left: 640px; top: 110px;">
+    <div class="pag dir" style="width: 360px; height: 480px; background: #B4532A; filter: blur(3px); opacity: .85;">
+      <div style="position: absolute; left: 40px; top: 50px; right: 40px; height: 64px; background: rgba(246,239,226,.7); border-radius: 3px;"></div>
+      <div style="position: absolute; left: 110px; top: 200px; width: 140px; height: 140px; border-radius: 50%; background: #F2C46B;"></div>
+    </div>
+  </div>
+  <div class="tag" style="position: absolute; left: 640px; top: 602px; width: 360px; text-align: center;">prévia · a versão nítida está chegando</div>
+
+  <div class="ficha" style="position: absolute; left: 150px; top: 240px; width: 400px;">
+    <div class="ficha-h"><span class="tag">Catalogando</span><span class="tombo">Nº 0001</span></div>
+    <div class="ficha-b" style="padding: 10px 22px 22px;">
+      <div class="row" style="justify-content: space-between;"><span class="lbl" style="margin: 0;">Obra</span><span class="mono" style="font-size: 13px;">PDF · 51 páginas</span></div>
+      <div class="row" style="justify-content: space-between;"><span class="lbl" style="margin: 0;">Baixado</span><span class="mono" style="font-size: 13px;">3,2 de 10,3 MB</span></div>
+      <div class="row" style="justify-content: space-between;"><span class="lbl" style="margin: 0;">Páginas prontas</span><span class="mono" style="font-size: 13px;">1 de 51</span></div>
+      <div style="margin-top: 14px; height: 10px; border: 1.5px solid var(--ink); border-radius: 2px; position: relative;">
+        <div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: 31%; background: repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 9px);"></div>
+      </div>
+      <p class="muted" style="margin: 12px 0 0; font-size: 13px; line-height: 20px;">Só as páginas que você vai ler agora são baixadas. O resto vem enquanto você lê.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

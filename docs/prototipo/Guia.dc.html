@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · guia de estilo Ex-libris</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}
+.sec{margin-top:26px}
+.sws{display:flex;gap:10px;margin-top:10px}
+.swt{width:86px}
+.swt b{display:block;height:54px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.25)}
+.swt span{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;margin-top:5px;color:var(--ink2);line-height:1.35}
+</style>
+</helmet>
+<div class="row" style="width: 1280px; height: 1040px; align-items: stretch;">
+  <div class="fx" style="width: 640px; padding: 40px 48px;">
+    <div class="row" style="justify-content: space-between; align-items: baseline;"><span class="wordmark">Ex-libris</span><span class="tag">tema claro · Ateliê</span></div>
+
+    <div class="sec"><span class="lbl">Cores</span>
+      <div class="sws">
+        <div class="swt"><b style="background:#F3EDE1"></b><span>papel<br>#F3EDE1</span></div>
+        <div class="swt"><b style="background:#FBF7EF"></b><span>ficha<br>#FBF7EF</span></div>
+        <div class="swt"><b style="background:#2B2420"></b><span>tinta<br>#2B2420</span></div>
+        <div class="swt"><b style="background:#A9481F"></b><span>carimbo<br>#A9481F</span></div>
+        <div class="swt"><b style="background:#3E5641"></b><span>encaderna<br>#3E5641</span></div>
+        <div class="swt"><b style="background:#DDD1BE"></b><span>pauta<br>#DDD1BE</span></div>
+      </div>
+    </div>
+
+    <div class="sec"><span class="lbl">Tipografia</span>
+      <div class="serif" style="font-size: 40px; line-height: 1.1; margin-top: 6px;">Young Serif para títulos</div>
+      <div style="font-size: 17px; margin-top: 6px;">Atkinson Hyperlegible Next para textos de interface, feita para ser lida por todo mundo.</div>
+      <div class="mono" style="font-size: 15px; margin-top: 6px;">IBM Plex Mono · Nº 0001 · pág. 12–13 / 51</div>
+    </div>
+
+    <div class="sec"><span class="lbl">Botões</span>
+      <div class="row" style="gap: 10px; margin-top: 8px;">
+        <button class="btn pri">Escolher arquivo</button><button class="btn">Abrir</button><button class="btn ghost">Cancelar</button>
+        <button class="btn ib" aria-label="Próxima"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+        <button class="btn ib on" aria-label="Ajustes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></button>
+      </div>
+    </div>
+
+    <div class="sec"><span class="lbl">Campos e controles</span>
+      <div class="row" style="gap: 22px; margin-top: 8px; align-items: flex-end;">
+        <label style="width: 240px;"><span class="lbl">Endereço</span><input class="field" placeholder="https://…/livro.pdf"></label>
+        <div class="seg"><span class="on">Auto</span><span>Uma</span><span>Duas</span></div>
+        <span class="sw on" role="switch" aria-checked="true"></span><span class="sw" role="switch" aria-checked="false"></span>
+      </div>
+    </div>
+
+    <div class="sec"><span class="lbl">Assinatura</span>
+      <div class="row" style="gap: 22px; margin-top: 12px; align-items: center;">
+        <span class="carimbo">Domínio público</span>
+        <span class="carimbo ink">Fora de circulação</span>
+        <span class="tombo">Nº 0001 · 1920 · PT</span>
+      </div>
+      <div class="ficha picote" style="margin-top: 20px; width: 400px;">
+        <div class="ficha-h"><span class="tag">Ficha</span><span class="tombo">Nº 0000</span></div>
+        <div class="ficha-b" style="padding: 6px 24px 40px;"><div class="serif" style="font-size: 18px;">Cartão com pauta</div><div class="muted">Borda picotada, filete de carimbo e furo.</div></div>
+        <div class="furo"></div>
+      </div>
+    </div>
+
+    <div class="sec" style="position: relative; height: 66px;"><nav class="barra" style="left: 0; transform: none; bottom: 0;" aria-label="Barra exemplo"><button class="btn ib" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><span class="pg">12–13 <span class="muted">/ 51</span></span><button class="btn ib" aria-label="Próxima"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></nav></div>
+  </div>
+
+  <div class="fx dark" style="width: 640px; padding: 40px 48px;">
+    <div class="lamp"></div>
+    <div style="position: relative;">
+      <div class="row" style="justify-content: space-between; align-items: baseline;"><span class="wordmark">Ex-libris</span><span class="tag">tema escuro · Sebo à noite</span></div>
+
+      <div class="sec"><span class="lbl">Cores</span>
+        <div class="sws">
+          <div class="swt"><b style="background:#12161D"></b><span>noite<br>#12161D</span></div>
+          <div class="swt"><b style="background:#1E242E"></b><span>ficha<br>#1E242E</span></div>
+          <div class="swt"><b style="background:#EDE3CF"></b><span>papel<br>#EDE3CF</span></div>
+          <div class="swt"><b style="background:#E2A84B"></b><span>latão<br>#E2A84B</span></div>
+          <div class="swt"><b style="background:#8DB39A"></b><span>encaderna<br>#8DB39A</span></div>
+          <div class="swt"><b style="background:#323A47"></b><span>pauta<br>#323A47</span></div>
+        </div>
+      </div>
+
+      <div class="sec"><span class="lbl">Tipografia</span>
+        <div class="serif" style="font-size: 40px; line-height: 1.1; margin-top: 6px;">Young Serif para títulos</div>
+        <div style="font-size: 17px; margin-top: 6px;">Atkinson Hyperlegible Next para textos de interface, feita para ser lida por todo mundo.</div>
+        <div class="mono" style="font-size: 15px; margin-top: 6px;">IBM Plex Mono · Nº 0001 · pág. 12–13 / 51</div>
+      </div>
+
+      <div class="sec"><span class="lbl">Botões</span>
+        <div class="row" style="gap: 10px; margin-top: 8px;">
+          <button class="btn pri">Escolher arquivo</button><button class="btn">Abrir</button><button class="btn ghost">Cancelar</button>
+          <button class="btn ib" aria-label="Próxima"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+          <button class="btn ib on" aria-label="Ajustes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></button>
+        </div>
+      </div>
+
+      <div class="sec"><span class="lbl">Campos e controles</span>
+        <div class="row" style="gap: 22px; margin-top: 8px; align-items: flex-end;">
+          <label style="width: 240px;"><span class="lbl">Endereço</span><input class="field" placeholder="https://…/livro.pdf"></label>
+          <div class="seg"><span class="on">Auto</span><span>Uma</span><span>Duas</span></div>
+          <span class="sw on" role="switch" aria-checked="true"></span><span class="sw" role="switch" aria-checked="false"></span>
+        </div>
+      </div>
+
+      <div class="sec"><span class="lbl">Assinatura</span>
+        <div class="row" style="gap: 22px; margin-top: 12px; align-items: center;">
+          <span class="carimbo">Domínio público</span>
+          <span class="carimbo ink">Fora de circulação</span>
+          <span class="tombo">Nº 0001 · 1920 · PT</span>
+        </div>
+        <div class="ficha picote" style="margin-top: 20px; width: 400px;">
+          <div class="ficha-h"><span class="tag">Ficha</span><span class="tombo">Nº 0000</span></div>
+          <div class="ficha-b" style="padding: 6px 24px 40px;"><div class="serif" style="font-size: 18px;">Cartão com pauta</div><div class="muted">Borda picotada, filete de carimbo e furo.</div></div>
+          <div class="furo"></div>
+        </div>
+      </div>
+
+      <div class="sec" style="position: relative; height: 66px;"><nav class="barra" style="left: 0; transform: none; bottom: 0;" aria-label="Barra exemplo"><button class="btn ib" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><span class="pg">12–13 <span class="muted">/ 51</span></span><button class="btn ib" aria-label="Próxima"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></nav></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1040}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
