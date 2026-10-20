@@ -56,6 +56,12 @@ export function isCompatible(info: BridgeInfo) {
 
 type Handler = (message: BridgeMessage) => void;
 
+/** randomUUID needs a secure context; a dev server reached by LAN IP isn't one. */
+const newId = () =>
+  typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+
 export function createBridgeClient(): BridgeClient {
   let info: BridgeInfo | undefined;
   const handlers = new Map<string, Handler>();
@@ -93,7 +99,7 @@ export function createBridgeClient(): BridgeClient {
       };
       const timer = setTimeout(done, timeoutMs);
       waitingForInfo.add(done);
-      post({ type: 'hello', id: crypto.randomUUID(), protocol: PROTOCOL_VERSION });
+      post({ type: 'hello', id: newId(), protocol: PROTOCOL_VERSION });
     });
     return info;
   }
@@ -106,7 +112,7 @@ export function createBridgeClient(): BridgeClient {
     const { signal, onProgress } = options;
     if (signal?.aborted) throw new BridgeError('aborted', 'Aborted');
 
-    const id = crypto.randomUUID();
+    const id = newId();
     return new Promise<BridgeResponse>((resolve, reject) => {
       let head: ResponseHead | undefined;
       const chunks: ArrayBuffer[] = [];
@@ -160,7 +166,7 @@ export function createBridgeClient(): BridgeClient {
 
   async function requestAccess(origins: string[]) {
     if (!(await detect())) return false;
-    const id = crypto.randomUUID();
+    const id = newId();
     return new Promise<boolean>((resolve) => {
       const timer = setTimeout(() => {
         handlers.delete(id);
