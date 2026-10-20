@@ -7,7 +7,7 @@
 ## Ordem sugerida
 
 1. ✅ **D3, só o leitor (L1–L12), decidida em 20/10/2026:** decide o que entra no pedido do protótipo v2 e no motor da onda 1.
-2. **D1 + D5:** o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
+2. **D1 + D5** (✅ D1 decidida em 20/10/2026): o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
 3. **Protótipo v2 e fundações, em paralelo:** rascunhos em `prototipo-v2-pedido.md` e `spec-fundacoes.md`.
 4. **D2 + F1–F8:** as fontes dependem da regra 2, então é uma conversa só. Não bloqueia nada até a onda 2 (capas) e a onda 3 (fontes).
 
@@ -74,7 +74,7 @@ A regra 2 do `CLAUDE.md` hoje só aceita o `?file=` e os exemplos. As perguntas,
 
 ## D1. Quando começar a biblioteca
 
-**Recomendação: começar as fundações (etapa 1) já, em paralelo com o protótipo v2.**
+**Decidido em 20/10/2026: começar as fundações (etapa 1) já, em paralelo com o protótipo v2,** numa sessão própria em worktree que abre com a sabatina da etapa. Antes do Claude Design, o pedido do protótipo v2 passa por uma sessão própria de conversa.
 
 - **O que o estudo pedia antes já está feito:**
   - desempenho (A2, v0.2.0);

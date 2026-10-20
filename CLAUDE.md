@@ -72,7 +72,9 @@ Full guide: `docs/versionamento.md`.
   3. Commit `chore(release): vX.Y.Z`.
   4. Run `git tag -a vX.Y.Z -m "Folheia X.Y.Z"` and push main and the tag.
 
-  CI then creates the GitHub Release (notes from the changelog, stable site attached) and deploys. Only release when Artur asks.
+  CI then creates the GitHub Release (notes from the changelog, stable site attached) and deploys.
+
+- **Who releases:** you may release PATCH and MINOR versions on your own, following `docs/versionamento.md` §5 (one release per meaningful delivery), and mention it in your summary. A **MAJOR** (1.0.0, 2.0.0…) needs Artur's go-ahead first: tell him before releasing it.
 
 ## Commands
 

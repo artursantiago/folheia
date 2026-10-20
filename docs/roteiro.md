@@ -54,7 +54,7 @@ Os pontos que decidem a ordem:
 
 | #   | Decisão                                                                                                                                     | Destrava                                    |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| D1  | **Revisão conjunta dos estudos** (o "quando começar" da biblioteca)                                                                         | Etapa 1 da biblioteca                       |
+| D1  | ✅ **Revisão conjunta dos estudos** (o "quando começar" da biblioteca). Decidida em 20/10/2026: começar as fundações já                     | Etapa 1 da biblioteca                       |
 | D2  | **Sabatina de privacidade:** regra 2 (fontes pela extensão), capas da internet, GoatCounter                                                 | Frente 4, a parte de capas da etapa 2, G20  |
 | D3  | **Triagem dos candidatos L1–L12 (leitor) e F1–F8 (fontes)** do `estudo-mihon.md` §8. ✅ L1–L12 em 20/10/2026; F1–F8 vão com a D2            | A frente 5 e o desenho da frente 4          |
 | D4  | ✅ **Direção do ícone e do tom dos textos** (início da frente 2). Decidida em 20/10/2026: monograma F e os textos de `identidade-visual.md` | Protótipo v2, README, página da organização |
@@ -84,6 +84,7 @@ Os pontos que decidem a ordem:
   - cortes de tela;
   - exportar/importar em JSON.
 - **Leitor, só motor (aprovados na D3):** L1 (gravar o progresso quando a leitura para, que já cai no armazenamento novo) e L4 (pareamento por proporção).
+- **Som de virar página (E13):** trilha própria e pequena, que pode andar assim que as fundações começarem (pedido do Artur em 20/10/2026). O motor acompanha a virada; o protótipo v2 só ganha o liga/desliga.
 - **Identidade:** o protótipo v2 continua em paralelo até ser aprovado.
 
 ### Onda 2: o acervo aparece
@@ -136,7 +137,7 @@ Cada item é escolhido quando der vontade, e cada um mexe na moldura de um jeito
   - voz alta (E2);
   - controles na sobra lateral (B2);
   - os demais L aprovados.
-- **Extras:** 3D (E16), temas Cordel/HQ/mangá (E17), som (E13), exportar flipbook (E18).
+- **Extras:** 3D (E16), temas Cordel/HQ/mangá (E17), exportar flipbook (E18). O som (E13) subiu para a onda 1.
 - **Desempenho:** P7, P2 e P8–P10, se as medições pedirem.
 - **Se houver demanda:** G20–G22.
 

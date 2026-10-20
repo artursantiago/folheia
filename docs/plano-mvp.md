@@ -398,6 +398,7 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 
 12. Busca de texto no PDF (a camada de texto já existe).
 13. Som de virar página (asset próprio).
+    - **Subiu de prioridade (20/10/2026):** o Artur quer o som. É uma trilha própria e pequena na onda 1 do `roteiro.md`: o som acompanha a virada (a velocidade do arrasto muda o som), com Web Audio, que no iPad destrava no primeiro toque. O asset é nosso ou CC0, nunca de outro app. Na tela, só um liga/desliga nos Ajustes. O padrão (ligado ou desligado), o volume e um som por tipo de livro ficam para a sabatina dele.
 14. Painel **Paginação**: interruptor manual de spreads + "deslocar uma página".
     - Entram aqui o **"zoom e percorrer"** spreads largos no iPad em pé (L3) e a interface dos **ajustes por livro** (L5): cada opção de "como o livro é feito" (direção, simples/dupla, capa sozinha, dividir spreads) ganha "este livro / todos", e um aviso curto ao abrir só quando o livro difere do global.
 15. Modo **rolagem vertical** (webtoon e PDF).

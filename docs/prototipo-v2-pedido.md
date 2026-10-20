@@ -58,7 +58,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
    - a **barra do modo normal sempre visível** (ela não some mais), no espaço que o palco já reserva;
    - a **dica das zonas de toque** na primeira leitura e quando a direção muda: cada zona pintada com "Anterior", "Próxima" e, no meio, "Toque duplo: zoom", sumindo no primeiro toque.
 8. **Catálogos:** os exemplos de domínio público, mais discretos que o carrossel atual, com "Guardar no acervo". Deixe espaço visível para "Adicionar catálogo" (servidores OPDS), sem detalhar.
-9. **Mais:** ajustes; cópia dos arquivos (interruptor) e espaço usado; leitura sem registro; exportar e importar o acervo; e "Sobre", com os carimbos que saíram do início ("Seu arquivo não sai deste aparelho", "Domínio público").
+9. **Mais:** ajustes (incluindo o liga/desliga do som de virar página); cópia dos arquivos (interruptor) e espaço usado; leitura sem registro; exportar e importar o acervo; e "Sobre", com os carimbos que saíram do início ("Seu arquivo não sai deste aparelho", "Domínio público").
 10. **Estados:**
     - exemplar ausente ("Traga este exemplar de volta");
     - "Este não é o mesmo exemplar", com "abrir só desta vez" e "adicionar como livro novo";

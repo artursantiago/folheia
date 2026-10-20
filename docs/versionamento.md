@@ -73,3 +73,4 @@ O site tem dois endereços. Os dois são montados a cada deploy:
 - **Uma versão por entrega com sentido.** Por exemplo, uma etapa do roteiro, um conjunto de correções ou uma melhora de desempenho que você já sente no iPad. Não precisa ter data fixa.
 - **Correções urgentes** podem sair sozinhas, como CORREÇÃO.
 - **O redesign** anda na `main` e aparece na prévia. A estável só muda quando uma etapa inteira estiver pronta e testada.
+- **Quem lança (decidido pelo Artur em 20/10/2026):** o Claude lança as versões CORREÇÃO e MENOR sozinho, seguindo este guia, e conta no resumo da sessão. Uma **MAIOR** (1.0.0, 2.0.0…) é uma mudança brusca: o Claude avisa o Artur antes e só lança com o "sim" dele.
