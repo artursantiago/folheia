@@ -285,3 +285,172 @@ O Artur trouxe o leitor de livros do Internet Archive como referência de tela c
 - Usar degraus de escala fixos para as versões nítidas.
 - Slider de páginas e grade de miniaturas como modo de visualização (item B5).
 - Leitura em voz alta como recurso futuro. A Web Speech API roda no próprio aparelho, então combina com a privacidade.
+
+---
+
+## 12) Internet Archive BookReader: leitura do código (20/10/2026)
+
+Desta vez li o código-fonte do BookReader (repositório público, licença AGPL-3.0), num clone raso e temporário, já apagado. Ficaram só os **conceitos**, descritos com as minhas palavras. Nenhum código, CSS, nome interno ou asset deles entra no Folheia. A versão lida foi a série 5.0 (beta). Este estudo confirma e corrige os palpites da seção 11.
+
+### 12.1 Resolução das páginas e troca sem piscar (A2, A3)
+
+**Como funciona lá:**
+
+- Cada página tem um "fator de redução" (o quanto a imagem é menor que o original), calculado assim: largura nativa da página ÷ largura que ela ocupa na tela, já contando o zoom.
+- Esse fator é arredondado para baixo até a **potência de 2** mais próxima (1, 2, 4, 8…). Então só existem poucas versões por página, e o cache acerta muito.
+- Um registro pequeno guarda, por página, quais fatores já foram pedidos e quais já terminaram de carregar. A regra é **nunca piorar**: se já existe uma versão carregada igual ou mais nítida que a necessária, ela é reaproveitada. Os bytes ficam no cache HTTP do navegador.
+- A troca é em **camadas**: a imagem nova entra no mesmo lugar, por cima da antiga. A antiga só sai depois que a nova dispara o evento de carregado e passa uma folga fixa de ~100 ms (o evento pode chegar antes de a imagem estar pintada).
+- Se a versão nítida ainda não chegou, mas existe uma versão menor já carregada, ela é posta por baixo como substituta. Sem nenhuma versão, aparece um fundo neutro com um indicador de carregamento discreto.
+- Existe uma opção (desligada por padrão) que oferece ao navegador uma lista de versões mais nítidas, para ele escolher conforme a densidade da tela. Sem ela, o cálculo **ignora o devicePixelRatio**.
+
+**Ideia para o Folheia:**
+
+- Degraus discretos de escala de renderização no PDF.js (por exemplo 0,5×, 1×, 2× do "tamanho que cabe"), com uma chave de cache por página e degrau.
+- A regra "nunca piorar": se existe um bitmap melhor no cache, ele serve.
+- Troca em duas camadas: o bitmap novo entra por cima e o antigo só sai quando o novo estiver **decodificado de verdade**. Em vez da espera fixa deles, usar o término do desenho no canvas ou da decodificação da imagem. Isso resolve o A2.
+- Diferente deles, incluir o DPR (com teto de 2) no cálculo do degrau.
+
+### 12.2 Pré-carregamento e memória (A3)
+
+**Como funciona lá:**
+
+- No modo de duas páginas, o leitor mantém no DOM o spread visível **mais 2 páginas antes e 2 depois** (teto de segurança: 10). Essas páginas já têm a imagem pedida e ficam ocultas até a virada.
+- No modo de uma página com rolagem, é só 1 página antes e 1 depois. A lista é recalculada com limitação de frequência (~100 ms) durante a rolagem.
+- Os contêineres de página são guardados num mapa que **nunca é esvaziado**. Quando saem da janela, eles só deixam a árvore renderizada, e a memória decodificada fica por conta do navegador. Não há LRU nem teto explícito.
+
+**Ideia para o Folheia:**
+
+- Copiar a janela (atual ± 1 spread), mas **com descarte explícito**, porque no iPad o limite de memória de canvas é real:
+  - LRU com teto em megapixels;
+  - liberar a memória dos canvases que saem da janela (zerar o tamanho deles);
+  - cancelar renderizações que ficaram obsoletas.
+- O mapa sem limite deles é exatamente o que **não** queremos.
+
+### 12.3 Animação de virada no modo de duas páginas (A4)
+
+**Como funciona lá:**
+
+- É feita com DOM + **Web Animations API**. A folha que sai gira 0→180° em torno da lombada, e a que entra, do outro lado, gira de 180° até 0°.
+- A face de trás de cada elemento fica invisível. Assim cada página some ao passar de 90° e a outra aparece: parece uma folha só, com frente e verso.
+- Não há perspectiva, então o giro é visualmente um **achatamento horizontal 2D**, sem sombra dinâmica.
+- Detalhes do movimento:
+  - duração de ~400 ms (mais 1 ms por página pulada), com aceleração no início (sem desaceleração no fim);
+  - o livro inteiro é recentralizado ao mesmo tempo (útil na capa, quando o livro muda de largura);
+  - camadas de texto e de busca ficam escondidas durante o giro.
+- **Cliques rápidos são ignorados** enquanto há uma virada em andamento: não há fila. O estado final só é gravado depois que a animação termina.
+- Nas laterais, uma "espessura de páginas" (largura proporcional às folhas restantes) mostra o progresso. Ao passar o mouse, aparece o nome da página sob o cursor, e um clique salta para ela.
+
+**Ideia para o Folheia:**
+
+- O nosso motor 2D já é mais rico (curvatura e sombra). O que vale levar daqui:
+  - A4: em vez de cortar a sombra de repente, a sombra e a dobra devem fazer o caminho inverso no fim da animação, voltando à intensidade zero;
+  - durante a virada, desligar overlays (texto, links, destaques);
+  - tratar cliques repetidos de propósito: **enfileirar no máximo 1** virada pendente, que é melhor que descartar.
+- A borda com espessura e o salto ao clicar nela é um extra barato para o B5.
+
+### 12.4 Tela cheia e interface imersiva (B5)
+
+**Como funciona lá:**
+
+- São duas camadas:
+  - **tela cheia "de CSS"**: o leitor fica fixo, cobre a janela inteira com fundo preto e trava a rolagem do body. É o padrão no celular;
+  - no desktop, um complemento usa a **Fullscreen API** no elemento raiz do leitor e cai no modo CSS se ela não estiver disponível.
+- Ao entrar ou sair, o conteúdo some e reaparece com um fade curto, e o livro é recalculado depois que o layout assenta. Esc sai da tela cheia.
+- A URL ganha um marcador de "modo teatro".
+- O encaixe do livro usa o menor entre a escala por largura e a escala por altura, com uma margem fixa pequena. A área do livro é recortada pela altura real da barra de ferramentas e do rodapé, e um ResizeObserver dispara o reencaixe.
+- Abaixo de uma largura de ~800 px, a tela cheia passa para o modo de uma página.
+- **Barra inferior:** troca o conjunto de botões conforme a largura do contêiner. Abaixo de ~640 px fica um conjunto mínimo e o slider se recolhe atrás de um botão. Existe uma opção de esconder sozinha, mas ela vem desligada.
+- **Trilho lateral de ícones:** é um componente externo. Uma lista ordenada de atalhos (sumário, busca, marcadores, ajustes visuais, compartilhar) abre painéis. Em tela cheia, um atalho extra no topo do trilho sai do modo.
+- **Slider:**
+  - enquanto se arrasta, **só o rótulo muda**, e o salto acontece ao soltar;
+  - no modo de duas páginas, o valor é ajustado para a página da esquerda do spread;
+  - o rótulo mostra o número impresso e o índice físico (com travessão quando não há número impresso);
+  - resultados de busca e capítulos aparecem como marcadores posicionados em porcentagem ao longo do trilho, com dica ao passar o mouse e salto ao clicar.
+- Os ajustes visuais (brilho, contraste, inversão, tons de cinza) são só um filtro aplicado ao contêiner do livro.
+
+**Ideia para o Folheia:**
+
+- Para o B5:
+  - Fullscreen API onde existir e modo CSS fixo no iPhone;
+  - slider com prévia do rótulo durante o arrasto e salto só no fim;
+  - marcadores de busca e de capítulos (sumário do PDF) no trilho;
+  - recalcular o encaixe pelo ResizeObserver depois da transição.
+- O filtro visual é um recurso quase grátis ("modo noturno" por inversão).
+
+### 12.5 Toque, pinça e iOS
+
+**Como funciona lá:**
+
+- **Não há swipe** no modo de duas páginas: no toque, vira-se tocando na página da esquerda ou da direita.
+- A pinça usa uma biblioteca de gestos, com os eventos de gesto do Safari como reforço, e a área de toque permite só pan nativo. As correções para o Safari são:
+  - um contador de toques ignora "pinças" falsas com um dedo só;
+  - um segundo início de gesto é ignorado (o Safari dispara duas vezes).
+- Ctrl + roda trata a pinça do trackpad, com um passo maior no Mac.
+- **Não achei nada** sobre safe areas, barra de status ou altura dinâmica da viewport.
+
+**Ideia para o Folheia:**
+
+- Manter o swipe/arrasto do nosso motor.
+- Copiar as duas defesas do Safari (contar os toques reais e tolerar o início duplicado de gesto).
+- Tratar as safe areas e a altura dinâmica da viewport nós mesmos: é uma lacuna deles, não um modelo.
+
+### 12.6 Zoom nítido
+
+**Como funciona lá:**
+
+- O zoom aplica uma escala por transform no "mundo" do livro (rápido, só GPU). Durante a pinça, as atualizações são agrupadas por quadro de animação e a rolagem é corrigida para manter fixo o ponto entre os dedos.
+- Depois que a escala muda, a página é re-renderizada e o fator de redução é recalculado. Então chega uma **imagem inteira maior**, da próxima potência de 2. **Não há tiles.**
+
+**Ideia para o Folheia:**
+
+- O mesmo fluxo: transform durante o gesto e, quando ele termina, renderizar no degrau seguinte com troca em camadas.
+- No iPad, imagem inteira tem teto (megapixels por canvas). Acima de ~2–3×, renderizar **só a região visível** num canvas do tamanho da tela, que é mais simples que tiles e respeita o limite.
+
+### 12.7 Grade de miniaturas e URL (E2)
+
+**Como funciona lá:**
+
+- A grade monta as linhas a partir das proporções das páginas e cria elementos **só para as linhas visíveis mais 1 linha de folga**. As linhas que saem da janela são removidas do DOM.
+- O fator das miniaturas é derivado da largura delas.
+- O "zoom" da grade muda o número de colunas, dentro de um mínimo e um máximo.
+- A página atual fica destacada, e um toque abre a página no modo de leitura.
+- **URL:** página e modo ficam no caminho (ou no hash), e busca e "teatro" ficam nos parâmetros. A barra de endereço é atualizada **substituindo a entrada** do histórico, sem empilhar. Quando a página não tem número impresso, a URL usa um prefixo que indica índice físico. Um complemento separado lembra a última página num cookie.
+
+**Ideia para o Folheia:**
+
+- Para o E2:
+  - grade virtual (linhas visíveis ± 1), miniaturas renderizadas num degrau baixo e fixo, com fila de prioridade;
+  - zoom por número de colunas;
+  - toque na miniatura volta ao modo anterior.
+- No `#p=`, acrescentar o modo e usar a substituição de histórico.
+- Guardar a última página por documento no armazenamento local, com chave pelo hash do arquivo.
+
+### 12.8 Leitura em voz alta (E2)
+
+**Como funciona lá:**
+
+- O texto vem do OCR, dividido em trechos de cerca de 25 a 50 palavras (por parágrafo). Cada trecho guarda os retângulos das suas linhas, em coordenadas nativas da página. Um iterador mantém ~3 páginas de texto carregadas à frente.
+- Antes de falar cada trecho, o leitor:
+  1. vira para a página certa, se ela não estiver visível;
+  2. desenha os retângulos numa camada vetorial sobre a página. Essa camada usa as coordenadas nativas e estica junto com a página, então acompanha qualquer zoom;
+  3. rola até o destaque.
+- A voz é a Web Speech API. Correções para os navegadores:
+  - ao trocar de voz ou de velocidade, a fala recomeça do último ponto de fronteira de palavra;
+  - pausar e retomar têm tempo-limite e fallback, porque em alguns navegadores elas falham sem avisar;
+  - no iOS, às vezes falta a voz padrão na lista, e uma voz "padrão do sistema" é inserida no topo;
+  - um áudio silencioso em loop ativa a Media Session (controles na tela de bloqueio).
+
+**Ideia para o Folheia:**
+
+- No PDF, montar os trechos a partir do conteúdo de texto do PDF.js, que já traz as posições.
+- Destacar com uma camada vetorial em coordenadas da página, com a mesma escala do resto.
+- Virar a página automaticamente pelo nosso motor.
+- No CBZ não há texto, então o recurso fica desativado.
+- Tudo roda no aparelho e combina com a privacidade.
+
+### 12.9 Outras ideias reaproveitáveis
+
+- Separar três sistemas de coordenadas: "mundo" (polegadas ou pontos do PDF), "renderizado" (px de layout) e "visível" (px × zoom). Isso deixa os cálculos de encaixe, zoom e escolha de degrau limpos.
+- Guardar em cache as medidas do contêiner (largura e altura) e atualizá-las só por ResizeObserver, para não forçar recálculo de layout a cada quadro.
+- Um único caminho de navegação ("ir para o índice N") usado por slider, miniaturas, busca, URL e voz alta.
+- Os atalhos de teclado só funcionam quando o leitor está visível, detectado por IntersectionObserver.
