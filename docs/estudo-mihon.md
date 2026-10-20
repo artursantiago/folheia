@@ -549,10 +549,132 @@ Comparação do caminho de uma página até a tela, feita com o código do Folhe
 | P8  | Deixar rodar durante a virada o que roda em worker                                                                              | Médio-alto              | M       | Médio (engasgos)                  |
 | P9  | Tiles de zoom em grade, reaproveitados                                                                                          | Médio                   | M-G     | Médio                             |
 | P10 | Leitor de PDF próprio que passa o JPEG embutido direto (o PDF de HQ vira um "CBZ")                                              | Muito alto (HQ em PDF)  | G       | Alto                              |
+| P11 | Codificar em JPEG também no Chromium (o WebP custa 140–290 ms por página; veio do P0)                                           | Médio (desktop)         | Mínimo  | Baixo                             |
 
 **Ordem sugerida:** P0 → P1 + P5 → P2/P3 juntos → P4 → P6/P7 → P8 → P9 → P10 (só se P0 e P4 mostrarem que a decodificação é o gargalo).
 
 **Como medir:** com `e2e/engine.spec.ts` e `e2e/flip.spec.ts` (`FOLHEIA_FIXTURE=fixtures/personal/invincible-vol-1.pdf`, e um CBZ pessoal gerado das mesmas páginas). Memória e iPad real só aparecem no Web Inspector, **em HTTPS**.
+
+#### P0: resultados (20/10/2026)
+
+**Como foi medido.**
+
+- No `#/lab`, botão **Medir P0** (`src/ui/pages/labP0.ts`), rodado pelo `e2e/p0.spec.ts`:
+
+  ```bash
+  FOLHEIA_P0=1 FOLHEIA_FIXTURE=fixtures/personal/invincible-vol-1.pdf npx playwright test p0
+  ```
+
+  `FOLHEIA_P0_NO_DECODER=1` desliga o `ImageDecoder` do PDF.js; `FOLHEIA_P0_OUT` diz onde gravar o JSON; `FOLHEIA_E2E_PORT` muda a porta (para não colidir com outra sessão).
+
+- Mediana de 5 páginas (11 a 15). A fila do lab é esvaziada e pausada antes, porque divide o worker do PDF.js com a medição.
+- Os tamanhos são os do **iPad Pro 11** em todos os motores, com o orçamento do iOS (5 MP por canvas):
+  - prévia: 234×360;
+  - "spread": uma página do spread deitado, 1221×1877 (2,3 MP);
+  - "em pé": uma página sozinha, 1803×2773 (5 MP, no teto).
+- **Máquina:** M1 Max, macOS 26.5, Playwright 1.64 (Chromium, WebKit e WebKit com emulação de iPad). **Um iPad de verdade é mais lento**: os números valem como proporção, não como valor absoluto.
+- **Frio** é o render de hoje: `page.cleanup()` depois de cada um. **Quente** é o mesmo render com a página ainda analisada pelo PDF.js, ou seja, só a pintura.
+
+**O que tem dentro da Invincible.** Cada página é um PDF "MRC" de scanner, com três imagens:
+
+- um fundo JPEG 2000 de 1987×3056;
+- uma máscara JBIG2 do mesmo tamanho;
+- uma camada JPEG 2000 de 662×1018.
+
+O PDF.js decodifica as três em WebAssembly (OpenJPEG e JBIG2), sempre em resolução cheia. **Não há JPEG**, então o `ImageDecoder` não entra nesse arquivo.
+
+**1. Divisão do render (ms).**
+
+| Render         | Chromium | WebKit | iPad (emul.) |
+| -------------- | -------- | ------ | ------------ |
+| Frio, prévia   | 198      | 181    | 177          |
+| Frio, spread   | 190      | 165    | 167          |
+| Frio, em pé    | 183      | 168    | 165          |
+| Quente, prévia | 21       | 37     | 35           |
+| Quente, spread | 8        | 2      | 1            |
+| Quente, em pé  | 17       | 10     | 2            |
+
+- **Parse e decodificação são 90–99% do render.** A pintura custa de 1 a 37 ms; a prévia quente é a mais cara porque o PDF.js reduz a imagem de 2k em passos.
+- **A prévia fria custa o mesmo que a nítida:** isso confirma a regra de derivar a prévia da nítida em HQ.
+- **Sem o `page.cleanup()`,** um segundo render da página visível (zoom, tile, nova nítida) cai de ~170 ms para 2–17 ms. É o argumento do **P6**. O preço é o PDF.js segurar as imagens decodificadas da página: cerca de 1987×3056×4 ≈ 24 MB, mais a máscara (estimativa, não medida).
+- **No WebKit,** o "quente" pode estar subestimado, porque o canvas pode adiar a pintura até alguém ler os pixels.
+
+**2. Guardar a página: `toBlob` × `ImageBitmap` (ms; KB).**
+
+Página do spread (1221×1877):
+
+| Caminho                                    | Chromium       | WebKit       |
+| ------------------------------------------ | -------------- | ------------ |
+| `toBlob` WebP 0,86                         | 143 (240 KB)   | não codifica |
+| `toBlob` JPEG 0,86                         | 12 (407 KB)    | 16 (656 KB)  |
+| `toBlob` PNG (sem perda)                   | 30 (1555 KB)   | 72 (2173 KB) |
+| `<img>.decode()` do JPEG / do PNG          | 8 / 13         | 16 / 36      |
+| `createImageBitmap(canvas)`                | 0 (preguiçoso) | 18           |
+| `transferFromImageBitmap` (bitmaprenderer) | 0              | 0            |
+
+Página em pé (1803×2773): WebP 285 ms (397 KB); JPEG 22 ms (718 KB) no Chromium e 31 ms (1209 KB) no WebKit; PNG 49 ms (2374 KB) e 91 ms (2416 KB); `<img>.decode()` do JPEG 15 e 32 ms. O iPad emulado dá o mesmo que o WebKit.
+
+- **O WebP do Chromium é 10–13× mais lento que o JPEG.** Ele custa quase o mesmo que decodificar a página no PDF.js, e só economiza 40% de bytes. No `heavy.pdf` (fotos), economiza **nada**: 452 KB contra 441 KB, por 194 ms contra 14 ms.
+- **O PNG é viável.** HQ tem cor chapada e comprime bem sem perda. Fica 3,3–3,8× maior que o JPEG e custa +56 ms para codificar e +20 ms para decodificar no WebKit.
+- **O caminho bitmap (P2)** troca `toBlob` + `decode()` (≈30 ms por página do spread no WebKit, ≈60 ms em pé) por `createImageBitmap` (6–18 ms). Exibir é grátis. Voltar da cache comprimida para bitmap custa o mesmo que o `<img>.decode()` (`createImageBitmap(blob)`: 12 ms no spread, 29 ms em pé no WebKit). Re-renderizar do PDF custaria ~170 ms.
+
+**3. Memória por página e quantas cabem.**
+
+- **Decodificada** (canvas, `ImageBitmap` ou `<img>` decodificado; tanto faz o formato): **8,7 MB** por página do spread deitado e **19,1 MB** em pé.
+- **Comprimida:**
+  - JPEG 0,86 do WebKit: 0,6–1,2 MB (13–16× menos);
+  - PNG: 2,1–2,4 MB (4–8× menos).
+- **Orçamento de ~3 spreads decodificados no iPad (≈ 60 MB):**
+  - **6 páginas deitado** (3 spreads de 2);
+  - **3 páginas em pé**.
+
+  O spread visível já custa isso hoje como `<img>` decodificado: 17 MB deitado, 19 MB em pé. Uma janela de ±1 spread acrescenta **≈ 35 MB deitado** e **≈ 38 MB em pé**. A virada segura até 4 páginas ao mesmo tempo.
+
+- **Para comparar,** a cache comprimida do iOS (48 MB) guarda ~73 páginas do spread em JPEG, ou ~22 em PNG. Hoje só ~6–8 nítidas ficam lá, então mesmo em PNG ela não é o gargalo.
+- **O teto real do iPad** (memória de canvas, jetsam do processo) só aparece no aparelho, pelo Web Inspector, em HTTPS. Não dá para medir isso no Playwright.
+
+**4. `ImageDecoder` e HTTPS.**
+
+- **Onde existe:** no Chromium e no WebKit do Playwright, a janela e o worker têm `ImageDecoder` em `http://localhost`, que é contexto seguro. Em `http://192.168.1.106` (o IP da rede local), nenhum dos dois tem: `isSecureContext` é falso nos dois lugares. Testado.
+- **Num PDF de JPEG** (`heavy.pdf`, 1800×2400), o render frio leva:
+  - com `ImageDecoder`: 33–60 ms (Chromium) e 34–63 ms (WebKit);
+  - sem ele (decodificador em JS): 150–200 ms.
+
+  Medir o iPad por `http://192.168…` deixa PDFs de JPEG **4–5× mais lentos** do que no site real. Na Invincible (JPEG 2000 e JBIG2) não muda nada.
+
+- **Falta confirmar** se o Safari do iPadOS 18 tem `ImageDecoder` (o WebKit do Playwright é mais novo). No aparelho, em HTTPS, basta rodar `typeof ImageDecoder` no console.
+
+**5. CBZ simulado.** A página foi exportada em JPEG 0,9 a 2000 px de largura, e o JPEG faz o papel do arquivo dentro do CBZ (ms):
+
+| Caminho                                                           | Chromium | WebKit |
+| ----------------------------------------------------------------- | -------- | ------ |
+| Hoje: decodificar cheio, desenhar, `toBlob`, `<img>.decode()`     | 226      | 106    |
+| `createImageBitmap(blob)` cheio                                   | 17       | 35     |
+| `createImageBitmap(blob, {resizeWidth})` para o tamanho do spread | 48       | 35     |
+
+- **O P3 economiza 70–200 ms por página e não perde nada:** o arquivo original já é a cache.
+- **Reduzir no `createImageBitmap`** custa o mesmo no WebKit e é mais lento no Chromium. Só vale quando a imagem é bem maior que a tela, para poupar memória.
+
+**Linha de base do leitor** (`engine.spec` e `flip.spec`, Invincible, mesmo dia):
+
+- **Abrir:** 1ª prévia em 684–935 ms, 1ª nítida em 1317–1595 ms.
+- **Leitura calma:** 12 de 12 viradas terminam nítidas.
+- **Viradas apressadas:** terminam em branco 8 de 10 vezes no Chromium e no WebKit, e 3 de 10 no iPad. Esse é o caso do **P1**.
+
+#### P0: recomendações
+
+1. **Novo, e o mais barato: JPEG também no Chromium (P11).** O WebP gasta 140–290 ms por página nítida na thread principal e quase não economiza bytes em fotos. Não afeta o iPad, que já usa JPEG. Esforço mínimo.
+2. **P5, logo.** É pequeno e evita re-renders de ~170 ms quando o LRU despeja a página da frente. É pré-requisito do P2.
+3. **P3 antes do P2.** No CBZ, ele dá o "sem perda" de graça e ainda acelera (70–200 ms por página), sem memória extra.
+4. **P6/P4 sobem.** O gargalo do PDF de HQ é decodificar (~170 ms por render, 90%+ do tempo), não guardar a página. Manter a página visível analisada durante o zoom deixa tiles e re-renders ~10× mais baratos. O custo é ~25–30 MB por página segurada no worker, a medir no aparelho.
+5. **P2 desce.** Ele economiza só ~30–60 ms por página no WebKit (o `toBlob` + `decode()`), e em troca segura +35–38 MB decodificados no iPad. Não ataca o gargalo. Só vale se o 18b quiser a janela quente sem perda **e** sem o custo do PNG. Se for feito, o orçamento é em pixels (≈ 15 MP no iOS, ou seja, 6 páginas deitado ou 3 em pé), com o P5 e as páginas da virada presas.
+6. **Opção sem perda (18b): PNG na cache nítida, sem o P2.**
+   - **Por quê:** a memória continua no modelo de hoje (comprimida, despejo por bytes), que é o que protege o iPad.
+   - **Custo:** +56 ms de codificação e +20 ms de decodificação por página no WebKit, e 3–4× mais bytes. Com 48 MB, a cache nítida guarda ~22 páginas, mais que as 6–8 que ela segura hoje.
+   - **No CBZ** é o P3 (o original).
+   - **Falta medir no aparelho:** quanto tempo do `toBlob` PNG o WebKit gasta na thread principal.
+
+**Nova ordem sugerida:** P11 → P1 + P5 → P3 → 18b em PNG → P6/P4 → P7 → P2 (só se ainda fizer falta) → P8 → P9 → P10.
 
 ## 7. O que encaixa no Folheia
 
@@ -625,7 +747,7 @@ O L8 coincide com o slider do item B5, que já está sendo feito em outra sessã
 
 ### 8.2 Desempenho
 
-Os detalhes e a ordem estão em §6.5. O P0 decide o resto.
+Os detalhes e a ordem estão em §6.5. O P0 já foi medido (20/10/2026); os números e a nova ordem estão lá.
 
 | ID  | Candidato                                                                          | Esforço | Impacto                | Decisão |
 | --- | ---------------------------------------------------------------------------------- | ------- | ---------------------- | ------- |
@@ -640,6 +762,7 @@ Os detalhes e a ordem estão em §6.5. O P0 decide o resto.
 | P8  | Trabalho em worker continua durante a virada                                       | M       | médio-alto             |         |
 | P9  | Tiles de zoom em grade, reaproveitados                                             | M-G     | médio                  |         |
 | P10 | Leitor de PDF próprio que passa o JPEG embutido direto                             | G       | muito alto (HQ em PDF) |         |
+| P11 | Codificar em JPEG também no Chromium (o WebP é 10–13× mais lento; veio do P0)      | Mínimo  | médio (desktop)        |         |
 
 ### 8.3 Interface e biblioteca
 

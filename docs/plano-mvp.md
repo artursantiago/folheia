@@ -263,7 +263,7 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
 18. Exportar flipbook autônomo (.zip).
     18b. **Opção "qualidade máxima (sem perda)"**, desligada por padrão; o padrão continua o de hoje (JPEG/WebP). Pedida pelo Artur em 20/10/2026, depois da comparação de qualidade com a Invincible: a diferença é pequena, mas visível nos traços.
     - **Como fazer sem perda:** não recomprimir. JPEG 1,0 ainda perde um pouco e ocupa 2–3× mais no cache. A saída é o **P2** do `estudo-mihon.md` §6.5: a janela quente (spread visível + vizinhos) fica como bitmap descomprimido, exibido num canvas `bitmaprenderer`, e só o que sai da janela é comprimido. No CBZ, o **P3**: o arquivo original é o cache, sem nenhuma recompressão.
-    - **Memória:** uma página decodificada custa o mesmo num `<img>` ou num bitmap (largura × altura × 4 bytes, ~6 MB numa página da Invincible no iPad). O risco é segurar páginas demais, não o formato. As defesas:
+    - **Memória:** uma página decodificada custa o mesmo num `<img>` ou num bitmap (largura × altura × 4 bytes: na Invincible no iPad, 8,7 MB por página do spread deitado e 19,1 MB em pé, medido no P0). O risco é segurar páginas demais, não o formato. As defesas:
       - orçamento explícito de pixels descomprimidos (no iPad, cerca de 3 spreads), com despejo por distância (**P5**) e as páginas da virada presas;
       - durante o zoom, só o spread visível (já é assim);
       - zerar o canvas de toda página que sai;
@@ -271,7 +271,8 @@ Sabatinadas e implementadas na mesma sessão. O que foi decidido:
     - **Como os outros fazem:**
       - o **Mihon** decodifica direto do arquivo, já reduzido para a tela, sem recomprimir. Mantém 1 página decodificada de cada lado e despeja a mais distante;
       - o **BookReader** recebe do servidor imagens prontas em escalas fixas e não despeja nada: deixa a memória por conta do navegador, o que não serve para o iPad (`estudo-referencias.md` §12.2).
-    - **Depende de:** P0 (medir no `#/lab`) e da triagem do Artur dos candidatos de desempenho do Mihon (§8 E3). P2, P3 e P5 também melhoram o modo padrão.
+    - **O P0 mudou a recomendação (20/10/2026, `estudo-mihon.md` §6.5):** no PDF, o caminho mais seguro é **PNG na cache nítida**, sem o P2. A memória fica no modelo de hoje. Custa +56 ms de codificação e +20 ms de decodificação por página no WebKit, e 3–4× mais bytes (~22 páginas nítidas nos 48 MB do iOS, mais do que as 6–8 de hoje). No CBZ, o P3. O P2 só volta se o PNG ficar lento no iPad de verdade.
+    - **Depende de:** triagem do Artur dos candidatos de desempenho do Mihon (§8 E3) e de medir o `toBlob` PNG no iPad real, em HTTPS. P3 e P5 também melhoram o modo padrão.
 
 ### F. App nativo (mais para frente)
 
