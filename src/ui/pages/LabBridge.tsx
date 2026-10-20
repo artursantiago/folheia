@@ -9,9 +9,11 @@ import {
   type NetworkResponse,
   type NetworkRoute,
 } from '../../platform/network';
+import { URL_INPUT } from './labInput';
 import { Button, Overline, Segmented, TextField } from '../components';
 import styles from './LabBridge.module.css';
 import { LabBridgeBatch } from './LabBridgeBatch';
+import { LabBridgeImage } from './LabBridgeImage';
 
 const PRESETS = [
   {
@@ -137,18 +139,21 @@ export function LabBridge() {
       </div>
       <div className={styles.controls}>
         <TextField
+          {...URL_INPUT}
           label="URL da ponte"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
           className={styles.wide}
         />
         <TextField
+          {...URL_INPUT}
           label="Referer"
           value={referer}
           onChange={(event) => setReferer(event.target.value)}
           className={styles.field}
         />
         <TextField
+          {...URL_INPUT}
           label="User-Agent"
           value={userAgent}
           onChange={(event) => setUserAgent(event.target.value)}
@@ -166,6 +171,7 @@ export function LabBridge() {
       </div>
 
       <LabBridgeBatch network={network} />
+      <LabBridgeImage network={network} />
 
       {busy && <p className={styles.mono}>recebidos {mb(received)}…</p>}
 

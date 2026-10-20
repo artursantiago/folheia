@@ -4,6 +4,7 @@
 // repo (fixtures/personal/). Copy is intentionally not translated.
 import { useState } from 'react';
 import { NetworkError, type Network } from '../../platform/network';
+import { URL_INPUT } from './labInput';
 import { Button, TextField } from '../components';
 import styles from './LabBridge.module.css';
 
@@ -74,6 +75,7 @@ export function LabBridgeBatch({ network }: { network: Network }) {
     <div className={styles.batch}>
       <div className={styles.controls}>
         <TextField
+          {...URL_INPUT}
           label="Lista (JSON)"
           value={list}
           onChange={(event) => setList(event.target.value)}
