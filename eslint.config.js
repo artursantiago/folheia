@@ -4,7 +4,16 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'docs/prototipo', 'playwright-report', 'test-results'] },
+  {
+    ignores: [
+      'dist',
+      'extension/dist',
+      'coverage',
+      'docs/prototipo',
+      'playwright-report',
+      'test-results',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -15,6 +24,11 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/consistent-type-imports': 'error',
     },
+  },
+  {
+    files: ['extension/src/**/*.ts'],
+    languageOptions: { globals: { ...globals.browser, ...globals.serviceworker } },
+    rules: { '@typescript-eslint/consistent-type-imports': 'error' },
   },
   {
     // The core is framework-free: React must never leak into it.
