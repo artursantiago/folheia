@@ -1,3 +1,5 @@
+import { storageName } from './channel';
+
 /**
  * Key-value persistence. The web build uses localStorage; a native build
  * (Capacitor) can swap in its Preferences plugin behind the same interface.
@@ -10,9 +12,7 @@ export interface KeyValueStore {
   remove(key: string): void;
 }
 
-// The preview channel keeps its own data, so testing main never touches the
-// reading data of the stable app on the same origin (docs/versionamento.md).
-const PREFIX = __APP_CHANNEL__ === 'next' ? 'folheia-next:' : 'folheia:';
+const PREFIX = `${storageName}:`;
 
 export const webStorage: KeyValueStore = {
   get(key) {
