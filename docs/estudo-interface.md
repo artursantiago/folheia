@@ -81,7 +81,7 @@ Uma pergunta por vez, com recomendação. O número entre parênteses é a pergu
 
 **Etapas e organização**
 
-22. **Etapas (Q18):** o protótipo v2 e as fundações **andam em paralelo**. Os exemplos ganham a seção Catálogos **já na etapa 2**. O tablet fica sozinho na etapa 5, e o OPDS vira um item próprio do backlog. A tabela está no §7.
+22. **Etapas (Q18):** o protótipo v2 e as fundações **andam em paralelo**. ~~Os exemplos ganham a seção Catálogos **já na etapa 2**.~~ **Mudado em 20/10/2026** (sabatina do pedido, abaixo): os exemplos saem do app, e Catálogos só entra com o primeiro catálogo de verdade. O tablet fica sozinho na etapa 5, e o OPDS vira um item próprio do backlog. A tabela está no §7.
     - **Começo:** só depois da revisão conjunta dos estudos. A etapa 2 só começa com o protótipo v2 aprovado.
 23. **Organização `folheia-app` (Q19):** fazer a mudança **antes de qualquer código da biblioteca ir para a `main`**: logo depois da revisão conjunta e antes da etapa 1.
     - Hoje a origem antiga só guarda números (página e carimbos de até 200 livros, e as preferências), então perder isso custa quase nada, e a biblioteca já nasce na origem nova.
@@ -89,6 +89,30 @@ Uma pergunta por vez, com recomendação. O número entre parênteses é a pergu
     - Na hora, conferir se o GitHub Pages redireciona o endereço antigo.
     - O exportar/importar continua necessário para o app Android, que é outra origem.
 24. **Migração do `localStorage`:** os registros de hoje não têm título nem arquivo, então não viram livros do acervo. Eles ficam como memória de progresso: quando o mesmo arquivo voltar, o livro entra já com a página e os carimbos.
+
+## Decisões da sabatina do pedido do protótipo v2 (20/10/2026)
+
+Uma segunda sabatina, sobre o pedido do protótipo v2 (`prototipo-v2-pedido.md`), com esboços. O texto da proposta (§3–§8) já foi atualizado com ela.
+
+25. **Estantes:** as abas são **divisórias de fichário**, com a aba atual "na frente" e o filete terracota. As prateleiras (uma fileira por estante, empilhadas) foram descartadas: um livro em duas estantes apareceria duas vezes, e cada fileira só mostraria capas.
+26. **Sem aba "Tudo":** o "Por catalogar" já é o "Padrão" do Mihon. A busca procura no acervo inteiro, não só na aba aberta.
+27. **Quatro exibições:** capas (o padrão), lista, fichário e **lombadas**.
+    - **A lombada é gerada pelo app.** As APIs de livros (Open Library, Google Books) só servem a capa da frente, e imagens de lombada só existem em bases de visão computacional. A lombada usa a cor da capa, uma faixa da borda dela, o título na vertical e o volume. A espessura segue as páginas (de 44 px a ~72 px) e a altura segue a proporção da página.
+    - **Lombada escaneada:** se um CBZ trouxer uma página com proporção de lombada, o app usa ela.
+    - **Em leitura:** uma fita saindo do topo. **Exemplar ausente:** uma vaga tracejada na tábua.
+    - **Hover (desktop):** o livro sai um pouco da estante, sem girar. **Toque ou clique:** o livro sai e gira para mostrar a capa, sobre o véu (sem desfoque). Duas propostas vão ao design: "ao centro" e "a ficha sai do bolso".
+    - Nesta exibição, o toque não retoma direto, como na capa (Q5): ele tira o livro da estante, e tocar na capa aberta continua a leitura. A ficha não cabe como botão numa lombada de 44 px.
+28. **Sons do acervo:** tirar o livro da estante tem som; o hover pode ter um som bem mais baixo, com limite. Vão para a trilha do som (E13), com um liga/desliga só.
+29. **"Nova entrada":** a antiga ficha de empréstimo vira a "Nova entrada", com o próximo tombo. Ela aparece no acervo vazio e no "Adicionar".
+    - O slogan é o título da página vazia. "Comece o seu acervo." vai dentro da ficha, e "O que vamos ler hoje?" vai no "Adicionar".
+    - **"Ou cole um endereço"** mora dentro da ficha, e o endereço colado ali **entra no acervo** (guarda a URL, a capa e os dados, como na Q15). O `?file=` de um link de fora continua abrindo direto no leitor (Q4).
+30. **Navegação: o fichário vertical.** A partir de 600 px, cada seção é uma divisória com a aba saindo da lateral, e a atual é a ficha da frente. No celular, as abas descem da borda de baixo. As bordas das fichas de trás ficam mínimas, para não poluir.
+    - **Exploradas e descartadas:** trilho sóbrio de ícone e rótulo (genérico), gaveteiro de fichas, índice de dedo, pilha de livros e a lombada do app com etiquetas de classificação.
+31. **Ajustes:** o menu do leitor fica com o que se muda no meio da leitura: páginas, capa sozinha, sentido, barra no modo imersivo, tema, sons e a leitura sem registro, com "Copiar diagnóstico" no rodapé. Mais fica com tema, idioma, sons, **qualidade máxima** e ponta no canto. Tema e Sons aparecem nos dois lugares, com uma preferência só.
+32. **Dica das zonas de toque (L2):** aparece na primeira leitura no app e quando o sentido muda. Some no primeiro toque, que não vira a página, e nunca junto com o aviso "Retomado".
+33. **Exemplos fora do app:** os exemplos de domínio público vão para uma **landing page**, fora do app. **Catálogos sai da etapa 2** e entra com o primeiro catálogo de verdade (OPDS, F2). A etapa 2 fica com Acervo e Mais.
+34. **"Sobre":** é a **ficha catalográfica do próprio Folheia** (edição, licença, créditos, diagnóstico). Nenhum carimbo de privacidade aparece no app. O carimbo "Domínio público" vai para a landing, com os exemplos.
+35. **Tamanhos:** **cada tela em três tamanhos**, um por faixa de corte: celular (390 × 844), tablet (iPad em pé, 820 × 1180) e desktop (1280 × 800). A responsividade em qualquer aparelho é uma passada própria no fim, depois das features.
 
 ## 1. Onde estamos
 
@@ -149,7 +173,7 @@ A identidade (`identidade-visual.md`) já fala a língua de biblioteca. O redesi
 | Fita do slider de páginas                                      | Os **marcadores de página**                                        |
 | "Catalogando" (carregando)                                     | Importar um livro para o acervo                                    |
 
-**Conflito de nome, resolvido:** hoje "Do acervo" são os exemplos de domínio público. Como "Acervo" passa a ser "os meus livros", os exemplos vão para a seção **Catálogos**.
+**Conflito de nome, resolvido:** hoje "Do acervo" são os exemplos de domínio público. Como "Acervo" passa a ser "os meus livros", os exemplos saem do app e vão para uma landing page (decisão 33).
 
 ## 3. Organização
 
@@ -157,12 +181,12 @@ A identidade (`identidade-visual.md`) já fala a língua de biblioteca. O redesi
 
 Quatro seções fixas, sem ajuste para esconder nenhuma. Cada uma entra na navegação quando a etapa dela fica pronta.
 
-| Seção         | O que é                                                                                                                                                                           | Equivalente no Mihon |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| **Acervo**    | Os seus livros, com estantes opcionais. É a tela inicial.                                                                                                                         | Biblioteca           |
-| **Leituras**  | O histórico de leitura: "retirado em… devolvido na pág…", agrupado por dia. Tocar retoma a leitura.                                                                               | Histórico            |
-| **Catálogos** | De onde vêm livros que você não tem: os **exemplos de domínio público** (já na etapa 2) e, no futuro, os servidores **OPDS** e as fontes (F1–F8).                                 | Navegar              |
-| **Mais**      | Ajustes, cópia dos arquivos e espaço usado, leitura sem registro, exportar/importar o acervo e "Sobre", onde passam a morar os carimbos de privacidade e de domínio público (C9). | Mais                 |
+| Seção         | O que é                                                                                                                                                                                    | Equivalente no Mihon |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| **Acervo**    | Os seus livros, com estantes opcionais. É a tela inicial.                                                                                                                                  | Biblioteca           |
+| **Leituras**  | O histórico de leitura: "retirado em… devolvido na pág…", agrupado por dia. Tocar retoma a leitura.                                                                                        | Histórico            |
+| **Catálogos** | De onde vêm livros que você não tem: os servidores **OPDS** e as fontes (F1–F8). Entra com o primeiro catálogo de verdade; os exemplos de domínio público vão para a landing (decisão 33). | Navegar              |
+| **Mais**      | Ajustes, cópia dos arquivos e espaço usado, leitura sem registro, exportar/importar o acervo e "Sobre", que é a ficha catalográfica do próprio Folheia, sem carimbos (decisão 34).         | Mais                 |
 
 O **leitor** não é uma seção: ele abre por cima de tudo.
 
@@ -174,28 +198,31 @@ Os **marcadores** não têm seção. Eles aparecem na ficha do livro, na gaveta 
 - **A partir de 600px:** **trilho lateral** à esquerda, também com rótulos. Nada de "rótulo só ao segurar", que é um problema de acessibilidade. O celular deitado também usa o trilho, porque ali o que falta é altura.
 - **A partir de 1024px:** **dois painéis** (acervo + ficha). Cobre o iPad deitado (todos os tamanhos), o iPad Pro 13" em pé e o desktop. O iPad Air tem 820px em pé e 1180px deitado.
 - **O critério é a largura**, não a orientação, por causa do Split View e do Stage Manager. Os cortes ficam em tokens em `src/theme/`.
-- **Na linguagem Ex-libris:** o trilho pode ser um **fichário vertical** de abas de papel, com a aba atual em destaque.
+- **Na linguagem Ex-libris (decidido em 20/10/2026, decisão 30):** a navegação é um **fichário vertical**. Cada seção é uma divisória com a aba de papel saindo da lateral, em alturas escalonadas, e a seção atual é a ficha da frente. No celular, as abas descem da borda de baixo. As bordas das fichas de trás ficam mínimas.
 - **Botão Voltar** (navegador e Android): fecha o diálogo ou painel aberto, depois sai do leitor, depois volta para o Acervo. Isso exige navegação com histórico (§5).
 - **Leitura sem registro ligada:** uma faixa fina e fixa no topo de todas as telas avisa.
 
 ### 3.3 Acervo
 
-- **Vazio:** a ficha de empréstimo de hoje ("Traga um livro para a mesa") é o estado vazio. A identidade aprovada continua sendo a primeira coisa que se vê.
+- **Vazio:** a ficha de hoje vira a **"Nova entrada"**, com o próximo tombo (decisão 29). A identidade aprovada continua sendo a primeira coisa que se vê.
 - **Como um livro entra:**
   - **Arquivo local** (escolher ou soltar em qualquer lugar): entra sozinho, com a cópia do arquivo. Soltar mostra o próximo tombo.
-  - **`?file=` e exemplos:** abrem direto o leitor, com "Guardar no acervo" no topo e na ficha.
+  - **Endereço colado na "Nova entrada":** entra no acervo, guardando a URL.
+  - **`?file=` de um link de fora:** abre direto o leitor, com "Guardar no acervo" no topo e na ficha.
   - **Mesmo arquivo de novo** (mesma impressão digital): abre o livro que já está lá.
-  - **"Adicionar"** é uma ação fixa no topo.
+  - **"Adicionar"** é uma ação fixa no topo e abre a mesma ficha "Nova entrada".
 - **Estantes:**
   - **sem nenhuma estante criada, não há abas**: o acervo é uma lista única;
-  - com estantes, abas roláveis no topo;
+  - com estantes, abas roláveis no topo, como **divisórias de fichário**;
   - um livro pode estar em várias;
   - a estante de sistema **"Por catalogar"** guarda os livros sem estante e só aparece se tiver livros;
+  - **não há aba "Tudo"**: a busca procura no acervo inteiro;
   - criar, renomear, reordenar e apagar, sempre com **desfazer**.
 - **Exibições:**
   - **capas** (grade): **o padrão**;
   - **lista**;
   - **fichário**: cada livro como uma ficha catalográfica curta. É a exibição "assinatura", a melhor para PDFs de texto.
+  - **lombadas**: os livros de lado, sobre tábuas, com a lombada gerada pelo app (decisão 27). Brilha numa estante de série.
   - Colunas separadas para retrato e paisagem.
   - A exibição e a ordem são lembradas por estante, ou valem para o acervo todo.
 - **Na capa:**
@@ -264,13 +291,11 @@ O Mihon não tem marcador de página; o Folheia vai ter.
 
 ### 3.7 Catálogos
 
-- **Na etapa 2:**
-  - os exemplos de domínio público, num formato mais discreto que o carrossel de hoje (C7);
-  - um botão "Guardar no acervo", que guarda a URL (§5).
-- **Depois:**
-  - catálogos OPDS que o usuário adiciona (F2);
+- **Não entra na etapa 2** (decisão 33). Os exemplos de domínio público não pertencem ao acervo de ninguém: eles vão para uma landing page, fora do app, para quem quer experimentar o Folheia.
+- **Entra com o primeiro catálogo de verdade:**
+  - catálogos OPDS que o usuário adiciona (F2), como uma lista de catálogos desde o começo;
   - as fontes (F5), com a mesma interface: lista, busca e detalhe;
-  - um livro de catálogo aberto por URL pode ser guardado no acervo.
+  - um livro de catálogo aberto por URL pode ser guardado no acervo ("Guardar no acervo" guarda a URL, §5).
 
 ## 4. O que muda no leitor
 
@@ -328,9 +353,12 @@ Cada um entra em `src/ui/components/` e no `#/estilo`, nos dois temas:
 | Componente                          | Para que serve                                                                  |
 | ----------------------------------- | ------------------------------------------------------------------------------- |
 | `BookCover`                         | Capa genérica: a imagem guardada ou a tipográfica, com selos                    |
-| `CoverGrid`, `BookList`, `CardFile` | As três exibições do acervo                                                     |
-| `NavRail` / `TabBar`                | O trilho lateral (≥ 600px) e a barra inferior (celular)                         |
-| `ShelfTabs`                         | As abas de estante                                                              |
+| `CoverGrid`, `BookList`, `CardFile` | Três das exibições do acervo                                                    |
+| `SpineShelf` / `BookSpine`          | A exibição de lombadas: a lombada gerada e o livro que sai da estante           |
+| `NavRail` / `TabBar`                | O fichário vertical (≥ 600px) e as abas embaixo (celular)                       |
+| `ShelfTabs`                         | As abas de estante, como divisórias de fichário                                 |
+| `Sheet`                             | A gaveta de baixo do celular ("Adicionar")                                      |
+| `TapZonesHint`                      | A dica das zonas de toque do leitor                                             |
 | `SearchField`                       | A busca                                                                         |
 | `Checkbox` (três estados)           | A seleção e as estantes em lote                                                 |
 | `SelectionBar`                      | Contador, "selecionar tudo" e ações                                             |
@@ -344,34 +372,43 @@ Cada um entra em `src/ui/components/` e no `#/estilo`, nos dois temas:
 
 Decidido em 20/10/2026. **Nada começa antes da revisão conjunta dos estudos.** Cada etapa passa por sabatina antes de ser implementada.
 
-| Etapa                        | O que entra                                                                                                                                                                                                                                                                                                                                            | Depende de                   |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- |
-| **0. Protótipo v2**          | Revisar o protótipo com as telas novas (§8). Nenhum código.                                                                                                                                                                                                                                                                                            | —                            |
-| **1. Fundações**             | Armazenamento assíncrono + migração, cópia dos arquivos, identidade e tombo, rotas com histórico (Voltar), interfaces de abrir/guardar/buscar em `platform/`, tokens de corte, exportar/importar JSON.                                                                                                                                                 | a mudança para `folheia-app` |
-| **2. Acervo mínimo**         | Acervo como tela inicial (vazio = a ficha de hoje), Catálogos com os exemplos (C7) e Mais na navegação, capas geradas, tocar para retomar com "Do início" (sai o cartão "Continuar?"), selos, exemplar ausente, "Guardar no acervo" para URL, ficha como página, remover com desfazer, o "⋯" do leitor no celular. **Substitui o item C6 (Recentes).** | 0 aprovado, 1                |
-| **3. Organização**           | Estantes, seleção em lote, três exibições, ordenar, filtrar, buscar, série, notas e capa escolhida.                                                                                                                                                                                                                                                    | 2                            |
-| **4. Leituras e marcadores** | A seção Leituras, os marcadores de página (barra, slider, gaveta, ficha) e a leitura sem registro.                                                                                                                                                                                                                                                     | 2                            |
-| **5. Tablet**                | Dois painéis a partir de 1024px (acervo + ficha).                                                                                                                                                                                                                                                                                                      | 3                            |
+| Etapa                        | O que entra                                                                                                                                                                                                                                                                                                                                                                      | Depende de                   |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| **0. Protótipo v2**          | Revisar o protótipo com as telas novas (§8). Nenhum código.                                                                                                                                                                                                                                                                                                                      | —                            |
+| **1. Fundações**             | Armazenamento assíncrono + migração, cópia dos arquivos, identidade e tombo, rotas com histórico (Voltar), interfaces de abrir/guardar/buscar em `platform/`, tokens de corte, exportar/importar JSON.                                                                                                                                                                           | a mudança para `folheia-app` |
+| **2. Acervo mínimo**         | Acervo como tela inicial (vazio = a "Nova entrada"), Mais na navegação (Catálogos só com o OPDS; os exemplos vão para a landing), capas geradas, tocar para retomar com "Do início" (sai o cartão "Continuar?"), selos, exemplar ausente, "Guardar no acervo" para URL, ficha como página, remover com desfazer, o "⋯" do leitor no celular. **Substitui o item C6 (Recentes).** | 0 aprovado, 1                |
+| **3. Organização**           | Estantes, seleção em lote, quatro exibições, ordenar, filtrar, buscar, série, notas e capa escolhida.                                                                                                                                                                                                                                                                            | 2                            |
+| **4. Leituras e marcadores** | A seção Leituras, os marcadores de página (barra, slider, gaveta, ficha) e a leitura sem registro.                                                                                                                                                                                                                                                                               | 2                            |
+| **5. Tablet**                | Dois painéis a partir de 1024px (acervo + ficha).                                                                                                                                                                                                                                                                                                                                | 3                            |
 
 As etapas 0 e 1 andam em paralelo, porque as fundações não dependem do visual. As etapas 3 e 4 são independentes e também podem andar em paralelo. O OPDS e as fontes ficam como itens próprios do backlog (F1–F8).
 
 ## 8. Protótipo v2: telas a desenhar
 
-Revisar o protótipo aprovado, mantendo a linguagem Ex-libris. As telas:
+**O pedido completo e aprovado (20/10/2026) está em `prototipo-v2-pedido.md`**, em duas levas. A lista abaixo é o resumo.
 
-1. **Acervo vazio:** a ficha de hoje, dentro da nova navegação. No iPad e no celular.
-2. **Acervo com livros:** nas três exibições (capas como padrão, lista, fichário), sem estantes e com abas de estante, no iPad deitado e no celular.
-3. **Acervo + ficha em dois painéis:** no iPad deitado.
-4. **Ficha do livro como página:** no celular, com marcadores e o resumo das leituras.
-5. **Seleção em lote** + o diálogo de estantes com três estados.
-6. **Leituras**, agrupadas por dia.
-7. **Leitor:** o topo com o tombo, "Guardar no acervo", o aviso "Do início", o botão de marcador, as fitas no slider, a aba Marcadores na gaveta e o "⋯" no celular.
-8. **Catálogos:** os exemplos.
-9. **Mais:** ajustes, cópia dos arquivos e espaço usado, leitura sem registro e "Sobre", com os carimbos que saíram do início.
-10. **Estados:** exemplar ausente (e "não é o mesmo exemplar"), aviso com desfazer, faixa de leitura sem registro, estante vazia, busca sem resultado.
-11. **Trilho lateral e barra inferior:** nos dois temas.
+- **Leva 1 (destrava a etapa 2):**
+  - a navegação em fichário, com as quatro seções e só com Acervo e Mais;
+  - o Acervo vazio com a "Nova entrada", e o "Adicionar";
+  - o Acervo com capas, sem estantes;
+  - a ficha como página;
+  - a moldura nova do leitor, com o menu de ajustes novo e a dica das zonas de toque;
+  - Mais, com o "Sobre" como ficha do Folheia;
+  - os estados da etapa 2;
+  - o splash.
+- **Leva 2:**
+  - as estantes em divisórias;
+  - lista, fichário e lombadas, com as duas propostas de animação;
+  - a seleção em lote;
+  - Leituras;
+  - os marcadores;
+  - a leitura sem registro;
+  - os dois painéis;
+  - Catálogos como estrutura do futuro;
+  - estante vazia e busca sem resultado.
+- **Tamanhos:** cada tela em três tamanhos (celular, tablet e desktop), nos dois temas.
 
-O protótipo atual vive como artifact privado, com cópia em `docs/prototipo/`. A v2 pode seguir o mesmo formato.
+O protótipo atual vive como artifact privado, com cópia em `docs/prototipo/`. A v2 segue o mesmo formato, com cópia em `docs/prototipo-v2/`.
 
 ## 9. Perguntas
 
