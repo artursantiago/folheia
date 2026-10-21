@@ -11,6 +11,7 @@ import { createBudget, currentEnvironment } from '../../render/budget';
 import type { BookMetadata, PageSource, ReadingDirection } from '../../sources/types';
 import { library } from '../../storage/db';
 import type { BookEntry, ReadingMemory } from '../../storage/library';
+import { createSaver, flushOnLeave } from '../../storage/saver';
 import { preferences } from '../../storage/preferences';
 import { Reader, type ReaderState } from '../../viewer/Reader';
 import {
@@ -153,6 +154,24 @@ export function ReaderScreen({
   // Keep the page in the address and in the book's loan card. Only when the
   // page changes: the state also changes on every step of a pinch zoom, and
   // Safari throws after 100 replaceState calls in 10 s.
+  // Progress is written once the reading stops for a moment (L1), and right
+  // away when the page is hidden or left, or the book is closed.
+  const progressSaver = useMemo(
+    () =>
+      createSaver(
+        (progress: { fromPage: number; page: number; pageCount: number; finished: boolean }) =>
+          library.saveProgress(source.id, progress),
+      ),
+    [source.id],
+  );
+  useEffect(() => {
+    const stop = flushOnLeave(progressSaver);
+    return () => {
+      stop();
+      progressSaver.flush();
+    };
+  }, [progressSaver]);
+
   const page = state?.page;
   const total = state?.total;
   const atEnd = state?.atEnd;
@@ -162,19 +181,18 @@ export function ReaderScreen({
     url.hash = `p=${page}`;
     if (url.href !== window.location.href) history.replaceState(history.state, '', url);
     if (sessionStart.current !== undefined)
-      void library
-        .saveProgress(source.id, {
-          fromPage: sessionStart.current,
-          page,
-          pageCount: total,
-          finished: atEnd ?? false,
-        })
-        .catch(() => undefined);
-  }, [page, total, atEnd, source.id]);
+      progressSaver.schedule({
+        fromPage: sessionStart.current,
+        page,
+        pageCount: total,
+        finished: atEnd ?? false,
+      });
+  }, [page, total, atEnd, progressSaver]);
 
   // The book card shows the latest loan stamps.
   useEffect(() => {
     if (panel !== 'card') return;
+    progressSaver.flush();
     let cancelled = false;
     void library
       .recall(source.id)
@@ -186,7 +204,7 @@ export function ReaderScreen({
     return () => {
       cancelled = true;
     };
-  }, [panel, source.id]);
+  }, [panel, source.id, progressSaver]);
 
   const setImmersive = useCallback((on: boolean) => {
     preferences.set((p) => ({ ...p, immersive: on }));
