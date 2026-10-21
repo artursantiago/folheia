@@ -365,7 +365,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 
 O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do Mihon. O estudo e todas as decisões estão em **`estudo-interface.md`** (seções Acervo, Leituras, Catálogos e Mais). **Nada começa antes da revisão conjunta dos estudos que o Artur vai fazer.** Cada etapa passa por sabatina própria antes de ser implementada.
 
-- **Etapa 0, protótipo v2:** as telas novas na linguagem Ex-libris (`estudo-interface.md` §8). Nenhum código. Anda em paralelo com a etapa 1. **Leva 1 aprovada em 20/10/2026** ([canvas](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb), cópia em `docs/prototipo-v2/`; as escolhas do desenho estão no `estudo-interface.md`, decisões 36–45). A leva 2 (estantes, outras exibições, Leituras, marcadores, leitura sem registro, dois painéis e Catálogos) vem antes das etapas 3 e 4.
+- **Etapa 0, protótipo v2:** as telas novas na linguagem Ex-libris (`estudo-interface.md` §8). Nenhum código. Anda em paralelo com a etapa 1. **Leva 1 aprovada em 20/10/2026** ([canvas](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb), cópia em `docs/prototipo-v2/`; as escolhas do desenho estão no `estudo-interface.md`, decisões 36–45). **Leva 2 aprovada em 20/10/2026** (estantes, outras exibições, o livro saindo da estante, Leituras, marcadores, leitura sem registro, dois painéis e Catálogos; decisões 46–57). Com as duas levas, a etapa 0 está completa.
 - **Etapa 1, fundações:**
   - armazenamento assíncrono (IndexedDB) + migração do `localStorage`;
   - cópia dos arquivos no OPFS;
