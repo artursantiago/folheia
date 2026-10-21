@@ -114,6 +114,44 @@ Uma segunda sabatina, sobre o pedido do protótipo v2 (`prototipo-v2-pedido.md`)
 34. **"Sobre":** é a **ficha catalográfica do próprio Folheia** (edição, licença, créditos, diagnóstico). Nenhum carimbo de privacidade aparece no app. O carimbo "Domínio público" vai para a landing, com os exemplos.
 35. **Tamanhos:** **cada tela em três tamanhos**, um por faixa de corte: celular (390 × 844), tablet (iPad em pé, 820 × 1180) e desktop (1280 × 800). A responsividade em qualquer aparelho é uma passada própria no fim, depois das features.
 
+## Decisões do desenho da leva 1 (20/10/2026)
+
+O Artur aprovou a leva 1 do protótipo v2 ([canvas](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb), cópia em `docs/prototipo-v2/`). O desenho fez estas escolhas, além do pedido:
+
+36. **Fichário vertical, na prática:**
+    - **A partir de 600 px:** a aba atual é da cor da ficha da frente e avança 1 px sobre ela, com o filete terracota sob o rótulo. As de trás ficam num tom mais escuro e encostam em duas linhas finas, que são as bordas das fichas de trás. O cabeçalho da ficha da frente leva o filete terracota.
+    - **No celular:** as abas têm largura fixa e ficam à esquerda. Na etapa 2 (só Acervo e Mais), são duas abas, sem esticar.
+    - **Rótulos:** em mono, caixa alta, sem ícones.
+37. **Capa no acervo:**
+    - **Progresso:** a fita é uma faixa fina na borda de baixo da capa, e "pág. 45/200" vai na legenda, antes do formato.
+    - **"novo":** uma etiqueta terracota saindo do topo da capa.
+    - **"Lido":** carimbo inclinado.
+    - **Ficha:** o botão é um quadradinho no canto de cima, com 44 px de área de toque.
+    - **Legenda:** título em até duas linhas e, em mono, a página e o formato.
+38. **Barra do acervo:** busca e "Adicionar" no cabeçalho. Ordem, filtrar e as quatro exibições numa linha logo abaixo. No celular, a busca vira um botão de ícone. O título "Acervo" traz um contador discreto ("12 obras").
+39. **Estado arrastando:** só no tablet e no desktop. A ficha da frente ganha um picote terracota, e a "Nova entrada" se inclina com "Solte para guardar no acervo", o nome e o tamanho do arquivo.
+40. **Diálogos e gavetas:** o "Adicionar", a ficha dentro do leitor, os diálogos de exemplar ausente e os ajustes de leitura são **diálogos (ou popovers) a partir de 600 px** e **gavetas de baixo no celular**.
+41. **Ficha do livro:**
+    - **Leituras:** um cartão de empréstimo com "Retirado em" e "Devolvido na", e as datas carimbadas.
+    - **Ações:** editar os dados, usar uma página como capa, exportar a ficha, remover só o arquivo e remover do acervo, que fica na cor de destaque.
+    - **Livro fora do acervo:** no lugar do tombo aparece "Fora do acervo".
+42. **Leitor:**
+    - **Índice:** um botão só abre a gaveta, com as abas Sumário e Páginas.
+    - **"Retomado da pág. 87 · Do início":** fica logo acima da barra.
+    - **Barra no celular:** em duas linhas, com o slider em cima e os botões embaixo. Os ajustes ficam na barra.
+    - **"⋯" no celular:** primeira e última página, zoom (com "Ajustar à tela"), compartilhar e modo imersivo.
+43. **Dica das zonas de toque:**
+    - **Onde:** o véu cobre a tela toda, e as zonas cobrem só o palco, sem a barra.
+    - **"Próxima":** vai na cor de destaque, e "Anterior" em tinta.
+    - **No desktop:** o meio diz **"Clique duplo aproxima"**.
+44. **Mais:** grupos Ajustes (tema, idioma, sons), Leitura (qualidade máxima, ponta no canto) e Arquivos (cópia de cada livro, espaço usado, exportar e importar).
+    - **O "Sobre":** fica ao lado no desktop e embaixo no tablet. No celular é uma página própria.
+    - **"Nova edição do Folheia disponível":** aparece como aviso dentro do "Sobre".
+45. **Estados:**
+    - **"Este não é o mesmo exemplar":** o botão principal é "Adicionar como livro novo".
+    - **Sem espaço:** o aviso diz "Sem espaço no aparelho: … entrou no acervo sem o arquivo." e tem a ação "Ver espaço", que leva a Mais.
+    - **Remover:** o aviso diz "… saiu do acervo · Desfazer".
+
 ## 1. Onde estamos
 
 **Protótipo aprovado** (`docs/prototipo/`, 15 telas). Ele foi desenhado para "abrir um arquivo e ler":
@@ -387,7 +425,7 @@ As etapas 0 e 1 andam em paralelo, porque as fundações não dependem do visual
 
 **O pedido completo e aprovado (20/10/2026) está em `prototipo-v2-pedido.md`**, em duas levas. A lista abaixo é o resumo.
 
-- **Leva 1 (destrava a etapa 2):**
+- **Leva 1 (destrava a etapa 2). Desenhada e aprovada em 20/10/2026** ([canvas](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb), decisões 36–45):
   - a navegação em fichário, com as quatro seções e só com Acervo e Mais;
   - o Acervo vazio com a "Nova entrada", e o "Adicionar";
   - o Acervo com capas, sem estantes;
@@ -408,7 +446,7 @@ As etapas 0 e 1 andam em paralelo, porque as fundações não dependem do visual
   - estante vazia e busca sem resultado.
 - **Tamanhos:** cada tela em três tamanhos (celular, tablet e desktop), nos dois temas.
 
-O protótipo atual vive como artifact privado, com cópia em `docs/prototipo/`. A v2 segue o mesmo formato, com cópia em `docs/prototipo-v2/`.
+O protótipo v1 vive como artifact privado, com cópia em `docs/prototipo/`. A v2 segue o mesmo formato, com cópia em `docs/prototipo-v2/`: um arquivo por tela e tamanho, com claro e escuro lado a lado.
 
 ## 9. Perguntas
 
