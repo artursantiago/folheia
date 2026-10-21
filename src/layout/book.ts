@@ -8,6 +8,8 @@ export interface LogicalPage {
   size: PageSize;
   /** A double-page image (CBZ) that must fill a whole spread on its own. */
   wide: boolean;
+  /** The size was read from the file, not guessed from another page. */
+  measured: boolean;
   /** 1-based number shown to the reader; null for blanks. */
   label: number | null;
 }
@@ -33,6 +35,23 @@ export interface BookInput {
   splitSpreads?: boolean;
   /** Pages known to be double-page images that should stay whole (CBZ). */
   isWide?: (index: number) => boolean;
+  /** Whether `sizeOf` gives a measured size (default: yes). Guesses never unpair pages. */
+  measured?: (index: number) => boolean;
+}
+
+/**
+ * Two pages share a spread only when their proportions (width/height) differ
+ * by less than this (L4): a fold-out or an insert stands alone, while the
+ * small variations of scanned PDFs still pair.
+ */
+export const PAIR_TOLERANCE = 0.2;
+
+/** Whether two pages look right side by side. Only measured sizes can say no. */
+export function canPair(a: LogicalPage, b: LogicalPage): boolean {
+  if (!a.measured || !b.measured) return true;
+  const ra = a.size.width / a.size.height;
+  const rb = b.size.width / b.size.height;
+  return Math.max(ra, rb) / Math.min(ra, rb) - 1 < PAIR_TOLERANCE;
 }
 
 export interface Book {
@@ -49,6 +68,7 @@ export function logicalPages(input: BookInput, direction: ReadingDirection): Log
   const last = input.pageCount - 1;
   for (let page = 0; page < input.pageCount; page++) {
     const size = input.sizeOf(page);
+    const measured = input.measured?.(page) ?? true;
     const split = input.splitSpreads && page > 0 && (page < last || size.width > size.height);
     if (split) {
       const half = { width: size.width / 2, height: size.height };
@@ -56,9 +76,10 @@ export function logicalPages(input: BookInput, direction: ReadingDirection): Log
       const order: ('left' | 'right')[] =
         direction === 'rtl' ? ['right', 'left'] : ['left', 'right'];
       for (const side of order)
-        pages.push({ ref: { page, half: side }, size: half, wide: false, label: 0 });
+        pages.push({ ref: { page, half: side }, size: half, wide: false, measured, label: 0 });
     } else {
-      pages.push({ ref: { page }, size, wide: input.isWide?.(page) ?? false, label: 0 });
+      const wide = input.isWide?.(page) ?? false;
+      pages.push({ ref: { page }, size, wide, measured, label: 0 });
     }
   }
   pages.forEach((page, i) => (page.label = i + 1));
@@ -86,8 +107,17 @@ export function buildBook(input: BookInput, options: LayoutOptions): Book {
       ref: null,
       size: page.size,
       wide: false,
+      measured: page.measured,
       label: null,
     });
+    /** Closes a half-filled spread with a blank, so the next page starts a new one. */
+    const pad = (fallback: LogicalPage) => {
+      if (pending === null) return;
+      const blank = pages.length;
+      pages.push(blankLike(pages[pending] ?? fallback));
+      spreads.push({ pages: [pending, blank] });
+      pending = null;
+    };
 
     source.forEach((page, i) => {
       const index = pages.length;
@@ -97,22 +127,21 @@ export function buildBook(input: BookInput, options: LayoutOptions): Book {
         return;
       }
       if (page.wide) {
-        if (pending !== null) {
-          // A double image must start on the left: pad the half-filled spread.
-          const blank = pages.length;
-          pages.push(blankLike(pages[pending] ?? page));
-          spreads.push({ pages: [pending, blank] });
-          pending = null;
-        }
+        // A double image must start on the left: pad the half-filled spread.
+        pad(page);
         pages.push(page);
         spreads.push({ pages: [pages.length - 1] });
         return;
       }
+      // A page too different from the one waiting for it starts a new spread.
+      const waiting = pending === null ? undefined : pages[pending];
+      if (waiting && !canPair(waiting, page)) pad(page);
+      const at = pages.length;
       pages.push(page);
       if (pending === null) {
-        pending = index;
+        pending = at;
       } else {
-        spreads.push({ pages: [pending, index] });
+        spreads.push({ pages: [pending, at] });
         pending = null;
       }
     });

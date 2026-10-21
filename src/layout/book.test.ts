@@ -74,6 +74,45 @@ describe('buildBook', () => {
   });
 });
 
+describe('pairing by proportion (L4)', () => {
+  const pairs = (book: ReturnType<typeof buildBook>) =>
+    book.spreads.map((spread) => spread.pages.map((p) => book.pages[p]?.label ?? '_').join('+'));
+
+  it('leaves a fold-out alone and pairs again after it', () => {
+    const fold = { width: 1800, height: 800 };
+    const book = buildBook(
+      input(7, (i) => (i === 3 ? fold : portrait)),
+      ltrDouble,
+    );
+    expect(pairs(book)).toEqual(['1', '2+3', '4+_', '5+6', '7']);
+  });
+
+  it('leaves a narrow insert alone', () => {
+    const insert = { width: 300, height: 800 };
+    const book = buildBook(
+      input(6, (i) => (i === 2 ? insert : portrait)),
+      ltrDouble,
+    );
+    expect(pairs(book)).toEqual(['1', '2+_', '3+_', '4+5', '6']);
+  });
+
+  it('still pairs the small variations of scanned PDFs', () => {
+    const book = buildBook(
+      input(5, (i) => (i % 2 ? { width: 612, height: 792 } : { width: 590, height: 800 })),
+      ltrDouble,
+    );
+    expect(pairs(book)).toEqual(['1', '2+3', '4+5']);
+  });
+
+  it('never unpairs on guessed sizes', () => {
+    const book = buildBook(
+      { ...input(5, (i) => (i === 2 ? wide : portrait)), measured: (i) => i !== 2 },
+      ltrDouble,
+    );
+    expect(pairs(book)).toEqual(['1', '2+3', '4+5']);
+  });
+});
+
 describe('chooseMode', () => {
   const a4 = { width: 595, height: 842 };
   it('uses double pages on a landscape iPad and single on a portrait one', () => {

@@ -13,6 +13,7 @@ The stable version is live at <https://folheia-app.github.io/folheia/>; what's i
 ### Changed
 
 - Outside the immersive mode, the reader's bottom bar now stays on screen instead of fading out after a few seconds, so the page number is always in view. It never covered the book.
+- In double-page view, a page whose shape is very different from its neighbor (a fold-out, a narrow insert) now stands alone instead of being paired; scans with small size differences still pair.
 - Folheia now keeps what it remembers about your books in the browser's database, the groundwork for your personal library. Local files you open are recorded with their title and page count, still only on your device. Your saved pages and reading history carry over.
 - Your page is saved a moment after you stop turning, and right away when you switch apps, hide the tab or close it, so the iPad doesn't lose it. Reaching the last page marks the book as read.
 - A CBZ is now recognized by its contents, so it keeps its page after being renamed or copied again.

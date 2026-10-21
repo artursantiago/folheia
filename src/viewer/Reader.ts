@@ -32,6 +32,18 @@ export interface ReaderOptions {
   lossless: boolean;
 }
 
+/** Same pages in the same spreads (sizes aside). */
+function sameSpreads(a: Book, b: Book) {
+  if (a.spreads.length !== b.spreads.length || a.pages.length !== b.pages.length) return false;
+  return a.spreads.every((spread, s) => {
+    const other = b.spreads[s]!.pages;
+    return (
+      spread.pages.length === other.length &&
+      spread.pages.every((p, i) => p === other[i] && a.pages[p]?.wide === b.pages[p]?.wide)
+    );
+  });
+}
+
 export interface ReaderState {
   spread: number;
   spreadCount: number;
@@ -287,20 +299,22 @@ export class Reader {
         sizeOf: this.sizeOf,
         splitSpreads: this.splitSpreads,
         isWide: (index) => this.config.source.isWidePage?.(index) ?? false,
+        measured: (index) => this.config.source.knownPageSize(index) !== undefined,
       },
       { mode, coverAlone: this.options.coverAlone, direction: this.direction },
     );
   }
 
-  /** CBZ page sizes arrive as headers are read: re-lay out if double pages appear. */
+  /**
+   * Page sizes arrive as pages are read (CBZ headers, PDF pages): re-lay out
+   * when that changes the spreads (double pages, proportions that don't pair).
+   */
   private onSizesChanged = () => {
     const { source } = this.config;
-    if (!source.isWidePage) return;
-    const wide = this.book.pages.filter((page) => page.wide).length;
-    let now = 0;
-    for (let i = 0; i < source.pageCount; i++) if (source.isWidePage(i)) now++;
-    this.updateTallStrips();
-    if (now !== wide && !this.flip.isFlipping) this.rebuild(this.book.options.mode);
+    if (source.isWidePage) this.updateTallStrips();
+    if (this.flip.isFlipping) return;
+    const next = this.build(this.book.options.mode);
+    if (!sameSpreads(next, this.book)) this.rebuild(this.book.options.mode);
   };
 
   /** Webtoon strips (much taller than wide) aren't meant to be flipped. */
