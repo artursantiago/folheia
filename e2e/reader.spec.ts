@@ -95,3 +95,18 @@ test('remembers where a local file was left, across reloads', async ({ page, isM
     .click();
   await expect(counter).toHaveText(new RegExp(`^${left}\\b`), { timeout: 15_000 });
 });
+
+test('opens books by URL (?file=) with range reads', async ({ page, baseURL }) => {
+  const ranges: string[] = [];
+  page.on('request', (request) => {
+    const range = request.headers().range;
+    if (request.url().includes('fixtures/generated/') && range) ranges.push(range);
+  });
+  const counter = page.getByRole('button', { name: /Ir para página|Go to page/ });
+  for (const file of ['heavy.pdf', 'manga.cbz']) {
+    await page.goto(`./?file=${encodeURIComponent(`${baseURL}fixtures/generated/${file}`)}`);
+    await expect(counter).toHaveText(/^1\b/, { timeout: 15_000 });
+    await expect(page.locator('.fx-page img').first()).toBeVisible();
+  }
+  expect(ranges.length).toBeGreaterThan(2);
+});

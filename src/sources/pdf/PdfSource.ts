@@ -52,8 +52,8 @@ class UrlRangeTransport extends pdfjs.PDFDataRangeTransport {
 
   override requestDataRange(begin: number, end: number) {
     fetchRange(this.url, begin, end)
-      .then(async (response) => {
-        const data = new Uint8Array(await response.arrayBuffer());
+      .then((response) => {
+        const data = new Uint8Array(response.body);
         if (response.status === 206) this.onDataRange(begin, data);
         else if (response.ok)
           this.onDataRange(0, data); // Server ignored the range: it sent everything.
