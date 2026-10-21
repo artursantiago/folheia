@@ -10,6 +10,8 @@ import { Button, IconButton, Overline, Switch, TextField } from '../components';
 import styles from './Lab.module.css';
 import { describeLossless, measureLossless, measureP0, summarizeP0 } from './labP0';
 import { patternBlob, probeOpfs } from './labOpfs';
+import { applyImport, exportLibrary, parseBackup, planImport } from '../../storage/backup';
+import { library } from '../../storage/db';
 
 type Loaded = { source: PageSource; renderer: PageRenderer; openedIn: number };
 
@@ -44,6 +46,7 @@ export default function Lab() {
   const [lossless, setLossless] = useState<{ text: string; json?: string }>();
   const [opfs, setOpfs] = useState<string>();
   const [opfsFile, setOpfsFile] = useState<File>();
+  const [backup, setBackup] = useState<string>();
   const version = useRendererVersion(loaded?.renderer);
   useSyncExternalStore(
     (cb) => {
@@ -173,6 +176,34 @@ export default function Lab() {
     }
   }
 
+  async function downloadBackup() {
+    const data = await exportLibrary(library);
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }),
+    );
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `folheia-acervo-${data.exportedAt.slice(0, 10)}.json`;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setBackup(`exportados ${data.books.length} registros`);
+  }
+
+  async function importBackup(file: File) {
+    try {
+      const plan = await planImport(library, parseBackup(JSON.parse(await file.text())));
+      const overwrite =
+        plan.existing.length > 0 &&
+        window.confirm(
+          `${plan.existing.length} livros já existem aqui. Substituir pelos do arquivo?`,
+        );
+      const result = await applyImport(library, plan, { overwrite });
+      setBackup(`novos: ${result.added} · substituídos: ${result.updated}`);
+    } catch (err) {
+      setBackup(`erro: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   const stats = loaded?.renderer.stats();
   const mb = (bytes = 0) => (bytes / 1048576).toFixed(1);
 
@@ -205,6 +236,22 @@ export default function Lab() {
       </header>
 
       {error && <p role="alert">{error}</p>}
+
+      <section className={styles.p0}>
+        <Overline>Acervo (JSON)</Overline>
+        <Button onClick={() => void downloadBackup()}>Exportar acervo</Button>
+        <input
+          type="file"
+          accept=".json,application/json"
+          aria-label="Importar acervo"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) void importBackup(file);
+            event.target.value = '';
+          }}
+        />
+        {backup && <p className={styles.mono}>{backup}</p>}
+      </section>
 
       <section className={styles.p0}>
         <Overline>Armazenamento (OPFS)</Overline>

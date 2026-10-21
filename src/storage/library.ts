@@ -100,6 +100,11 @@ export class Library {
     return run;
   }
 
+  /** Runs `task` in the write queue, for work across stores (backups). */
+  withDatabase<T>(task: (db: Database) => Promise<T>): Promise<T> {
+    return this.serial(task);
+  }
+
   get(id: string): Promise<BookRecord | undefined> {
     return this.serial((db) => db.get<BookRecord>('books', id));
   }
