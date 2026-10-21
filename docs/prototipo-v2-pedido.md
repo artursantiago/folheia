@@ -6,7 +6,8 @@
 > - **Formato:** o mesmo do protótipo aprovado: um arquivo por tela, claro e escuro. A cópia entra em `docs/prototipo-v2/`.
 > - **Em duas levas.** A leva 1 destrava a etapa 2 da biblioteca. A leva 2 vai depois que a leva 1 for aprovada.
 > - **Como colar:** a "Base comum" vai junto com cada leva.
-> - **Leva 1 desenhada e aprovada pelo Artur em 20/10/2026:** [Folheia v2 · protótipo da biblioteca](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb) (privado), com cópia em `docs/prototipo-v2/`. São 38 pranchas: cada tela em celular, tablet e desktop, com claro e escuro lado a lado. As escolhas que o desenho fez além do pedido estão no `estudo-interface.md` (decisões 36–45). A leva 2 ainda não foi desenhada.
+> - **Leva 1 desenhada e aprovada pelo Artur em 20/10/2026:** [Folheia v2 · protótipo da biblioteca](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb) (privado), com cópia em `docs/prototipo-v2/`. São 38 pranchas: cada tela em celular, tablet e desktop, com claro e escuro lado a lado. As escolhas que o desenho fez além do pedido estão no `estudo-interface.md` (decisões 36–45).
+> - **Leva 2 desenhada e aprovada pelo Artur em 20/10/2026**, no mesmo canvas e na mesma cópia: mais 41 pranchas. O livro tirado da estante segue a proposta **"a ficha sai do bolso"**, e o título da lombada vai **de cima para baixo**. As outras opções ficaram no canvas, com "descartada" no nome. As escolhas do desenho estão no `estudo-interface.md` (decisões 46–57).
 
 ## Decisões da sabatina (20/10/2026)
 
