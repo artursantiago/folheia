@@ -152,6 +152,44 @@ O Artur aprovou a leva 1 do protótipo v2 ([canvas](https://claude.ai/artifact/6
     - **Sem espaço:** o aviso diz "Sem espaço no aparelho: … entrou no acervo sem o arquivo." e tem a ação "Ver espaço", que leva a Mais.
     - **Remover:** o aviso diz "… saiu do acervo · Desfazer".
 
+## Decisões do desenho da leva 2 (20/10/2026)
+
+O Artur aprovou a leva 2 no mesmo canvas da leva 1 (cópia em `docs/prototipo-v2/`). As duas primeiras foram perguntas a ele; as outras são escolhas do desenho.
+
+46. **O livro sai da estante: "a ficha sai do bolso"** (pergunta ao Artur). O toque tira o livro, que gira mostrando a lombada e a capa. A ficha catalográfica desliza de trás dele, com tombo, título, autor, página, "Continuar" e "Ficha completa". No celular, a ficha desce por baixo da capa. A proposta "ao centro" ficou descartada.
+47. **Título da lombada de cima para baixo** (pergunta ao Artur), como nos livros em inglês e, até onde sabemos, na norma brasileira de lombada. "De baixo para cima" ficou descartado.
+48. **Abas de estante:**
+    - **Onde:** no topo do acervo, abaixo do cabeçalho.
+    - **Rótulo:** texto normal com a contagem em mono.
+    - **Aba atual:** fica "na frente", com o filete terracota **em cima**.
+    - **"Por catalogar":** tem a borda picotada.
+    - **No fim da fileira:** o "+" cria uma estante, e um lápis abre "Organizar estantes".
+    - **Diferença da navegação:** a navegação é lateral (ou embaixo, no celular), em mono caixa alta, com o filete sob o rótulo.
+49. **Lombadas:**
+    - **Textura:** vem da capa. São a tira de papel do mangá e os filetes da HQ.
+    - **Estados:** a fita terracota sai do topo de quem está em leitura. O exemplar ausente vira uma vaga tracejada com o nome.
+    - **Hover:** puxa o livro uns 12 px.
+    - **A tábua:** é uma faixa lisa, sem textura de madeira.
+    - **Ordem:** a prancha usa a ordem por título, que alinha os volumes de uma série.
+50. **Lista e fichário:**
+    - **Lista:** capa pequena, título e autor, uma coluna de leitura (fita, "novo", "Lido" ou "Exemplar ausente"), a última leitura (só no desktop), o formato e o botão da ficha.
+    - **Fichário:** fichas curtas, com tombo, formato, título, "autor invertido · ano" e o estado, sobre pautas e com o furo.
+51. **Seleção em lote:**
+    - **Barra:** em tinta no topo, com "3 selecionados", "Estantes", "Marcar como lido" e "Remover". No celular as ações descem para baixo.
+    - **Diálogo "Estantes":** caixas de três estados, com a contagem ("1 de 3") quando a estante tem só parte dos livros.
+    - **"Organizar estantes":** arrastar pela alça, renomear no lugar e apagar com "Desfazer".
+52. **Leituras:** uma linha por livro e por dia, agrupadas por data. O texto é "retirado às 20:40 · devolvido na pág. 45", com o carimbo "Lido" no fim. O × apaga a linha, e "Limpar tudo" fica no cabeçalho.
+53. **Marcadores em verde** (a cor de encadernação da paleta), para não se confundirem com a fita terracota da página atual.
+    - **No leitor:** o botão de fita fica na barra, e as fitas verdes ficam sobre o slider.
+    - **Na gaveta do índice:** a aba Marcadores, com miniatura, página, data e nota (ou "Adicionar nota").
+    - **Na ficha:** o cartão "Marcadores".
+54. **Leitura sem registro:** uma faixa de 24 px na cor de destaque, no topo de todas as telas, abaixo do entalhe no iPhone. O interruptor fica nos ajustes do leitor e no grupo Ajustes de Mais, com "Nada é gravado enquanto estiver ligada".
+55. **Dois painéis (desktop):** o acervo em 4 colunas e a ficha num painel de 420 px à direita, separado por um picote, com "Continuar" e "Ficha completa".
+56. **Catálogos:** a lista traz uma frase curta do que é um catálogo e "Adicionar catálogo"; o exemplo é o Project Gutenberg (OPDS). O catálogo aberto é uma grade com "Guardar no acervo" e o carimbo "No acervo".
+57. **Estados:**
+    - **Estante vazia:** uma tábua sem livros e o botão "Selecionar livros".
+    - **Busca:** enquanto ela está aberta, as abas de estante dão lugar a "Busca em todo o acervo". Sem resultado, aparece "Nada no acervo com “…”." e "Limpar a busca".
+
 ## 1. Onde estamos
 
 **Protótipo aprovado** (`docs/prototipo/`, 15 telas). Ele foi desenhado para "abrir um arquivo e ler":
@@ -434,7 +472,7 @@ As etapas 0 e 1 andam em paralelo, porque as fundações não dependem do visual
   - Mais, com o "Sobre" como ficha do Folheia;
   - os estados da etapa 2;
   - o splash.
-- **Leva 2:**
+- **Leva 2. Desenhada e aprovada em 20/10/2026** (decisões 46–57):
   - as estantes em divisórias;
   - lista, fichário e lombadas, com as duas propostas de animação;
   - a seleção em lote;

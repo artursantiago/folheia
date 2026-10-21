@@ -53,7 +53,7 @@ A fonte mono **nunca** é usada em frases longas de interface. A serifada **nunc
 4. **Tombo:** número `Nº 0001` em mono, como identificador de cada livro e de cada ficha.
 5. **Luz de abajur** (só no escuro): um halo radial suave atrás do livro.
 6. **Divisória de fichário** (decidida em 20/10/2026): a aba de papel da navegação (fichário vertical) e das estantes do acervo. A aba atual fica "na frente", colada ao conteúdo, com o filete na cor de destaque.
-7. **Lombada** (decidida em 20/10/2026): na exibição de lombadas, cada livro aparece de lado sobre uma tábua, com a lombada gerada a partir da capa.
+7. **Lombada** (decidida em 20/10/2026): na exibição de lombadas, cada livro aparece de lado sobre uma tábua, com a lombada gerada a partir da capa. O título vai **de cima para baixo**. Ao tocar, o livro sai da estante e **a ficha sai do bolso** (`estudo-interface.md`, decisões 46 e 47).
 
 ## Componentes
 
