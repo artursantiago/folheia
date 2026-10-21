@@ -11,7 +11,7 @@
 | Frente                           | O que reúne                                                                                                                                                                                                                                                                         | Estado                                                     |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **1. Desempenho**                | A2: P11, P1 + P5, P3, 18b e P6 feitos (20/10/2026). Depois, se fizer falta: P7, P2, P8, P9, P10. As confirmações no iPad.                                                                                                                                                           | **Em andamento** (sessão própria)                          |
-| **2. Identidade e apresentação** | **Protótipo v2** (C2, etapa 0). **Ícone e logo** (D10). **Splash** (D11). **Textos** (C8: menos "PDF e CBZ", e o tom). **README** e **README.en**, a **descrição do repositório** e a **página da organização** (`folheia-app/.github`).                                            | A começar                                                  |
+| **2. Identidade e apresentação** | **Protótipo v2** (C2, etapa 0). **Ícone e logo** (D10). **Splash** (D11). **Landing page** com os exemplos (D11b). **Textos** (C8: menos "PDF e CBZ", e o tom). **README** e **README.en**, a **descrição do repositório** e a **página da organização** (`folheia-app/.github`).   | A começar                                                  |
 | **3. Biblioteca**                | C2, etapas 1 a 5: fundações, acervo mínimo, organização, Leituras e marcadores, tablet. Resolve C6, C7 e C9.                                                                                                                                                                        | Decidida na sabatina; espera o protótipo v2 para a etapa 2 |
 | **4. Fontes e catálogos**        | E4 (extensão, PR #1). F1–F8 do Mihon: `CatalogSource`, OPDS, Internet Archive, fontes JS, `CapacitorHttp`. Capas por catálogo de metadados.                                                                                                                                         | POC pronta; depende de decisões (§3)                       |
 | **5. Leitor**                    | B2 (controles na sobra lateral, slider na barra normal, marcas de capítulo no slider). E12 (busca no PDF), E14 (painel Paginação), E15 (rolagem vertical/webtoon). E2 (voz alta, grade de miniaturas como modo). L1–L12 do Mihon. E13 (som), E16 (3D), E17 (temas), E18 (exportar). | L1–L12 triados em 20/10/2026                               |
@@ -30,8 +30,8 @@ Os pontos que decidem a ordem:
      - o slider na barra normal (B2);
      - a dica das zonas de toque (L2);
      - a grade de miniaturas em pares (E2);
-     - a opção de qualidade máxima (18b), que já existe nos Ajustes desde 20/10/2026 (o protótipo decide o lugar final).
-   - **As fontes:** o mesmo vale para a seção **Catálogos**, onde as fontes vão aparecer.
+     - a opção de qualidade máxima (18b), que já existe nos Ajustes desde 20/10/2026. **O lugar final, decidido na sabatina do pedido (20/10/2026):** só em Mais › Ajustes.
+   - **As fontes:** o mesmo vale para a seção **Catálogos**, onde as fontes vão aparecer. Ela entra no protótipo como estrutura do futuro (leva 2) e só entra no app com o primeiro catálogo de verdade.
    - **A identidade:** o ícone e os textos novos também entram no protótipo.
 2. **Separar motor de moldura.**
    - **O que só mexe no motor pode andar já,** porque não depende do protótipo: desempenho, L1 (gravar o progresso quando a leitura para), L4 (regras de pareamento), a parte de motor da E14 e da E15, e a busca da E12 sem a interface.
@@ -71,7 +71,7 @@ Os pontos que decidem a ordem:
 - **Identidade (frente 2), sem código:**
   - explorar o ícone;
   - revisar os textos (C8);
-  - desenhar o **protótipo v2** no Claude Design, com as telas de `estudo-interface.md` §8 e as mudanças de moldura do leitor listadas no §2.
+  - desenhar o **protótipo v2** no Claude Design. O pedido foi sabatinado e aprovado em 20/10/2026 (`prototipo-v2-pedido.md`) e vai em duas levas: a leva 1 destrava a etapa 2, e a leva 2 traz o resto.
 
 ### Onda 1: fundações
 
@@ -84,13 +84,13 @@ Os pontos que decidem a ordem:
   - cortes de tela;
   - exportar/importar em JSON.
 - **Leitor, só motor (aprovados na D3):** L1 (gravar o progresso quando a leitura para, que já cai no armazenamento novo) e L4 (pareamento por proporção).
-- **Som de virar página (E13):** trilha própria e pequena, que pode andar assim que as fundações começarem (pedido do Artur em 20/10/2026). O motor acompanha a virada; o protótipo v2 só ganha o liga/desliga.
+- **Som de virar página (E13):** trilha própria e pequena, que pode andar assim que as fundações começarem (pedido do Artur em 20/10/2026). O motor acompanha a virada; o protótipo v2 só ganha o liga/desliga ("Sons", no menu do leitor e em Mais). Desde a sabatina do pedido, a trilha também cobre os sons do acervo: tirar o livro da estante e, bem baixo, o hover.
 - **Identidade:** o protótipo v2 continua em paralelo até ser aprovado.
 
 ### Onda 2: o acervo aparece
 
 - **Biblioteca, etapa 2:**
-  - Acervo, Catálogos (exemplos) e Mais;
+  - Acervo e Mais (Catálogos só com o OPDS; os exemplos vão para a landing);
   - capas e selos;
   - exemplar ausente;
   - ficha como página;
@@ -101,7 +101,8 @@ Os pontos que decidem a ordem:
   - ícone no PWA e no favicon;
   - splash do iOS (D11);
   - textos novos (C8);
-  - os carimbos no "Sobre" (C9);
+  - o "Sobre" como a ficha catalográfica do Folheia, sem carimbos (C9);
+  - a **landing page** com os exemplos de domínio público (D11b);
   - README, README.en, descrição do repositório e página da organização com o ícone e capturas de tela.
 
 ### Onda 3: organizar e buscar
@@ -119,6 +120,7 @@ São três trilhas que podem andar ao mesmo tempo, cada uma em seu worktree:
 ### Onda 4: tablet e Android
 
 - **Biblioteca, etapa 5:** dois painéis a partir de 1024px.
+- **Passada de responsividade:** depois das features, conferir o app em outras larguras e aparelhos, além dos três tamanhos do protótipo (decidido em 20/10/2026).
 - **App Android (frente 6):**
   - Capacitor ou TWA;
   - a pasta da biblioteca;
