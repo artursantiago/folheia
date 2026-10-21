@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { fileOpener } from '../../platform/openFile';
 import { preferences } from '../../storage/preferences';
 import {
   Accession,
@@ -29,45 +30,15 @@ export function isAcceptableUrl(value: string): boolean {
 export function HomeScreen() {
   const { t, locale } = useI18n();
   const prefs = useStore(preferences);
-  const fileInput = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState('');
   const [urlError, setUrlError] = useState<string>();
   const [dragging, setDragging] = useState(false);
 
-  // The whole window is a drop target.
-  useEffect(() => {
-    let depth = 0;
-    const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') ?? false;
-    const enter = (event: DragEvent) => {
-      if (!hasFiles(event)) return;
-      depth++;
-      setDragging(true);
-    };
-    const leave = () => {
-      depth = Math.max(0, depth - 1);
-      if (depth === 0) setDragging(false);
-    };
-    const over = (event: DragEvent) => {
-      if (hasFiles(event)) event.preventDefault();
-    };
-    const drop = (event: DragEvent) => {
-      event.preventDefault();
-      depth = 0;
-      setDragging(false);
-      const file = event.dataTransfer?.files[0];
-      if (file) void openBook({ kind: 'file', file });
-    };
-    window.addEventListener('dragenter', enter);
-    window.addEventListener('dragleave', leave);
-    window.addEventListener('dragover', over);
-    window.addEventListener('drop', drop);
-    return () => {
-      window.removeEventListener('dragenter', enter);
-      window.removeEventListener('dragleave', leave);
-      window.removeEventListener('dragover', over);
-      window.removeEventListener('drop', drop);
-    };
-  }, []);
+  // The picker and drops on the window open the book.
+  useEffect(
+    () => fileOpener.listen((file) => void openBook({ kind: 'file', file }), setDragging),
+    [],
+  );
 
   const submitUrl = (event: FormEvent) => {
     event.preventDefault();
@@ -135,24 +106,11 @@ export function HomeScreen() {
               <p className={styles.bring}>{t('home.bring')}</p>
               <p className={styles.hint}>{t('home.dropHint')}</p>
               <div className={styles.actions}>
-                <Button variant="primary" icon="upload" onClick={() => fileInput.current?.click()}>
+                <Button variant="primary" icon="upload" onClick={() => fileOpener.pick()}>
                   {t('home.choose')}
                 </Button>
                 <Overline>{t('home.orUrl')}</Overline>
               </div>
-              <input
-                ref={fileInput}
-                type="file"
-                accept=".pdf,application/pdf,.cbz,application/vnd.comicbook+zip,application/x-cbz,application/zip"
-                className="srOnly"
-                tabIndex={-1}
-                aria-hidden="true"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) void openBook({ kind: 'file', file });
-                  event.target.value = '';
-                }}
-              />
               <form className={styles.urlForm} onSubmit={submitUrl}>
                 <TextField
                   label={t('home.urlLabel')}

@@ -15,17 +15,3 @@ export async function registerServiceWorker() {
 export function applyUpdate() {
   void update?.(true);
 }
-
-interface LaunchParams {
-  files: { getFile(): Promise<File> }[];
-}
-
-/** "Open with Folheia" on desktop Chrome/Edge (file_handlers in the manifest). */
-export function onLaunchFile(open: (file: File) => void) {
-  const queue = (
-    window as unknown as { launchQueue?: { setConsumer(cb: (p: LaunchParams) => void): void } }
-  ).launchQueue;
-  queue?.setConsumer((params) => {
-    void params.files[0]?.getFile().then(open);
-  });
-}

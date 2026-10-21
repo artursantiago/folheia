@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { exampleForUrl } from '../examples';
-import { applyUpdate, onLaunchFile, registerServiceWorker, updateAvailable } from '../platform/pwa';
+import { fileOpener } from '../platform/openFile';
+import { applyUpdate, registerServiceWorker, updateAvailable } from '../platform/pwa';
 import { preferences } from '../storage/preferences';
 import { applyTheme } from '../theme/applyTheme';
 import { useI18n } from './hooks/useI18n';
@@ -41,7 +42,7 @@ export function App() {
   useEffect(openFromQuery, []);
   useEffect(() => {
     void registerServiceWorker();
-    onLaunchFile((file) => void openBook({ kind: 'file', file }));
+    fileOpener.onLaunch((file) => void openBook({ kind: 'file', file }));
   }, []);
   const hasUpdate = useStore(updateAvailable);
 
