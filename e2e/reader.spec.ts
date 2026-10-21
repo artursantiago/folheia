@@ -64,3 +64,34 @@ test('best quality keeps the page on screen as PNG', async ({ page, isMobile }) 
   await page.getByRole('switch', { name: /Qualidade máxima|Best quality/ }).click();
   await expect.poll(typeOnScreen, { timeout: 15_000 }).toBe('image/png');
 });
+
+test('remembers where a local file was left, across reloads', async ({ page, isMobile }) => {
+  await page.goto('./');
+  await page.locator('input[type=file]').setInputFiles(FIXTURE);
+  const counter = page.getByRole('button', { name: /Ir para página|Go to page/ });
+  await expect(counter).toHaveText(/^1\s*\//, { timeout: 15_000 });
+  for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowRight');
+  const left = isMobile ? 4 : 6;
+  await expect(counter).toHaveText(new RegExp(`^${left}\\b`), { timeout: 5_000 });
+
+  // Wait for the progress to be written, then start the app afresh.
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const { library } = (
+          window as unknown as {
+            __folheia: { library: { all(): Promise<{ lastPage: number }[]> } };
+          }
+        ).__folheia;
+        return (await library.all()).map((book) => book.lastPage);
+      }),
+    )
+    .toContain(left);
+  await page.goto('./');
+  await page.reload();
+  await page.locator('input[type=file]').setInputFiles(FIXTURE);
+  await page
+    .getByRole('button', { name: new RegExp(`(Continuar da página|Continue from page) ${left}`) })
+    .click();
+  await expect(counter).toHaveText(new RegExp(`^${left}\\b`), { timeout: 15_000 });
+});

@@ -9,6 +9,8 @@ The stable version is live at <https://folheia-app.github.io/folheia/>; what's i
 ### Changed
 
 - Outside the immersive mode, the reader's bottom bar now stays on screen instead of fading out after a few seconds, so the page number is always in view. It never covered the book.
+- Folheia now keeps what it remembers about your books in the browser's database, the groundwork for your personal library. Local files you open are recorded with their title and page count, still only on your device. Your saved pages and reading history carry over.
+- A CBZ is now recognized by its contents, so it keeps its page after being renamed or copied again.
 
 ## [0.2.0] - 2026-10-20
 

@@ -9,7 +9,8 @@ import {
 import { copyText, shareLink } from '../../platform/share';
 import { createBudget, currentEnvironment } from '../../render/budget';
 import type { BookMetadata, PageSource, ReadingDirection } from '../../sources/types';
-import { bookMemory } from '../../storage/books';
+import { library } from '../../storage/db';
+import type { BookEntry, ReadingMemory } from '../../storage/library';
 import { preferences } from '../../storage/preferences';
 import { Reader, type ReaderState } from '../../viewer/Reader';
 import {
@@ -48,6 +49,8 @@ export interface ReaderScreenProps {
   metadata: BookMetadata;
   name: string;
   request: OpenRequest;
+  /** What the library remembers about this book, read when it opened. */
+  memory?: BookEntry | undefined;
   credit?: { source: string; license: string } | undefined;
   onClose: () => void;
 }
@@ -57,6 +60,7 @@ export function ReaderScreen({
   metadata,
   name,
   request,
+  memory,
   credit,
   onClose,
 }: ReaderScreenProps) {
@@ -82,8 +86,11 @@ export function ReaderScreen({
     tRef.current = t;
   }, [t]);
 
-  // What we remember about this book, read once when it opens.
-  const [record] = useState(() => bookMemory.get(source.id));
+  // What we remember about this book, read once when it opened.
+  const [record] = useState(() =>
+    memory ? { ...memory.record, history: memory.loans } : undefined,
+  );
+  const [cardMemory, setCardMemory] = useState<ReadingMemory>();
   const [hashPage] = useState(() => initialPageFromHash());
   const [askToContinue, setAskToContinue] = useState(
     () => !hashPage && (record?.lastPage ?? 1) > 1,
@@ -147,14 +154,39 @@ export function ReaderScreen({
   // page changes: the state also changes on every step of a pinch zoom, and
   // Safari throws after 100 replaceState calls in 10 s.
   const page = state?.page;
+  const total = state?.total;
+  const atEnd = state?.atEnd;
   useEffect(() => {
-    if (page === undefined) return;
+    if (page === undefined || total === undefined) return;
     const url = new URL(window.location.href);
     url.hash = `p=${page}`;
     if (url.href !== window.location.href) history.replaceState(history.state, '', url);
     if (sessionStart.current !== undefined)
-      bookMemory.recordProgress(source.id, sessionStart.current, page);
-  }, [page, source.id]);
+      void library
+        .saveProgress(source.id, {
+          fromPage: sessionStart.current,
+          page,
+          pageCount: total,
+          finished: atEnd ?? false,
+        })
+        .catch(() => undefined);
+  }, [page, total, atEnd, source.id]);
+
+  // The book card shows the latest loan stamps.
+  useEffect(() => {
+    if (panel !== 'card') return;
+    let cancelled = false;
+    void library
+      .recall(source.id)
+      .then((entry) => {
+        if (!cancelled && entry)
+          setCardMemory({ lastPage: entry.record.lastPage, history: entry.loans });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [panel, source.id]);
 
   const setImmersive = useCallback((on: boolean) => {
     preferences.set((p) => ({ ...p, immersive: on }));
@@ -290,7 +322,7 @@ export function ReaderScreen({
   const changeDirection = (value: ReadingDirection) => {
     setDirection(value);
     reader?.setOptions({ direction: value });
-    bookMemory.update(source.id, { direction: value });
+    void library.update(source.id, { direction: value }).catch(() => undefined);
   };
 
   const share = async () => {
@@ -520,7 +552,7 @@ export function ReaderScreen({
           bytes={request.kind === 'file' ? request.file.size : undefined}
           direction={state.direction}
           splitSpreads={state.splitSpreads}
-          record={bookMemory.get(source.id)}
+          record={cardMemory}
           credit={credit}
         />
       )}

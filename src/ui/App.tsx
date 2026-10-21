@@ -89,6 +89,7 @@ export function App() {
           }
           name={state.name}
           request={state.request}
+          memory={state.memory}
           credit={
             example ? { source: example.source, license: t('license.publicDomain') } : undefined
           }

@@ -1,5 +1,7 @@
 import { storageName } from '../platform/channel';
 import { memoryDatabase, openWebDatabase, type Database } from '../platform/database';
+import { webStorage } from '../platform/storage';
+import { Library, migrateLegacyMemory } from './library';
 import { librarySchema } from './schema';
 
 export interface LibraryDatabase {
@@ -16,7 +18,12 @@ let opening: Promise<LibraryDatabase> | undefined;
  */
 export function libraryDatabase(): Promise<LibraryDatabase> {
   opening ??= openWebDatabase(storageName, librarySchema).then(
-    (db) => ({ db, persistent: true }),
+    async (db) => {
+      await migrateLegacyMemory(db, webStorage).catch((error: unknown) =>
+        console.warn('Could not migrate the old reading memory', error),
+      );
+      return { db, persistent: true };
+    },
     (error: unknown) => {
       console.warn('Library storage unavailable, using memory', error);
       return { db: memoryDatabase(librarySchema), persistent: false };
@@ -24,3 +31,5 @@ export function libraryDatabase(): Promise<LibraryDatabase> {
   );
   return opening;
 }
+
+export const library = new Library(async () => (await libraryDatabase()).db);

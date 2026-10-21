@@ -1,11 +1,11 @@
-import type { BookRecord } from '../../storage/books';
+import type { ReadingMemory } from '../../storage/library';
 import { Button, Dialog, Stamp } from '../components';
 import { useI18n } from '../hooks/useI18n';
 import styles from './LoanCardDialog.module.css';
 
 export interface LoanCardDialogProps {
   title: string;
-  record: BookRecord;
+  record: ReadingMemory;
   onContinue: () => void;
   onRestart: () => void;
 }

@@ -1,5 +1,5 @@
 import type { BookMetadata, ReadingDirection, SourceKind } from '../../sources/types';
-import type { BookRecord } from '../../storage/books';
+import type { ReadingMemory } from '../../storage/library';
 import { Dialog, Stamp } from '../components';
 import { useI18n } from '../hooks/useI18n';
 import styles from './BookCardDialog.module.css';
@@ -14,7 +14,7 @@ export interface BookCardDialogProps {
   bytes?: number | undefined;
   direction: ReadingDirection;
   splitSpreads: boolean;
-  record?: BookRecord | undefined;
+  record?: ReadingMemory | undefined;
   /** Source and license line for example books. */
   credit?: { source: string; license: string } | undefined;
 }

@@ -2,6 +2,8 @@ import { createStore } from '../lib/store';
 import { openSource, type SourceInput } from '../sources/open';
 import type { ExampleBook } from '../examples';
 import { SourceError, type BookMetadata, type PageSource } from '../sources/types';
+import { library } from '../storage/db';
+import type { BookEntry } from '../storage/library';
 
 export type OpenRequest =
   { kind: 'file'; file: File } | { kind: 'url'; url: string; example?: ExampleBook | undefined };
@@ -21,6 +23,8 @@ export type Session =
       metadata: BookMetadata;
       name: string;
       request: OpenRequest;
+      /** What the library remembers about this file, if anything. */
+      memory: BookEntry | undefined;
     }
   | { status: 'error'; error: SourceError; name: string; request: OpenRequest };
 
@@ -39,6 +43,39 @@ export function nameOf(request: OpenRequest): string {
 }
 
 let openToken = 0;
+
+/** Storage must never keep a book from opening. */
+const STORAGE_PATIENCE_MS = 3000;
+
+function withPatience<T>(task: Promise<T>): Promise<T | undefined> {
+  return Promise.race([
+    task.catch((error: unknown) => {
+      console.warn('Library storage failed', error);
+      return undefined;
+    }),
+    new Promise<undefined>((resolve) => setTimeout(resolve, STORAGE_PATIENCE_MS)),
+  ]);
+}
+
+/**
+ * Finds what the library remembers about the file. A local file enters the
+ * library on its own; URLs and examples are only remembered as numbers.
+ */
+async function remember(
+  source: PageSource,
+  metadata: BookMetadata,
+  request: OpenRequest,
+): Promise<BookEntry | undefined> {
+  const entry = await library.recall(source.id, source.legacyIds);
+  if (request.kind !== 'file') return entry;
+  const record = await library.addToLibrary(source.id, {
+    kind: source.kind,
+    origin: { type: 'file', name: request.file.name, size: request.file.size },
+    metadata,
+    pageCount: source.pageCount,
+  });
+  return { record, loans: entry?.loans ?? [] };
+}
 
 export async function openBook(request: OpenRequest) {
   const token = ++openToken;
@@ -71,7 +108,12 @@ export async function openBook(request: OpenRequest) {
       return;
     }
     const metadata = await source.getMetadata();
-    session.set({ status: 'open', source, metadata, name, request });
+    const memory = await withPatience(remember(source, metadata, request));
+    if (token !== openToken) {
+      await source.destroy();
+      return;
+    }
+    session.set({ status: 'open', source, metadata, name, request, memory });
   } catch (error) {
     if (token !== openToken) return;
     passwordRequest.set(undefined);
@@ -93,5 +135,10 @@ export async function closeBook() {
 
 if (import.meta.env.DEV) {
   // Handy for debugging and end-to-end tests.
-  (window as unknown as Record<string, unknown>).__folheia = { session, passwordRequest, openBook };
+  (window as unknown as Record<string, unknown>).__folheia = {
+    session,
+    passwordRequest,
+    openBook,
+    library,
+  };
 }

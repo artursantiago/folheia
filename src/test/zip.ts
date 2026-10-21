@@ -1,4 +1,14 @@
-import { crc32 } from 'node:zlib';
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+
+function crc32(data: Uint8Array) {
+  let crc = 0xffffffff;
+  for (const byte of data) crc = CRC_TABLE[(crc ^ byte) & 0xff]! ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+}
 
 /** Minimal ZIP writer for tests (STORED entries, like most CBZ files). */
 export function zip(files: { name: string; data: Uint8Array }[]): Uint8Array<ArrayBuffer> {
