@@ -14,7 +14,7 @@
 3. **Exibições do acervo: quatro.** Capas (o padrão), lista, fichário e **lombadas**. A lombada é gerada pelo app, porque as APIs de livros (Open Library, Google Books) só servem a capa da frente. Se um CBZ trouxer a lombada escaneada (uma página bem estreita), o app usa ela.
 4. **Lombadas: o gesto.** O hover (só no desktop) puxa o livro um pouco para fora da estante, sem girar. O toque ou clique tira o livro da estante e gira para mostrar a capa. **Duas propostas vão ao design, em versão realista:** "ao centro" e "a ficha sai do bolso". O fundo leva o véu dos diálogos, não desfoque: um `backdrop-filter` sobre o acervo inteiro custaria caro no iPad e no Android.
 5. **Sons do acervo:** tirar o livro da estante tem som. O hover pode ter um som bem mais baixo, só depois de o mouse parar ~150 ms num livro, para não virar uma rajada. Isso entra na trilha do som (E13), com um liga/desliga só, "Sons". O protótipo não desenha som.
-6. **Tamanhos:** os quatro de base. A responsividade em qualquer aparelho vira uma passada própria no fim, depois das features (`roteiro.md`).
+6. **Tamanhos:** cada tela em **três tamanhos**, um por faixa de corte: celular, tablet (iPad em pé) e desktop. A responsividade em qualquer aparelho vira uma passada própria no fim, depois das features (`roteiro.md`).
 7. **"Nova entrada":** a ficha aparece no acervo vazio e no "Adicionar", com o próximo tombo.
    - **Títulos:** o slogan "Para folhear tudo o que você lê." é o título da página vazia. "Comece o seu acervo." é a frase da ficha, e "O que vamos ler hoje?" é a frase no "Adicionar".
    - **Endereço:** "ou cole um endereço" mora dentro da ficha. Um endereço colado ali **entra no acervo**. O `?file=` de um link de fora continua abrindo direto no leitor.
@@ -39,7 +39,7 @@ Revise o protótipo aprovado do Folheia (Ex-libris, 15 telas, claro e escuro) pa
 - Young Serif nos títulos, Atkinson Hyperlegible Next no texto e IBM Plex Mono nos números;
 - o único símbolo é o **monograma F** (o F da Young Serif com o filete terracota embaixo). Não crie outros logos nem mascotes.
 
-**Tamanhos:** desenhe em quatro tamanhos: celular (390 × 844), iPad em pé (820 × 1180), iPad deitado (1180 × 820) e desktop (1280 × 800).
+**Tamanhos:** desenhe **cada tela em três tamanhos**, um para cada faixa de corte: **celular** (390 × 844), **tablet** (iPad em pé, 820 × 1180) e **desktop** (1280 × 800). O desktop também representa o iPad deitado (1180 × 820), que fica na mesma faixa.
 
 - O corte é pela largura: abaixo de 600 px, abas embaixo; a partir de 600 px, abas na lateral; a partir de 1024 px, dois painéis.
 - O app precisa funcionar em qualquer largura, mas não desenhe outros tamanhos agora.
@@ -70,7 +70,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
 
 ### Regras
 
-- Toda tela nos dois temas.
+- Toda tela nos três tamanhos e nos dois temas.
 - Áreas de toque de 44 px, foco visível e contraste mínimo de 4,5:1.
 - Respeite as áreas seguras: o entalhe e o indicador de início do iPhone, e a barra de gestos do Android.
 - O Voltar do Android e o Esc fecham o que estiver aberto (diálogo, gaveta, livro tirado da estante), depois saem do leitor, depois voltam ao Acervo.
@@ -82,10 +82,10 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
 
 ## Leva 1: o acervo aparece (destrava a etapa 2)
 
-1. **Navegação** (celular, iPad e desktop), nos dois temas.
+1. **Navegação**, nos dois temas.
    - Com as quatro seções.
    - **E também como ela fica na etapa 2, só com Acervo e Mais.** Leituras e Catálogos entram depois, e nenhuma seção aparece vazia.
-2. **Acervo vazio** (celular e iPad).
+2. **Acervo vazio.**
    - Cabeçalho "Biblioteca de bolso".
    - Sobretítulo "Seu acervo", título "Para folhear tudo o que você lê." e apoio "Leia seus livros, quadrinhos e mangás folheando, como no papel.".
    - A ficha **"Nova entrada"**, com o próximo tombo (`Nº 0001`) no cabeçalho:
@@ -96,7 +96,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
      - o campo "ou cole um endereço".
    - O estado **arrastando um arquivo** por cima da página.
 3. **"Adicionar"**, com o acervo já cheio: a mesma ficha "Nova entrada", com o próximo tombo e a frase "O que vamos ler hoje?". No celular, numa gaveta de baixo; no iPad e no desktop, num diálogo.
-4. **Acervo com capas, sem estantes** (iPad deitado e celular).
+4. **Acervo com capas, sem estantes.**
    - **Na capa:**
      - a fita de progresso (ou "pág. 45/200");
      - "novo";
@@ -106,7 +106,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
    - **O tombo não aparece na capa.**
    - Um botão pequeno na capa abre a ficha (área de toque de 44 px). Tocar na capa retoma a leitura.
    - **No topo:** "Adicionar" fixo, busca, ordenar ("Última leitura" é o padrão), filtrar e a escolha da exibição, com os quatro ícones (capas, lista, fichário, lombadas).
-5. **Ficha do livro como página** (celular).
+5. **Ficha do livro como página.** No desktop também, até os dois painéis da leva 2.
    - **Dados:** tombo discreto, autor, título, ano, páginas, formato e tamanho, série e número, idioma, estantes, notas e progresso.
    - **O resumo das leituras** no visual do cartão de empréstimo (carimbos datados).
    - **Ações:**
@@ -118,7 +118,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
      - editar os dados;
      - exportar a ficha;
      - remover do acervo.
-6. **Leitor, a moldura nova** (iPad deitado em página dupla e celular).
+6. **Leitor, a moldura nova:** em página dupla no desktop e em página simples no tablet e no celular.
    - **Topo:** o tombo discreto ao lado do título e "Guardar no acervo" num livro aberto por URL.
    - **Abertura:** o aviso "Retomado da pág. 87 · **Do início**", que some sozinho. O cartão "Continuar?" sai.
    - **Barra:**
@@ -137,7 +137,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
      - **meio:** "Toque duplo aproxima";
      - **no desktop:** as teclas nos carimbos ("Anterior · ←");
      - **some no primeiro toque**, que não vira a página, e nunca aparece junto com o aviso "Retomado".
-7. **Mais** (celular e iPad).
+7. **Mais.**
    - **Ajustes:** tema, idioma, sons e um grupo "Leitura" com a **qualidade máxima** e a ponta no canto.
    - Cópia dos arquivos (interruptor) e espaço usado.
    - Exportar e importar o acervo.
@@ -159,7 +159,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
 
 ## Leva 2: organizar, Leituras, marcadores e o resto
 
-1. **Estantes** (iPad deitado e celular).
+1. **Estantes.**
    - Abas de estante roláveis, como **divisórias de fichário** (a aba atual "na frente", com o filete terracota).
    - A aba de sistema **"Por catalogar"**, no fim, só enquanto tiver livros.
    - **Não há aba "Tudo".** A busca procura no acervo inteiro.
@@ -190,7 +190,7 @@ Quatro seções fixas, sempre com rótulo visível: **Acervo**, **Leituras**, **
 7. **Leitura sem registro.**
    - A faixa fina e fixa no topo de todas as telas.
    - O interruptor no menu do leitor e em Mais.
-8. **Acervo + ficha em dois painéis** (iPad deitado).
+8. **Acervo + ficha em dois painéis:** só no desktop, porque só existe a partir de 1024 px.
 9. **Catálogos, como estrutura do futuro.**
    - A lista de catálogos, com um servidor OPDS de exemplo, e "Adicionar catálogo".
    - Um catálogo aberto, em grade, com "Guardar no acervo" e o carimbo "No acervo" na obra já guardada.
