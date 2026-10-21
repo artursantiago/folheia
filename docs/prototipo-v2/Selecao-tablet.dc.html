@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · seleção em lote e estantes, tablet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="col" style="width: 1688px; height: 3636px; gap: 48px;">
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 54px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px; top: 38px;"></div>
+  <div class="edge" style="left: 124px; top: 38px;"></div>
+  <nav class="abas" aria-label="Seções" style="top: 140px;">
+    <a class="aba on" href="Estantes-tablet.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; top: 38px; bottom: 24px; display: flex; flex-direction: column;">
+    <header class="barra-sel"><button class="btn ib" aria-label="Cancelar a seleção"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><span class="mono" style="font-size: 14px; flex: 1;">3 selecionados</span><button class="btn">Selecionar todos</button><button class="btn cont"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8z"></path></svg>Estantes</button><button class="btn">Marcar como lido</button><button class="btn">Remover</button></header>
+
+    <nav class="estantes" aria-label="Estantes" style="padding: 0 32px;">
+      <a class="est on" href="#" aria-current="page">Quadrinhos <span class="n">9</span></a>
+      <a class="est" href="#">Clássicos <span class="n">11</span></a>
+      <a class="est" href="#">Mangá <span class="n">3</span></a>
+      <a class="est" href="#">Revistas <span class="n">6</span></a>
+      <a class="est sis" href="#">Por catalogar <span class="n">4</span></a>
+      <button class="est mais" aria-label="Nova estante"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+      <button class="est mais" aria-label="Organizar estantes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+    </nav>
+
+    <div class="col" style="gap: 6px; padding: 12px 26px 0 32px;">
+      <label class="busca"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+      <div class="row" style="justify-content: space-between; margin-left: -10px;">
+        <div class="row" style="gap: 4px;">
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+        </div>
+        <div class="exib" role="group" aria-label="Exibição">
+          <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+          <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+          <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+          <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; padding: 22px 32px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}} {{b.sel}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 200px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 14.5px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-cx" aria-label="Selecionar {{b.titulo}}" aria-pressed="{{b.on}}"><span class="cx {{b.cxon}}" style="box-shadow: 0 1px 4px rgba(0,0,0,.35);"><sc-if value="{{b.on}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+</div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 54px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px; top: 38px;"></div>
+  <div class="edge" style="left: 124px; top: 38px;"></div>
+  <nav class="abas" aria-label="Seções" style="top: 140px;">
+    <a class="aba on" href="Estantes-tablet.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; top: 38px; bottom: 24px; display: flex; flex-direction: column;">
+    <header class="barra-sel"><button class="btn ib" aria-label="Cancelar a seleção"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><span class="mono" style="font-size: 14px; flex: 1;">3 selecionados</span><button class="btn">Selecionar todos</button><button class="btn cont"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8z"></path></svg>Estantes</button><button class="btn">Marcar como lido</button><button class="btn">Remover</button></header>
+
+    <nav class="estantes" aria-label="Estantes" style="padding: 0 32px;">
+      <a class="est on" href="#" aria-current="page">Quadrinhos <span class="n">9</span></a>
+      <a class="est" href="#">Clássicos <span class="n">11</span></a>
+      <a class="est" href="#">Mangá <span class="n">3</span></a>
+      <a class="est" href="#">Revistas <span class="n">6</span></a>
+      <a class="est sis" href="#">Por catalogar <span class="n">4</span></a>
+      <button class="est mais" aria-label="Nova estante"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+      <button class="est mais" aria-label="Organizar estantes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+    </nav>
+
+    <div class="col" style="gap: 6px; padding: 12px 26px 0 32px;">
+      <label class="busca"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+      <div class="row" style="justify-content: space-between; margin-left: -10px;">
+        <div class="row" style="gap: 4px;">
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+        </div>
+        <div class="exib" role="group" aria-label="Exibição">
+          <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+          <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+          <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+          <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; padding: 22px 32px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}} {{b.sel}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 200px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 14.5px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-cx" aria-label="Selecionar {{b.titulo}}" aria-pressed="{{b.on}}"><span class="cx {{b.cxon}}" style="box-shadow: 0 1px 4px rgba(0,0,0,.35);"><sc-if value="{{b.on}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+<div class="veu" style="z-index: 6;"></div><div class="dialogo" role="dialog" aria-label="Estantes" style="width: 440px; z-index: 7;"><div class="ficha" style="padding-bottom: 20px;"><div class="ficha-h" style="padding: 0 8px 0 20px;"><span class="serif" style="font-size: 19px;">Estantes · 3 livros</span><button class="btn ib" aria-label="Fechar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div><div class="item" role="checkbox" aria-checked="true" tabindex="0" style="padding: 0 20px; min-height: 52px; justify-content: flex-start; gap: 14px; cursor: pointer;"><span class="cx on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></span><span style="flex: 1;">Quadrinhos</span><span class="tombo">3 de 3</span></div><div class="item" role="checkbox" aria-checked="mixed" tabindex="0" style="padding: 0 20px; min-height: 52px; justify-content: flex-start; gap: 14px; cursor: pointer;"><span class="cx meio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"></path></svg></span><span style="flex: 1;">Clássicos</span><span class="tombo">1 de 3</span></div><div class="item" role="checkbox" aria-checked="false" tabindex="0" style="padding: 0 20px; min-height: 52px; justify-content: flex-start; gap: 14px; cursor: pointer;"><span class="cx "></span><span style="flex: 1;">Mangá</span><span class="tombo"></span></div><div class="item" role="checkbox" aria-checked="false" tabindex="0" style="padding: 0 20px; min-height: 52px; justify-content: flex-start; gap: 14px; cursor: pointer;"><span class="cx "></span><span style="flex: 1;">Revistas</span><span class="tombo"></span></div><button class="item" style="width: 100%; padding: 0 20px; min-height: 52px; border: 0; background: transparent; font: inherit; color: inherit; justify-content: flex-start; gap: 14px; cursor: pointer;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova estante</button><div class="row" style="justify-content: flex-end; gap: 10px; padding: 14px 20px 0;"><button class="btn ghost">Cancelar</button><button class="btn pri">Aplicar</button></div></div></div></div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 54px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px; top: 38px;"></div>
+  <div class="edge" style="left: 124px; top: 38px;"></div>
+  <nav class="abas" aria-label="Seções" style="top: 140px;">
+    <a class="aba on" href="Estantes-tablet.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; top: 38px; bottom: 24px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">31 obras</span>
+      </div>
+      <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+    </header>
+
+    <nav class="estantes" aria-label="Estantes" style="padding: 0 32px;">
+      <a class="est on" href="#" aria-current="page">Quadrinhos <span class="n">9</span></a>
+      <a class="est" href="#">Clássicos <span class="n">11</span></a>
+      <a class="est" href="#">Mangá <span class="n">3</span></a>
+      <a class="est" href="#">Revistas <span class="n">6</span></a>
+      <a class="est sis" href="#">Por catalogar <span class="n">4</span></a>
+      <button class="est mais" aria-label="Nova estante"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+      <button class="est mais" aria-label="Organizar estantes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+    </nav>
+
+    <div class="col" style="gap: 6px; padding: 12px 26px 0 32px;">
+      <label class="busca"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+      <div class="row" style="justify-content: space-between; margin-left: -10px;">
+        <div class="row" style="gap: 4px;">
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+        </div>
+        <div class="exib" role="group" aria-label="Exibição">
+          <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+          <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+          <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+          <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; padding: 22px 32px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 200px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 14.5px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-ficha" aria-label="Ficha: {{b.titulo}}"><span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"></rect><path d="M7 9h10M7 13h6"></path></svg></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+<div class="veu" style="z-index: 6;"></div><div class="dialogo" role="dialog" aria-label="Organizar estantes" style="width: 460px; z-index: 7;"><div class="ficha" style="padding-bottom: 20px;"><div class="ficha-h" style="padding: 0 8px 0 20px;"><span class="serif" style="font-size: 19px;">Organizar estantes</span><button class="btn ib" aria-label="Fechar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div><div class="item" style="padding: 0 8px 0 4px; min-height: 56px; gap: 6px;"><button class="btn ib" aria-label="Arrastar Quadrinhos" style="cursor: grab; color: var(--ink2);"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" style="stroke-width: 3;"></path></svg></button><span style="flex: 1;">Quadrinhos</span><span class="tombo">9</span><button class="btn ib" aria-label="Renomear Quadrinhos"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="btn ib" aria-label="Apagar Quadrinhos"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></button></div><div class="item" style="padding: 0 8px 0 4px; min-height: 56px; gap: 6px;"><button class="btn ib" aria-label="Arrastar Clássicos ilustrados" style="cursor: grab; color: var(--ink2);"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" style="stroke-width: 3;"></path></svg></button><label style="flex: 1;"><span class="lbl" style="position: absolute; left: -9999px;">Nome da estante</span><input class="field" value="Clássicos ilustrados" aria-label="Nome da estante"></label><button class="btn ib" aria-label="Salvar o nome"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button><button class="btn ib" aria-label="Apagar Clássicos ilustrados"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></button></div><div class="item" style="padding: 0 8px 0 4px; min-height: 56px; gap: 6px;"><button class="btn ib" aria-label="Arrastar Mangá" style="cursor: grab; color: var(--ink2);"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" style="stroke-width: 3;"></path></svg></button><span style="flex: 1;">Mangá</span><span class="tombo">3</span><button class="btn ib" aria-label="Renomear Mangá"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="btn ib" aria-label="Apagar Mangá"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></button></div><div style="padding: 14px 20px 0;"><button class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova estante</button></div></div></div><div class="aviso" role="status" style="position: absolute; z-index: 8; left: 50%; transform: translateX(-50%); bottom: 34px;"><span class="mono">Estante Revistas apagada</span><button class="btn">Desfazer</button></div></div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1688,"height":3636}}'>
+class Component extends DCLogic {
+renderVals() {
+const L = (o) => Object.assign({ ink: '#F6EFE2', cls: '', prog: false, novo: false, lido: false, ausente: false, sel: '', on: false, cxon: '' }, o);
+const livros = [
+L({ titulo: 'Little Nemo in Slumberland, v. 1', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1905', bg: '#2E4A5A', prog: true, pct: '22%', pag: 'pág. 45 de 200', meta: 'pág. 45/200 · CBZ', fmt: 'CBZ', tombo: 'Nº 0001', ultima: 'hoje', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Hokusai Manga, v. 1', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1814', bg: '#D8C59B', ink: '#2B2420', prog: true, pct: '12%', pag: 'pág. 12 de 96', meta: 'pág. 12/96 · CBZ', fmt: 'CBZ', tombo: 'Nº 0003', ultima: 'ontem' }),
+L({ titulo: 'O Tico-Tico, nº 1', autor: 'Revista · 1905', autorinv: 'O Tico-Tico (revista)', ano: '1905', bg: '#B4532A', lido: true, meta: 'PDF', fmt: 'PDF', tombo: 'Nº 0004', ultima: '14 out.' }),
+L({ titulo: 'Krazy Kat', autor: 'George Herriman', autorinv: 'Herriman, George', ano: '1916', bg: '#3E5641', cls: 'ausente', ausente: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0005', ultima: '9 out.' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 2', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1906', bg: '#355B6E', novo: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0007', ultima: '—', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 3', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1907', bg: '#2F5266', novo: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0014', ultima: '—', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Hokusai Manga, v. 2', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1815', bg: '#CDB98C', ink: '#2B2420', meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0015', ultima: '—' }),
+L({ titulo: 'Hokusai Manga, v. 3', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1815', bg: '#C4AE80', ink: '#2B2420', meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0016', ultima: '—' }),
+L({ titulo: 'O Tico-Tico, nº 2', autor: 'Revista · 1905', autorinv: 'O Tico-Tico (revista)', ano: '1905', bg: '#A84C27', meta: 'PDF', fmt: 'PDF', tombo: 'Nº 0017', ultima: '—' })
+];
+return { temas: [{ cls: '' }, { cls: 'dark' }], livros: livros };
+}
+}
+</script>
+</body>
+</html>

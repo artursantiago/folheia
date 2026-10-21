@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · acervo em lombadas, tablet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 1688px; height: 1180px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 54px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px; top: 38px;"></div>
+  <div class="edge" style="left: 124px; top: 38px;"></div>
+  <nav class="abas" aria-label="Seções" style="top: 140px;">
+    <a class="aba on" href="Estantes-tablet.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; top: 38px; bottom: 24px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">31 obras</span>
+      </div>
+      <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+    </header>
+
+    <nav class="estantes" aria-label="Estantes" style="padding: 0 32px;">
+      <a class="est on" href="#" aria-current="page">Quadrinhos <span class="n">9</span></a>
+      <a class="est" href="#">Clássicos <span class="n">11</span></a>
+      <a class="est" href="#">Mangá <span class="n">3</span></a>
+      <a class="est" href="#">Revistas <span class="n">6</span></a>
+      <a class="est sis" href="#">Por catalogar <span class="n">4</span></a>
+      <button class="est mais" aria-label="Nova estante"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+      <button class="est mais" aria-label="Organizar estantes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+    </nav>
+
+    <div class="col" style="gap: 6px; padding: 12px 26px 0 32px;">
+      <label class="busca"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+      <div class="row" style="justify-content: space-between; margin-left: -10px;">
+        <div class="row" style="gap: 4px;">
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Título</button>
+          <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+        </div>
+        <div class="exib" role="group" aria-label="Exibição">
+          <button class="btn ib" aria-label="Capas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+          <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+          <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+          <button class="btn ib on" aria-label="Lombadas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <section class="col" aria-label="Lombadas" style="gap: 70px; padding: 0 32px; margin-top: 56px;"><div class="tabua"><a class="lomb" href="#" aria-label="Hokusai Manga, v. 1" style="width: 54px; height: 240px; background: linear-gradient(#F4ECDC,#F4ECDC) center 24px / 74% 68% no-repeat, #B9A275; color: #2B2420;"><span class="fita-l" aria-hidden="true"></span><span class="v">1</span><span class="t" style="font-size: 15px;">Hokusai Manga</span><span class="f">CBZ</span></a><a class="lomb" href="#" aria-label="Hokusai Manga, v. 2" style="width: 54px; height: 240px; background: linear-gradient(#F4ECDC,#F4ECDC) center 24px / 74% 68% no-repeat, #AE9767; color: #2B2420;"><span class="v">2</span><span class="t" style="font-size: 15px;">Hokusai Manga</span><span class="f">CBZ</span></a><a class="lomb" href="#" aria-label="Hokusai Manga, v. 3" style="width: 55px; height: 240px; background: linear-gradient(#F4ECDC,#F4ECDC) center 24px / 74% 68% no-repeat, #A38C5C; color: #2B2420;"><span class="v">3</span><span class="t" style="font-size: 15px;">Hokusai Manga</span><span class="f">CBZ</span></a><div class="vaga" style="width: 51px; height: 282px;" aria-label="Lugar vago: Krazy Kat, exemplar ausente"><span>Krazy Kat</span></div><a class="lomb" href="#" aria-label="Little Nemo, v. 1" style="width: 66px; height: 282px; background: linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center 30px / 60% 3px no-repeat, linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center calc(100% - 28px) / 60% 3px no-repeat, #2E4A5A; color: #F6EFE2;"><span class="fita-l" aria-hidden="true"></span><span class="v">1</span><span class="t" style="font-size: 15px;">Little Nemo</span><span class="f">CBZ</span></a></div><div class="tabua"><a class="lomb" href="#" aria-label="Little Nemo, v. 2" style="width: 64px; height: 282px; background: linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center 30px / 60% 3px no-repeat, linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center calc(100% - 28px) / 60% 3px no-repeat, #355B6E; color: #F6EFE2;"><span class="v">2</span><span class="t" style="font-size: 15px;">Little Nemo</span><span class="f">CBZ</span></a><a class="lomb" href="#" aria-label="Little Nemo, v. 3" style="width: 65px; height: 282px; background: linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center 30px / 60% 3px no-repeat, linear-gradient(rgba(242,196,107,.9),rgba(242,196,107,.9)) center calc(100% - 28px) / 60% 3px no-repeat, #2F5266; color: #F6EFE2;"><span class="v">3</span><span class="t" style="font-size: 15px;">Little Nemo</span><span class="f">CBZ</span></a><a class="lomb" href="#" aria-label="O Tico-Tico, nº 1" style="width: 49px; height: 300px; background: repeating-linear-gradient(to bottom, transparent 0 18px, rgba(255,255,255,.09) 18px 20px), #B4532A; color: #F6EFE2;"><span class="v">nº 1</span><span class="t" style="font-size: 15px;">O Tico-Tico</span><span class="f">PDF</span></a><a class="lomb" href="#" aria-label="O Tico-Tico, nº 2" style="width: 49px; height: 300px; background: repeating-linear-gradient(to bottom, transparent 0 18px, rgba(255,255,255,.09) 18px 20px), #A84C27; color: #F6EFE2;"><span class="v">nº 2</span><span class="t" style="font-size: 15px;">O Tico-Tico</span><span class="f">PDF</span></a></div></section>
+  </main>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1688,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+const L = (o) => Object.assign({ ink: '#F6EFE2', cls: '', prog: false, novo: false, lido: false, ausente: false }, o);
+return {
+temas: [{ cls: '' }, { cls: 'dark' }],
+livros: [
+L({ titulo: 'Little Nemo in Slumberland, v. 1', autor: 'Winsor McCay', bg: '#2E4A5A', prog: true, pct: '22%', meta: 'pág. 45/200 · CBZ' }),
+L({ titulo: 'Hokusai Manga, v. 1', autor: 'Katsushika Hokusai', bg: '#D8C59B', ink: '#2B2420', prog: true, pct: '12%', meta: 'pág. 12/96 · CBZ' }),
+L({ titulo: 'O Tico-Tico, nº 1', autor: 'Revista · 1905', bg: '#B4532A', lido: true, meta: 'PDF' }),
+L({ titulo: 'Krazy Kat', autor: 'George Herriman', bg: '#3E5641', cls: 'ausente', ausente: true, meta: 'CBZ' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 2', autor: 'Winsor McCay', bg: '#355B6E', novo: true, meta: 'CBZ' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 3', autor: 'Winsor McCay', bg: '#2F5266', novo: true, meta: 'CBZ' }),
+L({ titulo: 'Hokusai Manga, v. 2', autor: 'Katsushika Hokusai', bg: '#CDB98C', ink: '#2B2420', meta: 'CBZ' }),
+L({ titulo: 'Hokusai Manga, v. 3', autor: 'Katsushika Hokusai', bg: '#C4AE80', ink: '#2B2420', meta: 'CBZ' }),
+L({ titulo: 'O Tico-Tico, nº 2', autor: 'Revista · 1905', bg: '#A84C27', meta: 'PDF' })
+]
+};
+}
+}
+</script>
+</body>
+</html>

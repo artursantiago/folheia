@@ -176,3 +176,65 @@ font-family:'Atkinson Hyperlegible Next',system-ui,sans-serif;color:var(--ink);b
 .acoes{display:flex;flex-wrap:wrap;gap:4px 6px}
 .acoes .btn{height:44px;font-size:14px;padding:0 12px}
 .perigo{color:var(--accent)!important}
+
+/* ===== leva 2 ===== */
+.fx{--tabua:#B9A88F;--tabua2:#9C8B73}
+.fx.dark{--tabua:#3A4350;--tabua2:#2A313C}
+
+/* abas de estante: divisórias no topo do acervo */
+.estantes{display:flex;align-items:flex-end;gap:4px;height:52px;padding:0 32px;border-bottom:1px solid var(--rule);overflow:hidden;flex:none}
+.est{flex:none;height:44px;padding:0 14px;display:flex;align-items:center;gap:8px;border:1px solid var(--rule);border-bottom:0;border-radius:5px 5px 0 0;background:var(--tab);color:var(--ink2);font:inherit;font-size:14px;white-space:nowrap;cursor:pointer;text-decoration:none}
+.est .n{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:var(--ink2)}
+.est.on{height:48px;margin-bottom:-1px;background:var(--card);color:var(--ink);border-top:3px solid var(--accent);box-shadow:0 -6px 12px -10px var(--shadow)}
+.est.sis{border-style:dashed;border-color:var(--perf)}
+.est.mais{width:44px;padding:0;justify-content:center;background:transparent;border-color:transparent}
+
+/* lombadas sobre a tábua */
+.tabua{position:relative;display:flex;align-items:flex-end;gap:3px;padding:0 20px;border-bottom:9px solid var(--tabua);box-shadow:0 9px 0 0 var(--tabua2),0 22px 18px -12px var(--shadow)}
+.lomb{position:relative;flex:none;border-radius:2px 2px 0 0;color:#F6EFE2;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:9px 0 8px;box-shadow:inset 4px 0 0 rgba(255,255,255,.08),inset -5px 0 0 rgba(0,0,0,.2);text-decoration:none;background-repeat:no-repeat}
+.lomb .v{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.04em;line-height:1}
+.lomb .t{flex:1;text-align:center;min-height:0;writing-mode:vertical-rl;font-family:'Young Serif',Georgia,serif;font-size:15px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:10px 0;padding:0 1px}
+.lomb .t.sobe{transform:rotate(180deg)}
+.lomb .f{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.06em;opacity:.8;line-height:1}
+.lomb .fita-l{position:absolute;top:-17px;left:50%;width:9px;height:22px;margin-left:-4.5px;background:var(--accent);clip-path:polygon(0 0,50% 22%,100% 0,100% 100%,0 100%)}
+.lomb.puxada{transform:translateY(-12px);box-shadow:inset 4px 0 0 rgba(255,255,255,.08),inset -5px 0 0 rgba(0,0,0,.2),0 16px 18px -8px var(--shadow)}
+.vaga{flex:none;border:1.5px dashed var(--perf);border-bottom:0;border-radius:2px 2px 0 0;display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.vaga span{writing-mode:vertical-rl;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+
+/* caixa de três estados */
+.cx{width:24px;height:24px;flex:none;border:1.5px solid var(--ink);border-radius:3px;background:var(--card);display:inline-flex;align-items:center;justify-content:center;color:var(--paper)}
+.cx.on,.cx.meio{background:var(--ink)}
+.cx svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.capa-cx{position:absolute;top:0;left:0;width:44px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sel .capa{outline:3px solid var(--accent);outline-offset:3px}
+
+/* linha de lista */
+.lhead{display:flex;align-items:center;gap:16px;height:36px;padding:0 8px;border-bottom:1.5px solid var(--ink);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.linha{display:flex;align-items:center;gap:16px;min-height:76px;padding:6px 8px;border-bottom:1px solid var(--rule);color:inherit;text-decoration:none}
+.mini{width:44px;height:62px;flex:none;border-radius:1px 3px 3px 1px;box-shadow:inset 3px 0 0 rgba(0,0,0,.16),0 4px 8px -4px var(--shadow);position:relative}
+.linha .lt{font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.minibar{height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.minibar i{display:block;height:100%;background:var(--accent)}
+.selo{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:1px 7px;border-radius:2px;align-self:flex-start}
+.carimbo.sm{font-size:10.5px;padding:1px 7px;transform:rotate(-4deg);align-self:flex-start}
+
+/* fichário: cada livro como uma ficha curta */
+.fichinha{background:var(--card);border-radius:4px;box-shadow:0 0 0 1px var(--rule),0 12px 24px -18px var(--shadow);position:relative;padding-bottom:26px;color:inherit;text-decoration:none;display:block}
+.fichinha .ficha-h{min-height:38px;padding:0 14px}
+.fichinha .cat{padding:4px 16px 0;font-size:12.5px;line-height:26px;background-image:repeating-linear-gradient(to bottom,transparent 0 25px,var(--rule) 25px 26px)}
+.fichinha .furo{bottom:8px;width:11px;height:11px;margin-left:-5.5px}
+
+/* barra de seleção */
+.barra-sel{height:64px;flex:none;display:flex;align-items:center;gap:8px;padding:0 20px;background:var(--ink);color:var(--paper)}
+.barra-sel .btn{color:var(--paper);border-color:transparent}
+.barra-sel .btn.cont{border-color:var(--paper)}
+.mini.ausente{opacity:.4;box-shadow:none;outline:1.5px dashed var(--perf);outline-offset:2px}
+
+/* marcadores: fitas verdes de encadernação */
+.slider .mf{position:absolute;top:3px;width:9px;height:16px;margin-left:-4.5px;background:var(--green);clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%)}
+.marc.on{color:var(--green);box-shadow:inset 0 0 0 1.5px var(--green)}
+.marc.on path{fill:currentColor}
+.mf-ic{width:10px;height:16px;flex:none;background:var(--green);clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%)}
+
+/* leitura sem registro: faixa fina e fixa no topo */
+.faixa{position:absolute;left:0;right:0;top:0;height:24px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:var(--accent-ink);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;z-index:20}

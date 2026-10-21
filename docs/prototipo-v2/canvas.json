@@ -275,6 +275,293 @@
       "w": 3378,
       "h": 2408,
       "title": "Splash · celular e tablet, em pé e deitado"
+    },
+    "Estantes-desktop.dc.html": {
+      "x": 0,
+      "y": 18600,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Acervo com estantes · desktop"
+    },
+    "Estantes-tablet.dc.html": {
+      "x": 2688,
+      "y": 18600,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Acervo com estantes · tablet"
+    },
+    "Estantes-celular.dc.html": {
+      "x": 4456,
+      "y": 18600,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Acervo com estantes · celular"
+    },
+    "Lombadas-desktop.dc.html": {
+      "x": 0,
+      "y": 20120,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Lombadas · desktop · título de cima para baixo · hover no v. 2"
+    },
+    "Lombadas-sobe-desktop.dc.html": {
+      "x": 2688,
+      "y": 20120,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Lombadas · título de baixo para cima (descartado)"
+    },
+    "Lombadas-tablet.dc.html": {
+      "x": 5376,
+      "y": 20120,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Lombadas · tablet"
+    },
+    "Lombadas-celular.dc.html": {
+      "x": 7144,
+      "y": 20120,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Lombadas · celular"
+    },
+    "Proposta-centro-desktop.dc.html": {
+      "x": 0,
+      "y": 21640,
+      "w": 2608,
+      "h": 1648,
+      "title": "Leva 2 · Proposta A, ao centro (descartada)"
+    },
+    "Proposta-bolso-desktop.dc.html": {
+      "x": 2688,
+      "y": 21640,
+      "w": 2608,
+      "h": 1648,
+      "title": "Leva 2 · Proposta B, a ficha sai do bolso (escolhida) · girando e aberto"
+    },
+    "Propostas-celular.dc.html": {
+      "x": 5376,
+      "y": 21640,
+      "w": 828,
+      "h": 1736,
+      "title": "Leva 2 · Celular · A (descartada) à esquerda, B (escolhida) à direita"
+    },
+    "Lista-desktop.dc.html": {
+      "x": 0,
+      "y": 23720,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Lista · desktop"
+    },
+    "Lista-tablet.dc.html": {
+      "x": 2688,
+      "y": 23720,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Lista · tablet"
+    },
+    "Lista-celular.dc.html": {
+      "x": 4456,
+      "y": 23720,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Lista · celular"
+    },
+    "Fichario-desktop.dc.html": {
+      "x": 5364,
+      "y": 23720,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Fichário · desktop"
+    },
+    "Fichario-tablet.dc.html": {
+      "x": 8052,
+      "y": 23720,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Fichário · tablet"
+    },
+    "Fichario-celular.dc.html": {
+      "x": 9820,
+      "y": 23720,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Fichário · celular"
+    },
+    "Selecao-desktop.dc.html": {
+      "x": 0,
+      "y": 25240,
+      "w": 2608,
+      "h": 2496,
+      "title": "Leva 2 · Seleção, diálogo de estantes e organizar estantes · desktop"
+    },
+    "Selecao-tablet.dc.html": {
+      "x": 2688,
+      "y": 25240,
+      "w": 1688,
+      "h": 3636,
+      "title": "Leva 2 · Seleção e estantes · tablet"
+    },
+    "Selecao-celular.dc.html": {
+      "x": 4456,
+      "y": 25240,
+      "w": 828,
+      "h": 2628,
+      "title": "Leva 2 · Seleção e estantes · celular"
+    },
+    "Leituras-desktop.dc.html": {
+      "x": 0,
+      "y": 29216,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Leituras · desktop"
+    },
+    "Leituras-tablet.dc.html": {
+      "x": 2688,
+      "y": 29216,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Leituras · tablet"
+    },
+    "Leituras-celular.dc.html": {
+      "x": 4456,
+      "y": 29216,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Leituras · celular"
+    },
+    "Dois-paineis-desktop.dc.html": {
+      "x": 5364,
+      "y": 29216,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Acervo e ficha em dois painéis · só desktop"
+    },
+    "Marcadores-leitor-desktop.dc.html": {
+      "x": 0,
+      "y": 30736,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Marcadores no leitor · desktop"
+    },
+    "Marcadores-leitor-tablet.dc.html": {
+      "x": 2688,
+      "y": 30736,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Marcadores no leitor · tablet"
+    },
+    "Marcadores-leitor-celular.dc.html": {
+      "x": 4456,
+      "y": 30736,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Marcadores no leitor · celular"
+    },
+    "Marcadores-indice-desktop.dc.html": {
+      "x": 5364,
+      "y": 30736,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Aba Marcadores · desktop"
+    },
+    "Marcadores-indice-tablet.dc.html": {
+      "x": 8052,
+      "y": 30736,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Aba Marcadores · tablet"
+    },
+    "Marcadores-indice-celular.dc.html": {
+      "x": 9820,
+      "y": 30736,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Aba Marcadores · celular"
+    },
+    "Marcadores-ficha-desktop.dc.html": {
+      "x": 10728,
+      "y": 30736,
+      "w": 2608,
+      "h": 800,
+      "title": "Leva 2 · Marcadores na ficha · desktop"
+    },
+    "Marcadores-ficha-tablet.dc.html": {
+      "x": 13416,
+      "y": 30736,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leva 2 · Marcadores na ficha · tablet"
+    },
+    "Marcadores-ficha-celular.dc.html": {
+      "x": 15184,
+      "y": 30736,
+      "w": 828,
+      "h": 844,
+      "title": "Leva 2 · Marcadores na ficha · celular"
+    },
+    "Sem-registro-desktop.dc.html": {
+      "x": 0,
+      "y": 32256,
+      "w": 2608,
+      "h": 2496,
+      "title": "Leva 2 · Leitura sem registro · acervo, ajustes do leitor e Mais · desktop"
+    },
+    "Sem-registro-tablet.dc.html": {
+      "x": 2688,
+      "y": 32256,
+      "w": 1688,
+      "h": 3636,
+      "title": "Leva 2 · Leitura sem registro · tablet"
+    },
+    "Sem-registro-celular.dc.html": {
+      "x": 4456,
+      "y": 32256,
+      "w": 828,
+      "h": 2628,
+      "title": "Leva 2 · Leitura sem registro · celular"
+    },
+    "Catalogos-desktop.dc.html": {
+      "x": 0,
+      "y": 36232,
+      "w": 2608,
+      "h": 1648,
+      "title": "Leva 2 · Catálogos · lista e catálogo aberto · desktop"
+    },
+    "Catalogos-tablet.dc.html": {
+      "x": 2688,
+      "y": 36232,
+      "w": 1688,
+      "h": 2408,
+      "title": "Leva 2 · Catálogos · tablet"
+    },
+    "Catalogos-celular.dc.html": {
+      "x": 4456,
+      "y": 36232,
+      "w": 828,
+      "h": 1736,
+      "title": "Leva 2 · Catálogos · celular"
+    },
+    "Vazios-desktop.dc.html": {
+      "x": 5364,
+      "y": 36232,
+      "w": 2608,
+      "h": 1648,
+      "title": "Leva 2 · Estante vazia e busca sem resultado · desktop"
+    },
+    "Vazios-tablet.dc.html": {
+      "x": 8052,
+      "y": 36232,
+      "w": 1688,
+      "h": 2408,
+      "title": "Leva 2 · Estante vazia e busca sem resultado · tablet"
+    },
+    "Vazios-celular.dc.html": {
+      "x": 9820,
+      "y": 36232,
+      "w": 828,
+      "h": 1736,
+      "title": "Leva 2 · Estante vazia e busca sem resultado · celular"
     }
   },
   "order": [
@@ -315,7 +602,48 @@
     "Estados-desktop.dc.html",
     "Estados-tablet.dc.html",
     "Estados-celular.dc.html",
-    "Splash.dc.html"
+    "Splash.dc.html",
+    "Estantes-desktop.dc.html",
+    "Estantes-tablet.dc.html",
+    "Estantes-celular.dc.html",
+    "Lombadas-desktop.dc.html",
+    "Lombadas-sobe-desktop.dc.html",
+    "Lombadas-tablet.dc.html",
+    "Lombadas-celular.dc.html",
+    "Proposta-centro-desktop.dc.html",
+    "Proposta-bolso-desktop.dc.html",
+    "Propostas-celular.dc.html",
+    "Lista-desktop.dc.html",
+    "Lista-tablet.dc.html",
+    "Lista-celular.dc.html",
+    "Fichario-desktop.dc.html",
+    "Fichario-tablet.dc.html",
+    "Fichario-celular.dc.html",
+    "Selecao-desktop.dc.html",
+    "Selecao-tablet.dc.html",
+    "Selecao-celular.dc.html",
+    "Leituras-desktop.dc.html",
+    "Leituras-tablet.dc.html",
+    "Leituras-celular.dc.html",
+    "Dois-paineis-desktop.dc.html",
+    "Marcadores-leitor-desktop.dc.html",
+    "Marcadores-leitor-tablet.dc.html",
+    "Marcadores-leitor-celular.dc.html",
+    "Marcadores-indice-desktop.dc.html",
+    "Marcadores-indice-tablet.dc.html",
+    "Marcadores-indice-celular.dc.html",
+    "Marcadores-ficha-desktop.dc.html",
+    "Marcadores-ficha-tablet.dc.html",
+    "Marcadores-ficha-celular.dc.html",
+    "Sem-registro-desktop.dc.html",
+    "Sem-registro-tablet.dc.html",
+    "Sem-registro-celular.dc.html",
+    "Catalogos-desktop.dc.html",
+    "Catalogos-tablet.dc.html",
+    "Catalogos-celular.dc.html",
+    "Vazios-desktop.dc.html",
+    "Vazios-tablet.dc.html",
+    "Vazios-celular.dc.html"
   ],
   "notes": {
     "row1": {
@@ -380,6 +708,69 @@
       "text": "Splash",
       "kind": "title1",
       "maxW": 3378
+    },
+    "l2r1": {
+      "x": 0,
+      "y": 18300,
+      "text": "Leva 2 · Estantes em divisórias",
+      "kind": "title1",
+      "maxW": 5284
+    },
+    "l2r2": {
+      "x": 0,
+      "y": 19820,
+      "text": "Leva 2 · Lombadas",
+      "kind": "title1",
+      "maxW": 7972
+    },
+    "l2r3": {
+      "x": 0,
+      "y": 21340,
+      "text": "Leva 2 · O livro sai da estante: duas propostas",
+      "kind": "title1",
+      "maxW": 6204
+    },
+    "l2r4": {
+      "x": 0,
+      "y": 23420,
+      "text": "Leva 2 · Lista e fichário",
+      "kind": "title1",
+      "maxW": 10648
+    },
+    "l2r5": {
+      "x": 0,
+      "y": 24940,
+      "text": "Leva 2 · Seleção em lote e estantes",
+      "kind": "title1",
+      "maxW": 5284
+    },
+    "l2r6": {
+      "x": 0,
+      "y": 28916,
+      "text": "Leva 2 · Leituras e dois painéis",
+      "kind": "title1",
+      "maxW": 7972
+    },
+    "l2r7": {
+      "x": 0,
+      "y": 30436,
+      "text": "Leva 2 · Marcadores",
+      "kind": "title1",
+      "maxW": 16012
+    },
+    "l2r8": {
+      "x": 0,
+      "y": 31956,
+      "text": "Leva 2 · Leitura sem registro",
+      "kind": "title1",
+      "maxW": 5284
+    },
+    "l2r9": {
+      "x": 0,
+      "y": 35932,
+      "text": "Leva 2 · Catálogos e estados",
+      "kind": "title1",
+      "maxW": 10648
     }
   },
   "designSystems": []

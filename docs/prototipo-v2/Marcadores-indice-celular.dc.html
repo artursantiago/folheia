@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · gaveta do índice, aba Marcadores, celular</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="col" style="width: 828px; height: 844px; gap: 48px;">
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 390px; height: 844px; flex: none;">
+  <sc-if value="{{t.escuro}}" hint-placeholder-val="{{false}}"><div class="lamp"></div></sc-if>
+  <div class="livro" style="left: 20px; top: 108px;">
+    <div class="pag dir" style="width: 350px; height: 520px; padding: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 150px 170px 150px; gap: 8px;">
+      <div style="grid-column: span 2; background: #2E4A5A; border: 2px solid #2B2420;"></div>
+      <div style="background: #D8C59B; border: 2px solid #2B2420;"></div>
+      <div style="background: #B4532A; border: 2px solid #2B2420;"></div>
+      <div style="grid-column: span 2; background: #6F5585; border: 2px solid #2B2420;"></div>
+    </div>
+  </div>
+  <div class="veu" style="z-index: 2;"></div>
+
+  <section class="gaveta" role="dialog" aria-label="Índice" style="top: 150px;">
+    <span class="alca" aria-hidden="true"></span>
+    <div class="row" style="justify-content: space-between; padding: 4px 8px 0 20px;">
+      <span class="serif" style="font-size: 21px;">Índice</span>
+      <a class="btn ib" href="Leitor-celular.dc.html" aria-label="Fechar índice"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    </div>
+    <div class="itabs" role="tablist" style="margin: 0 20px;">
+      <button class="itab" role="tab" aria-selected="false">Sumário</button>
+      <button class="itab" role="tab" aria-selected="false">Páginas</button>
+      <button class="itab on" role="tab" aria-selected="true">Marcadores</button>
+    </div>
+    <div class="col" style="padding: 4px 20px 0;"><div class="row" style="gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: flex-start;"><a href="#" class="row" aria-label="Ir para a pág. 12" style="flex: none;"><span class="th2 q" style="width: 40px; height: 56px;"></span><span class="th2 q" style="width: 40px; height: 56px;"></span></a><div class="col" style="flex: 1; min-width: 0; gap: 4px;"><span class="row" style="gap: 8px;"><span class="mf-ic" aria-hidden="true"></span><span class="mono" style="font-size: 13px;">pág. 12</span><span class="tombo">· 12 out.</span></span><span style="font-size: 14px;">A cama que anda.</span></div><div class="col"><button class="btn ib" aria-label="Editar a nota"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="btn ib" aria-label="Apagar o marcador"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></div><div class="row" style="gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: flex-start;"><a href="#" class="row" aria-label="Ir para a pág. 31" style="flex: none;"><span class="th2 q" style="width: 40px; height: 56px;"></span><span class="th2 q" style="width: 40px; height: 56px;"></span></a><div class="col" style="flex: 1; min-width: 0; gap: 4px;"><span class="row" style="gap: 8px;"><span class="mf-ic" aria-hidden="true"></span><span class="mono" style="font-size: 13px;">pág. 31</span><span class="tombo">· 16 out.</span></span><button class="btn ghost" style="height: 36px; padding: 0 2px; font-size: 14px; color: var(--ink2); align-self: flex-start;">Adicionar nota</button></div><div class="col"><button class="btn ib" aria-label="Editar a nota"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="btn ib" aria-label="Apagar o marcador"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></div><div class="row" style="gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: flex-start;"><a href="#" class="row" aria-label="Ir para a pág. 45" style="flex: none;"><span class="th2 q" style="width: 40px; height: 56px;"></span><span class="th2 q" style="width: 40px; height: 56px;"></span></a><div class="col" style="flex: 1; min-width: 0; gap: 4px;"><span class="row" style="gap: 8px;"><span class="mf-ic" aria-hidden="true"></span><span class="mono" style="font-size: 13px;">pág. 45</span><span class="tombo">· 20 out.</span></span><span style="font-size: 14px;">Cores do sonho.</span></div><div class="col"><button class="btn ib" aria-label="Editar a nota"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="btn ib" aria-label="Apagar o marcador"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></div></div>
+  </section>
+</div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":828,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+temas: [{ cls: '', escuro: false }, { cls: 'dark', escuro: true }],
+pares: [
+{ lab: '36–37', a: 'q', b: 'q', on: '' },
+{ lab: '38–39', a: 'q', b: 'q', on: '' },
+{ lab: '40–41', a: 'q', b: 'q', on: '' },
+{ lab: '42–43', a: 'q', b: 'q', on: '' },
+{ lab: '44–45 · aqui', a: 'q', b: 'q', on: 'on' },
+{ lab: '46–47', a: 'q', b: 'q', on: '' },
+{ lab: '48–49', a: 'q', b: 'q', on: '' },
+{ lab: '50–51', a: 'q', b: 'q', on: '' },
+{ lab: '52–53', a: 'q', b: 'q', on: '' },
+{ lab: '54–55', a: 'q', b: 'q', on: '' },
+{ lab: '56–57', a: 'q', b: 'q', on: '' },
+{ lab: '58–59', a: 'q', b: 'q', on: '' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

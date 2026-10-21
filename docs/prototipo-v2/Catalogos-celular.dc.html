@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · Catálogos, celular</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="col" style="width: 828px; height: 1736px; gap: 48px;">
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 390px; height: 844px; flex: none;">
+  <main class="m-front"><header class="front-h"><h1 class="serif" style="margin: 0; font-size: 24px;">Catálogos</h1><button class="btn pri" style="padding: 0 12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar catálogo</button></header><section class="col" style="gap: 14px; padding: 16px 16px 0;"><p class="muted" style="margin: 0;">Catálogos são bibliotecas na rede que você folheia daqui. O que você guardar vai para o acervo.</p><div class="grupo"><a class="item" href="#" style="min-height: 76px; color: inherit; text-decoration: none; gap: 14px;"><span class="col" style="gap: 2px; min-width: 0;"><span class="serif" style="font-size: 19px;">Project Gutenberg</span><span class="tombo" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">gutenberg.org/ebooks.opds</span></span><span class="row" style="gap: 10px;"><span class="carimbo ink sm" style="transform: none;">OPDS</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></a></div></section></main>
+
+  <div class="m-edge" style="bottom: 88px;"></div>
+  <div class="m-edge" style="bottom: 85px;"></div>
+  <nav class="m-abas" aria-label="Seções">
+    <a class="m-aba" href="#">Acervo</a>
+    <a class="m-aba" href="#">Leituras</a>
+    <a class="m-aba on" href="#" aria-current="page"><span>Catálogos</span></a>
+    <a class="m-aba" href="#">Mais</a>
+  </nav>
+</div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 390px; height: 844px; flex: none;">
+  <main class="m-front"><header class="front-h" style="padding-left: 4px;"><div class="row" style="gap: 8px; min-width: 0;"><button class="btn ib" aria-label="Voltar a Catálogos"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><h1 class="serif" style="margin: 0; font-size: 21px;">Project Gutenberg</h1></div><span class="carimbo ink sm" style="transform: none; align-self: center;">OPDS</span></header><section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; row-gap: 24px; padding: 16px 16px 0;"><div class="cel"><a class="capa" href="#" aria-label="Abrir Pride and Prejudice" style="height: 160px; width: 100%; text-decoration: none; background: #5B6E8C; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Pride and Prejudice</span><span class="a">Jane Austen</span></a><div class="cel-t" style="font-size: 13px;">Pride and Prejudice</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir Moby-Dick" style="height: 160px; width: 100%; text-decoration: none; background: #2B4A52; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Moby-Dick</span><span class="a">Herman Melville</span></a><div class="cel-t" style="font-size: 13px;">Moby-Dick</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir Frankenstein" style="height: 160px; width: 100%; text-decoration: none; background: #45403A; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Frankenstein</span><span class="a">Mary Shelley</span></a><div class="cel-t" style="font-size: 13px;">Frankenstein</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir Alice’s Adventures in Wonderland" style="height: 160px; width: 100%; text-decoration: none; background: #6F5585; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Alice’s Adventures in Wonderland</span><span class="a">Lewis Carroll</span></a><div class="cel-t" style="font-size: 13px;">Alice’s Adventures in Wonderland</div><span class="carimbo sm" style="align-self: flex-start;">No acervo</span></div><div class="cel"><a class="capa" href="#" aria-label="Abrir The Adventures of Sherlock Holmes" style="height: 160px; width: 100%; text-decoration: none; background: #7A3B2E; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">The Adventures of Sherlock Holmes</span><span class="a">Arthur Conan Doyle</span></a><div class="cel-t" style="font-size: 13px;">The Adventures of Sherlock Holmes</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir Dom Casmurro" style="height: 160px; width: 100%; text-decoration: none; background: #6B2D2A; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Dom Casmurro</span><span class="a">Machado de Assis</span></a><div class="cel-t" style="font-size: 13px;">Dom Casmurro</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir Twenty Thousand Leagues Under the Sea" style="height: 160px; width: 100%; text-decoration: none; background: #2E5A5A; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">Twenty Thousand Leagues Under the Sea</span><span class="a">Jules Verne</span></a><div class="cel-t" style="font-size: 13px;">Twenty Thousand Leagues Under the Sea</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div><div class="cel"><a class="capa" href="#" aria-label="Abrir The Time Machine" style="height: 160px; width: 100%; text-decoration: none; background: #5F5045; padding: 10px 10px 9px 13px;"><span class="t" style="font-size: 12px;">The Time Machine</span><span class="a">H. G. Wells</span></a><div class="cel-t" style="font-size: 13px;">The Time Machine</div><button class="btn" style="height: 44px; padding: 0 8px; font-size: 12.5px; align-self: flex-start;">Guardar</button></div></section></main>
+
+  <div class="m-edge" style="bottom: 88px;"></div>
+  <div class="m-edge" style="bottom: 85px;"></div>
+  <nav class="m-abas" aria-label="Seções">
+    <a class="m-aba" href="#">Acervo</a>
+    <a class="m-aba" href="#">Leituras</a>
+    <a class="m-aba on" href="#" aria-current="page"><span>Catálogos</span></a>
+    <a class="m-aba" href="#">Mais</a>
+  </nav>
+</div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":828,"height":1736}}'>
+class Component extends DCLogic {
+renderVals() {
+const L = (o) => Object.assign({ ink: '#F6EFE2', cls: '', prog: false, novo: false, lido: false, ausente: false, sel: '', on: false, cxon: '' }, o);
+const livros = [
+L({ titulo: 'Little Nemo in Slumberland, v. 1', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1905', bg: '#2E4A5A', prog: true, pct: '22%', pag: 'pág. 45 de 200', meta: 'pág. 45/200 · CBZ', fmt: 'CBZ', tombo: 'Nº 0001', ultima: 'hoje', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Hokusai Manga, v. 1', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1814', bg: '#D8C59B', ink: '#2B2420', prog: true, pct: '12%', pag: 'pág. 12 de 96', meta: 'pág. 12/96 · CBZ', fmt: 'CBZ', tombo: 'Nº 0003', ultima: 'ontem' }),
+L({ titulo: 'O Tico-Tico, nº 1', autor: 'Revista · 1905', autorinv: 'O Tico-Tico (revista)', ano: '1905', bg: '#B4532A', lido: true, meta: 'PDF', fmt: 'PDF', tombo: 'Nº 0004', ultima: '14 out.' }),
+L({ titulo: 'Krazy Kat', autor: 'George Herriman', autorinv: 'Herriman, George', ano: '1916', bg: '#3E5641', cls: 'ausente', ausente: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0005', ultima: '9 out.' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 2', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1906', bg: '#355B6E', novo: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0007', ultima: '—', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 3', autor: 'Winsor McCay', autorinv: 'McCay, Winsor', ano: '1907', bg: '#2F5266', novo: true, meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0014', ultima: '—', sel: 'sel', on: true, cxon: 'on' }),
+L({ titulo: 'Hokusai Manga, v. 2', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1815', bg: '#CDB98C', ink: '#2B2420', meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0015', ultima: '—' }),
+L({ titulo: 'Hokusai Manga, v. 3', autor: 'Katsushika Hokusai', autorinv: 'Hokusai, Katsushika', ano: '1815', bg: '#C4AE80', ink: '#2B2420', meta: 'CBZ', fmt: 'CBZ', tombo: 'Nº 0016', ultima: '—' }),
+L({ titulo: 'O Tico-Tico, nº 2', autor: 'Revista · 1905', autorinv: 'O Tico-Tico (revista)', ano: '1905', bg: '#A84C27', meta: 'PDF', fmt: 'PDF', tombo: 'Nº 0017', ultima: '—' })
+];
+return { temas: [{ cls: '' }, { cls: 'dark' }], livros: livros };
+}
+}
+</script>
+</body>
+</html>
