@@ -365,7 +365,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 
 O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do Mihon. O estudo e todas as decisões estão em **`estudo-interface.md`** (seções Acervo, Leituras, Catálogos e Mais). **Nada começa antes da revisão conjunta dos estudos que o Artur vai fazer.** Cada etapa passa por sabatina própria antes de ser implementada.
 
-- **Etapa 0, protótipo v2:** as telas novas na linguagem Ex-libris (`estudo-interface.md` §8). Nenhum código. Anda em paralelo com a etapa 1.
+- **Etapa 0, protótipo v2:** as telas novas na linguagem Ex-libris (`estudo-interface.md` §8). Nenhum código. Anda em paralelo com a etapa 1. **Leva 1 aprovada em 20/10/2026** ([canvas](https://claude.ai/artifact/67HDT4miiB5ftEqtDBJsTb), cópia em `docs/prototipo-v2/`; as escolhas do desenho estão no `estudo-interface.md`, decisões 36–45). A leva 2 (estantes, outras exibições, Leituras, marcadores, leitura sem registro, dois painéis e Catálogos) vem antes das etapas 3 e 4.
 - **Etapa 1, fundações:**
   - armazenamento assíncrono (IndexedDB) + migração do `localStorage`;
   - cópia dos arquivos no OPFS;
@@ -378,7 +378,7 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 
   A mudança para a organização `folheia-app` vem **antes** desta etapa ir para a `main` (§9).
 
-- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Mais. Catálogos só entra com o primeiro catálogo de verdade (OPDS), e os exemplos vão para a landing (item 7). O estado vazio e o "Adicionar" são a ficha "Nova entrada". Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer, o "⋯" do leitor no celular e a dica das zonas de toque (L2). Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
+- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Mais. Catálogos só entra com o primeiro catálogo de verdade (OPDS), e os exemplos vão para a landing (item 7). O estado vazio e o "Adicionar" são a ficha "Nova entrada". Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer, o "⋯" do leitor no celular e a dica das zonas de toque (L2). Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado: a leva 1, que cobre esta etapa, foi aprovada em 20/10/2026.
 - **Etapa 3, organização:** estantes, seleção em lote, as quatro exibições (capas é o padrão; lista, fichário e lombadas), ordenar (última leitura é o padrão), filtrar, buscar, série, notas e capa escolhida.
 - **Etapa 4, Leituras e marcadores:** a seção Leituras (sem tempo de leitura), os marcadores de página (fita + `B`) e a leitura sem registro (modo global). Independente da etapa 3.
 - **Etapa 5, tablet:** dois painéis (acervo + ficha) a partir de 1024px.
