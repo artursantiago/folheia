@@ -277,7 +277,7 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 
      O render do PDF.js, frio, levou **1045 ms** por página no iPad (no Mac, ~160 ms). Perto disso, o PNG soma +31–36 ms de trava e +19–24 ms de decodificação: **3–5% a mais por página**. A trava só acontece com a fila andando, e a fila pausa durante a virada, então a animação não sofre.
 
-   - **Decisão:** entra o PNG na cache nítida, sem o P2. O interruptor **"Qualidade máxima"** fica nos Ajustes, desligado por padrão e lembrado entre livros. O lugar final dele sai do protótipo v2 (`roteiro.md`).
+   - **Decisão:** entra o PNG na cache nítida, sem o P2. O interruptor **"Qualidade máxima"** fica nos Ajustes, desligado por padrão e lembrado entre livros. **Lugar final (sabatina do pedido do protótipo v2, 20/10/2026):** só em **Mais › Ajustes**, num grupo "Leitura". Sai do menu do leitor, porque é uma escolha do aparelho, feita uma vez.
    - **Como ficou:**
      - Ligado, as páginas nítidas do PDF e os tiles de zoom são guardados em PNG; as prévias continuam em JPEG.
      - O CBZ já é sem perda pelo P3.
@@ -352,12 +352,14 @@ O P0 mediu onde o tempo vai (`estudo-mihon.md` §6.5). Numa HQ em PDF, 90–99% 
 6. ~~**"Recentes" como conteúdo principal do início.**~~ **Substituído em 20/10/2026** pela biblioteca pessoal (seção C2, abaixo). As perguntas que estavam abertas aqui foram respondidas na sabatina do `estudo-interface.md`: copiar o arquivo por padrão, sem cota fixa; remover com desfazer; o livro sem arquivo fica no acervo como "exemplar ausente"; a capa sai da 1ª página e, sem ela, usa a capa tipográfica.
    - _Ainda aberto:_ buscar capa na internet (ex.: Open Library). Isso faz requisições externas e conflita com a privacidade, então precisa de decisão explícita.
 7. **Exemplos com menos destaque.** O carrossel "Do acervo · obras em domínio público" está grande demais para o papel dele. A ideia é um acesso secundário, como um link ou botão "Ver exemplos" que abre só essa parte. O visual do carrossel em si ficou bom.
-   - **Decidido (20/10/2026):** os exemplos vão para a seção **Catálogos** na etapa 2 da biblioteca (C2).
+   - ~~**Decidido (20/10/2026):** os exemplos vão para a seção **Catálogos** na etapa 2 da biblioteca (C2).~~
+   - **Mudado em 20/10/2026** (sabatina do pedido do protótipo v2): os exemplos **saem do app**. Eles não pertencem ao acervo de ninguém, então vão para uma **landing page** (item 11b, em D). O `src/examples.ts` fica para o desenvolvimento (`#/lab` e medições).
 8. **Menos menções a "PDF e CBZ".** O texto aparece no cabeçalho, na frase de abertura e na área de soltar, além do README e da descrição do repositório. O certo é dizer uma vez, num lugar discreto, principalmente o "CBZ".
 9. **Carimbos com menos ênfase.** O estilo do carimbo (`Stamp`) agradou e combina com a identidade, mas "Seu arquivo não sai deste aparelho" e "Domínio público" estão em destaque demais; privacidade não é o foco do app.
    - Manter o componente.
    - Rever onde ele aparece. Por exemplo: privacidade só no "Sobre" ou numa linha pequena; "domínio público" só na ficha do livro.
-   - **Decidido (20/10/2026):** os carimbos vão para o "Sobre", em Mais, na etapa 2 da biblioteca (C2).
+   - ~~**Decidido (20/10/2026):** os carimbos vão para o "Sobre", em Mais, na etapa 2 da biblioteca (C2).~~
+   - **Mudado em 20/10/2026** (sabatina do pedido do protótipo v2): **nenhum carimbo de privacidade aparece no app.** O "Sobre" vira a ficha catalográfica do próprio Folheia (edição, licença, créditos, diagnóstico). O carimbo "Domínio público" vai para a landing, com os exemplos.
 
 ### C2. Biblioteca pessoal (decidida em 20/10/2026)
 
@@ -376,10 +378,11 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 
   A mudança para a organização `folheia-app` vem **antes** desta etapa ir para a `main` (§9).
 
-- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Catálogos (exemplos) e Mais. Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer, o "⋯" do leitor no celular e a dica das zonas de toque (L2). Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
-- **Etapa 3, organização:** estantes, seleção em lote, as três exibições (capas é o padrão), ordenar (última leitura é o padrão), filtrar, buscar, série, notas e capa escolhida.
+- **Etapa 2, acervo mínimo:** o Acervo como tela inicial, com Mais. Catálogos só entra com o primeiro catálogo de verdade (OPDS), e os exemplos vão para a landing (item 7). O estado vazio e o "Adicionar" são a ficha "Nova entrada". Tocar na capa retoma direto e mostra o aviso "Do início"; o cartão "Continuar?" sai. Entram também os selos, o exemplar ausente, "Guardar no acervo" para URL, a ficha como página, remover com desfazer, o "⋯" do leitor no celular e a dica das zonas de toque (L2). Substitui o item 6 e resolve os itens 7 e 9. Só começa com o protótipo v2 aprovado.
+- **Etapa 3, organização:** estantes, seleção em lote, as quatro exibições (capas é o padrão; lista, fichário e lombadas), ordenar (última leitura é o padrão), filtrar, buscar, série, notas e capa escolhida.
 - **Etapa 4, Leituras e marcadores:** a seção Leituras (sem tempo de leitura), os marcadores de página (fita + `B`) e a leitura sem registro (modo global). Independente da etapa 3.
 - **Etapa 5, tablet:** dois painéis (acervo + ficha) a partir de 1024px.
+- **Depois das features: uma passada de responsividade** (decidido em 20/10/2026). O protótipo v2 desenha cada tela em três tamanhos (celular, tablet e desktop). No fim, uma passada confere o app em outras larguras e aparelhos (por exemplo, Android de 360 px e celular deitado).
 - **Fora das etapas, se houver vontade:**
   - estatísticas ("relatório da biblioteca");
   - pilha de volumes de uma série na grade;
@@ -393,12 +396,16 @@ O app deixa de ser só "abrir um arquivo" e vira um acervo pessoal, na linha do 
 11. **Splash screen.**
     - No PWA do iOS, o splash vem de `apple-touch-startup-image`, uma imagem por tamanho de tela. No Android, vem das cores do manifesto.
     - O Capacitor também vai precisar de um (`@capacitor/splash-screen`).
+    - O desenho entra na leva 1 do protótipo v2 (o monograma F no papel e na noite).
+
+    11b. **Landing page** (decidida em 20/10/2026, na sabatina do pedido do protótipo v2). Uma página estática **fora do app**, com a apresentação, capturas de tela e um "Experimente" com os exemplos de domínio público. Cada exemplo abre o app por `?file=`, direto no leitor, sem guardar nada. O carimbo "Domínio público" vai junto. Onde ela mora (raiz do site, endereço da organização…) fica para a sabatina dela.
 
 ### E. Recursos de leitura (prioridade normal)
 
 12. Busca de texto no PDF (a camada de texto já existe).
 13. Som de virar página (asset próprio).
-    - **Subiu de prioridade (20/10/2026):** o Artur quer o som. É uma trilha própria e pequena na onda 1 do `roteiro.md`: o som acompanha a virada (a velocidade do arrasto muda o som), com Web Audio, que no iPad destrava no primeiro toque. O asset é nosso ou CC0, nunca de outro app. Na tela, só um liga/desliga nos Ajustes. O padrão (ligado ou desligado), o volume e um som por tipo de livro ficam para a sabatina dele.
+    - **Subiu de prioridade (20/10/2026):** o Artur quer o som. É uma trilha própria e pequena na onda 1 do `roteiro.md`: o som acompanha a virada (a velocidade do arrasto muda o som), com Web Audio, que no iPad destrava no primeiro toque. O asset é nosso ou CC0, nunca de outro app. Na tela, só um liga/desliga, **"Sons"**, no menu do leitor e em Mais (uma preferência só).
+    - **Sons do acervo (20/10/2026, sabatina do pedido do protótipo v2):** a trilha também cobre a exibição de lombadas. Tirar o livro da estante tem som. O hover (só no desktop) pode ter um som bem mais baixo, só depois de o mouse parar ~150 ms num livro, para não virar uma rajada. O padrão (ligado ou desligado), o volume e um som por tipo de livro ficam para a sabatina dele.
 14. Painel **Paginação**: interruptor manual de spreads + "deslocar uma página".
     - Entram aqui o **"zoom e percorrer"** spreads largos no iPad em pé (L3) e a interface dos **ajustes por livro** (L5): cada opção de "como o livro é feito" (direção, simples/dupla, capa sozinha, dividir spreads) ganha "este livro / todos", e um aviso curto ao abrir só quando o livro difere do global.
 15. Modo **rolagem vertical** (webtoon e PDF).
