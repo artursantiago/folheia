@@ -65,6 +65,8 @@ export interface PageSource {
   readonly kind: SourceKind;
   /** Stable identifier of the file's content (used to remember the reading position). */
   readonly id: string;
+  /** Ids older versions gave the same file, to find its progress memory. Optional. */
+  readonly legacyIds?: readonly string[];
   readonly pageCount: number;
   /** Best known size; may be refined after the page is first loaded. */
   getPageSize(index: number): PageSize;

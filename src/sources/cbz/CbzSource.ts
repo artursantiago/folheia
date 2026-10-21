@@ -1,4 +1,5 @@
-import { unzipRaw, BlobReader, type ZipEntry } from 'unzipit';
+import { unzipRaw, BlobReader, type Reader, type ZipEntry } from 'unzipit';
+import { contentDigest } from '../digest';
 import { HttpRangeReader } from '../http';
 import {
   SourceError,
@@ -38,12 +39,36 @@ export function pageEntries<T extends { name: string; isDirectory: boolean }>(en
     .sort((a, b) => collator.compare(a.name, b.name));
 }
 
+/**
+ * Keeps the last bytes `reader` reads until stopped. While unzipit opens an
+ * archive its last read is the central directory, which identifies the book
+ * (see openCbz). Only `read` is wrapped, so the reader keeps its faster paths.
+ */
+function recordReads(reader: Reader) {
+  const read = reader.read.bind(reader);
+  const recorder = {
+    last: undefined as Uint8Array<ArrayBuffer> | undefined,
+    stop: () => void (reader.read = read),
+  };
+  reader.read = async (offset, size) => (recorder.last = await read(offset, size));
+  return recorder;
+}
+
+/** Ids the same archive had before the central directory hash (progress memory). */
+function legacyIds(input: CbzInput): string[] {
+  if (!('file' in input)) return [`cbz:${input.url}`];
+  const file = input.file as Partial<File> & Blob;
+  return [`cbz:${input.name ?? file.name ?? ''}:${input.file.size}:${file.lastModified ?? 0}`];
+}
+
 export async function openCbz(input: CbzInput): Promise<CbzSource> {
-  const reader =
+  const reader: Reader =
     'file' in input ? new BlobReader(input.file) : new HttpRangeReader(input.url, input.length);
+  const recorder = recordReads(reader);
   let entries: ZipEntry[];
   try {
     ({ entries } = await unzipRaw(reader));
+    recorder.stop();
   } catch (error) {
     if (error instanceof SourceError) throw error;
     throw new SourceError('invalid', 'Not a valid ZIP archive', error);
@@ -71,12 +96,13 @@ export async function openCbz(input: CbzInput): Promise<CbzSource> {
   pages = visible.map((page) => page.entry);
   if (pages.length === 0) throw new SourceError('empty', 'No page images in the archive');
 
-  const id =
-    'file' in input
-      ? `cbz:${input.name ?? (input.file as File).name ?? ''}:${input.file.size}:${(input.file as File).lastModified ?? 0}`
-      : `cbz:${input.url}`;
+  // The book's identity is a hash of the ZIP's central directory (every
+  // entry's name, size and CRC): cheap, and the same whatever the file name,
+  // date or where it came from.
+  const id = `cbz:${await contentDigest(recorder.last ?? new Uint8Array())}`;
   const source = new CbzSource(
     id,
+    legacyIds(input),
     pages,
     new Set(visible.flatMap((page, i) => (page.double ? [i] : []))),
     info,
@@ -96,6 +122,7 @@ export class CbzSource implements PageSource {
 
   constructor(
     readonly id: string,
+    readonly legacyIds: readonly string[],
     private readonly entries: ZipEntry[],
     private readonly doubles: Set<number>,
     private readonly info: ComicInfo | undefined,

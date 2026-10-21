@@ -1,4 +1,6 @@
-import { pageEntries } from './CbzSource';
+import { centralDirectory, zip } from '../../test/zip';
+import { contentDigest } from '../digest';
+import { openCbz, pageEntries } from './CbzSource';
 import { parseComicInfo } from './comicInfo';
 import { imageSize } from './imageSize';
 
@@ -78,5 +80,34 @@ describe('parseComicInfo', () => {
     expect(
       parseComicInfo('<ComicInfo><Manga>Yes</Manga></ComicInfo>').metadata.direction,
     ).toBeUndefined();
+  });
+});
+
+describe('CBZ identity', () => {
+  const pages = [
+    { name: '01.png', data: png(800, 1200) },
+    { name: '02.png', data: png(800, 1200) },
+  ];
+  const archive = zip(pages);
+
+  it('is the SHA-256 of the central directory, whatever the file name or date', async () => {
+    const a = await openCbz({
+      file: new File([archive], 'saga-01.cbz', { lastModified: 1 }),
+    });
+    const b = await openCbz({ file: new File([archive], 'renamed.cbz', { lastModified: 2 }) });
+    const expected = await contentDigest(centralDirectory(archive));
+    expect(a.id).toBe(`cbz:${expected}`);
+    expect(b.id).toBe(a.id);
+    expect(a.legacyIds).toEqual([`cbz:saga-01.cbz:${archive.length}:1`]);
+    await Promise.all([a.destroy(), b.destroy()]);
+  });
+
+  it('tells different archives apart, even with the same size and no name', async () => {
+    const other = zip([pages[0]!, { name: '03.png', data: png(800, 1200) }]);
+    expect(other.length).toBe(archive.length);
+    const a = await openCbz({ file: new Blob([archive]) });
+    const b = await openCbz({ file: new Blob([other]) });
+    expect(a.id).not.toBe(b.id);
+    await Promise.all([a.destroy(), b.destroy()]);
   });
 });

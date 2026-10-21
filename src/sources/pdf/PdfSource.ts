@@ -9,6 +9,7 @@ import {
   type PasswordPrompt,
   type RenderTarget,
 } from '../types';
+import { contentDigest } from '../digest';
 import { fetchRange, probe, type RangeProbe } from '../http';
 import { pdfjs, pdfjsDataUrls } from './pdfjs';
 
@@ -121,9 +122,29 @@ export async function openPdf(input: PdfInput, options: OpenPdfOptions = {}): Pr
     await task.destroy();
     throw new SourceError('empty', 'The PDF has no pages');
   }
-  const source = new PdfSource(doc, task);
+  const fingerprint = doc.fingerprints[0];
+  const source = new PdfSource(
+    doc,
+    task,
+    fingerprint ? `pdf:${fingerprint}` : `pdf:${await fallbackDigest(input)}`,
+  );
   await source.loadInitialSizes();
   return source;
+}
+
+const EDGE_BYTES = 64 * 1024;
+
+/** When PDF.js has no fingerprint: the size with the first and last bytes. */
+async function fallbackDigest(input: PdfInput) {
+  let parts: BlobPart[];
+  if ('file' in input) {
+    const { file } = input;
+    parts = [String(file.size), file.slice(0, EDGE_BYTES), file.slice(-EDGE_BYTES)];
+  } else {
+    const head = input.probe ?? (await probe(input.url, RANGE_CHUNK));
+    parts = [String(head.length ?? head.head.length), head.head.slice(0, EDGE_BYTES)];
+  }
+  return contentDigest(new Uint8Array(await new Blob(parts).arrayBuffer()));
 }
 
 function toSourceError(error: unknown): SourceError {
@@ -149,7 +170,6 @@ function toSourceError(error: unknown): SourceError {
 
 export class PdfSource implements PageSource {
   readonly kind = 'pdf' as const;
-  readonly id: string;
   readonly pageCount: number;
   private sizes: (PageSize | undefined)[];
   private fallbackSize: PageSize = { width: 595, height: 842 };
@@ -165,9 +185,9 @@ export class PdfSource implements PageSource {
   constructor(
     private readonly doc: PDFDocumentProxy,
     private readonly task: PDFDocumentLoadingTask,
+    readonly id: string,
   ) {
     this.pageCount = doc.numPages;
-    this.id = `pdf:${doc.fingerprints[0] ?? 'unknown'}`;
     this.sizes = new Array<PageSize | undefined>(doc.numPages).fill(undefined);
   }
 
