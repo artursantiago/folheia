@@ -75,6 +75,8 @@ Os pontos que decidem a ordem:
 
 ### Onda 1: fundações
 
+✅ **Feita em 20–21/10/2026**, na `main` (`spec-fundacoes.md` §5). Falta o teste do Artur no iPad, na prévia, antes da versão 0.3.0.
+
 - **Biblioteca, etapa 1:**
   - armazenamento assíncrono + migração;
   - cópia no OPFS;

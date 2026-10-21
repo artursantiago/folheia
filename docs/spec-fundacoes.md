@@ -1,6 +1,6 @@
 # Folheia — Spec das fundações (biblioteca, etapa 1)
 
-> 20/10/2026. **Aprovada na sabatina da etapa (20/10/2026)**; as respostas estão no §4. As decisões vêm do `estudo-interface.md` (topo e §5). O mapa do código foi feito em 20/10/2026, na `main` da v0.2.0.
+> 20/10/2026. **Aprovada na sabatina da etapa (20/10/2026)**; as respostas estão no §4. **Implementada em 20–21/10/2026:** os 10 passos do §3 estão na `main`, e o §5 conta o que mudou em relação a este rascunho. As decisões vêm do `estudo-interface.md` (topo e §5). O mapa do código foi feito em 20/10/2026, na `main` da v0.2.0.
 >
 > - **O que este documento faz:** junta o que a etapa 1 precisa construir, o ponto de partida no código e as perguntas que ainda pedem resposta. As perguntas estão no §4.
 > - **O que fica de fora:** a etapa 1 não muda a cara do app. O Acervo, a ficha e o aviso "Do início" são da etapa 2.
@@ -127,3 +127,52 @@ Cada passo com testes, lint, typecheck e build, como sempre. Entram no `CHANGELO
 5. **O que acontece com o cartão "Continuar?" na etapa 1:** ele continua até a etapa 2, que traz o aviso "Do início".
    - **Recomendação:** não mexer nele agora.
 6. **Os testes e2e que abrem arquivos** (sete specs) vão passar pela cópia. É preciso confirmar que o OPFS funciona no WebKit do Playwright, ou desligar a cópia nesses testes.
+
+## 5. Como ficou (implementação, 21/10/2026)
+
+Os 10 passos do §3 entraram na `main`, um commit por passo, com os testes passando no Chromium, no Firefox e no WebKit (e nos iPad e iPhone emulados).
+
+| Passo                    | Commit    | Onde                                                                        |
+| ------------------------ | --------- | --------------------------------------------------------------------------- |
+| 1. Cortes de tela        | `c05d1df` | `src/theme/breakpoints.ts`, `stylelint.config.js`                           |
+| 2. Banco assíncrono      | `b209d08` | `src/platform/database.ts`, `src/storage/schema.ts`, `src/storage/db.ts`    |
+| 3. Identidade e registro | `3e84e00` | `src/sources/digest.ts`, `CbzSource.ts`, `PdfSource.ts`                     |
+|                          | `959f10f` | `src/storage/library.ts` (registro, carimbos, migração)                     |
+| 4. L1                    | `d4b05d8` | `src/storage/saver.ts`, `ReaderScreen.tsx`                                  |
+| 5. Cópia no OPFS         | `797c91d` | `src/platform/files.ts`, `opfsWriter.worker.ts`, `src/storage/copies.ts`    |
+| 6. Abrir arquivo         | `2c54e9e` | `src/platform/openFile.ts`                                                  |
+| 7. `Network`             | `0437de8` | `src/platform/network.ts`, `src/platform/bridge/`, `src/sources/http.ts`    |
+| 8. Rotas e Voltar        | `c0a63ef` | `src/ui/router.ts`, `src/ui/hooks/useBackLayer.ts`, `App.tsx`, `session.ts` |
+| 9. Exportar e importar   | `dfde93d` | `src/storage/backup.ts` (botões no `#/lab`)                                 |
+| 10. L4                   | `ac8c07a` | `src/layout/book.ts`, `src/viewer/Reader.ts`                                |
+
+**O que mudou em relação ao rascunho:**
+
+- **§1 estava errado num ponto:** não existe `getThumbnail`. A loja `covers` existe, mas **a capa ainda não é gerada**: isso fica para a etapa 2, junto da grade, a partir da prévia que o leitor já renderiza.
+- **Registro do livro:** uma loja `books` só, chaveada pela identidade do arquivo. Com tombo, o livro está no acervo (com título, autor e origem). Sem tombo, é só memória de progresso (números), que é o que o `?file=`, os exemplos e a migração do `localStorage` viram.
+  - **O arquivo local entra no acervo sozinho já na etapa 1**, também na estável (decisão 4 do estudo). Só a cópia é que fica desligada na estável.
+  - **"Lido"** é o `finishedAt`: a primeira vez que a última página aparece (`atEnd` do leitor, que cobre o spread final).
+  - **L5:** o campo `settings` (`layout`, `coverAlone`) existe no registro, sem uso ainda.
+- **Identidade do CBZ:** o unzipit lê o diretório central por último ao abrir o ZIP. O `CbzSource` guarda essa leitura e calcula o SHA-256 dela, sem ler nada a mais (nem por HTTP). Um teste confere o hash contra o diretório lido à parte, para pegar uma mudança do unzipit.
+  - Fora de contexto seguro (servidor de dev por IP da rede), não há `crypto.subtle`: o hash vira um FNV não criptográfico. Os dados são por origem, então os dois nunca se misturam.
+  - Os ids antigos (`cbz:nome:tamanho:data` e `cbz:<url>`) vêm em `legacyIds`, e a memória achada com eles muda para o id novo.
+- **Migração:** roda uma vez, ao abrir o banco, só se o IndexedDB abriu de verdade. Nunca sobrescreve um registro que o banco já tem.
+- **Sem IndexedDB** (modo privado antigo, bloqueado), o app usa um banco em memória e continua lendo. Abrir um livro espera o armazenamento no máximo 3 s.
+- **L1:** o `createSaver` grava só o último valor, 1 s depois da última página virada. O `flushOnLeave` força a gravação no `pagehide` e no `visibilitychange` (escondida), e fechar o livro também grava.
+- **Cópia:** começa 1,5 s depois de o livro abrir, para não disputar o arquivo com as primeiras páginas. Uma por vez, e nunca duas do mesmo livro. O motivo da falta fica em `origin.copy` (`disabled`, `quota`, `unavailable`, `failed`).
+- **Rotas:** o livro fora do acervo fica em `#/ler?p=N` (com o `?file=` na query para os de URL).
+  - **Recarregar ou avançar** para `#/ler/<tombo>` reabre o livro pela cópia. Sem cópia (a estável), o app volta ao início; na etapa 2, ele vai pedir o arquivo.
+  - **Link de fora** (`?file=`, `#/ler/…`): o app põe o início por baixo, para o Voltar ficar no app.
+    - **O Firefox não respeita isso:** o Voltar dele pula entradas em que ninguém interagiu e sai do site. É regra do navegador; o e2e desse caso pula o Firefox.
+  - **Camadas:** o `Dialog` se registra sozinho. A gaveta do índice e o menu de ajustes usam `useBackLayer`. O cartão "Continuar?" fica de fora, para o Voltar fechar o livro.
+  - **Compartilhar** um livro de URL gera `?file=…#/ler?p=N`. Um arquivo local compartilha só o app, sem tombo.
+- **`Network`:** o `webNetwork` nunca usa a ponte, nem quando ela está instalada, e um teste garante isso. A ponte só entra num `Network` criado com ela (`createWebNetwork({ bridge })`), o que nada faz ainda. As requisições vão com `credentials: 'omit'`.
+- **Exportar e importar:** o formato é `folheia-library` versão 1. A cópia do arquivo não viaja (ela é do aparelho), e os carimbos são juntados sem repetir. Os botões ficam no `#/lab` até o Mais da etapa 2.
+- **L4:** a tolerância é `PAIR_TOLERANCE = 0.2` (razão entre as proporções). A página que esperava par ganha um branco virtual. O leitor refaz o layout quando um tamanho novo muda os spreads, e não durante uma virada.
+
+**Ficou para depois:**
+
+- gerar e guardar a capa (etapa 2);
+- a tela de exportar e importar e o interruptor da cópia, em Mais (etapa 2);
+- pedir o arquivo de volta quando não há cópia (etapa 2);
+- testar a cópia e o Voltar no iPad real, na prévia.
