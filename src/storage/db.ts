@@ -1,6 +1,8 @@
 import { storageName } from '../platform/channel';
 import { memoryDatabase, openWebDatabase, type Database } from '../platform/database';
+import { opfsFileStore } from '../platform/files';
 import { webStorage } from '../platform/storage';
+import { Copier } from './copies';
 import { Library, migrateLegacyMemory } from './library';
 import { librarySchema } from './schema';
 
@@ -33,3 +35,8 @@ export function libraryDatabase(): Promise<LibraryDatabase> {
 }
 
 export const library = new Library(async () => (await libraryDatabase()).db);
+
+/** The library's own copies of local files (OPFS on the web). */
+export const files = opfsFileStore();
+
+export const copier = new Copier(library, files);

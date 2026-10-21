@@ -218,6 +218,17 @@ export class Library {
     });
   }
 
+  /** Records whether the library holds its own copy of a local file. */
+  setCopy(id: string, copy: FileCopy): Promise<void> {
+    return this.serial(async (db) => {
+      await db.update<BookRecord>('books', id, (current) =>
+        current?.origin?.type === 'file'
+          ? { ...current, origin: { ...current.origin, copy }, updatedAt: Date.now() }
+          : current,
+      );
+    });
+  }
+
   setCover(id: string, cover: Blob): Promise<void> {
     return this.serial(async (db) => void (await db.put('covers', { bookId: id, cover })));
   }

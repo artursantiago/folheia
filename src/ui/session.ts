@@ -2,7 +2,7 @@ import { createStore } from '../lib/store';
 import { openSource, type SourceInput } from '../sources/open';
 import type { ExampleBook } from '../examples';
 import { SourceError, type BookMetadata, type PageSource } from '../sources/types';
-import { library } from '../storage/db';
+import { copier, files, library } from '../storage/db';
 import type { BookEntry } from '../storage/library';
 
 export type OpenRequest =
@@ -43,6 +43,9 @@ export function nameOf(request: OpenRequest): string {
 }
 
 let openToken = 0;
+
+/** The copy waits for the first pages, which read the same file. */
+const COPY_DELAY_MS = 1500;
 
 /** Storage must never keep a book from opening. */
 const STORAGE_PATIENCE_MS = 3000;
@@ -114,6 +117,8 @@ export async function openBook(request: OpenRequest) {
       return;
     }
     session.set({ status: 'open', source, metadata, name, request, memory });
+    if (request.kind === 'file' && memory?.record.accession !== undefined)
+      setTimeout(() => void copier.keep(source.id, request.file), COPY_DELAY_MS);
   } catch (error) {
     if (token !== openToken) return;
     passwordRequest.set(undefined);
@@ -140,5 +145,6 @@ if (import.meta.env.DEV) {
     passwordRequest,
     openBook,
     library,
+    files,
   };
 }
