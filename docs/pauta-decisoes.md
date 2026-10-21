@@ -8,7 +8,7 @@
 
 1. ✅ **D3, só o leitor (L1–L12), decidida em 20/10/2026:** decide o que entra no pedido do protótipo v2 e no motor da onda 1.
 2. ✅ **D1 + D5, decididas em 20/10/2026:** o "quando começar" das fundações e o que fazer com o PR #1, que entra nelas.
-3. **Protótipo v2 e fundações, em paralelo:** rascunhos em `prototipo-v2-pedido.md` e `spec-fundacoes.md`.
+3. **Protótipo v2 e fundações, em paralelo:** `prototipo-v2-pedido.md` (✅ sabatinado e aprovado em 20/10/2026, em duas levas) e `spec-fundacoes.md`.
 4. **D2 + F1–F8:** as fontes dependem da regra 2, então é uma conversa só. Não bloqueia nada até a onda 2 (capas) e a onda 3 (fontes).
 
 ## D3a. Triagem do leitor (L1–L12)
