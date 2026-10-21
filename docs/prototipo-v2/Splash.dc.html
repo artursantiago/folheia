@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · splash, em pé e deitado</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="col" style="width: 3378px; height: 2408px; gap: 48px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="row" style="gap: 48px; align-items: flex-start;">
+  <sc-for list="{{telas}}" as="s" hint-placeholder-count="4">
+    <div class="fx {{t.cls}}" role="img" aria-label="Folheia, {{s.nome}}" style="width: {{s.w}}; height: {{s.h}}; flex: none; display: flex; align-items: center; justify-content: center;">
+      <div class="monof" style="gap: 12px;"><b style="font-size: {{s.f}};">F</b><i style="width: {{s.rw}}; height: {{s.rh}};"></i></div>
+    </div>
+  </sc-for>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3378,"height":2408}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+temas: [{ cls: '' }, { cls: 'dark' }],
+telas: [
+{ nome: 'celular em pé', w: '390px', h: '844px', f: '96px', rw: '58px', rh: '6px' },
+{ nome: 'celular deitado', w: '844px', h: '390px', f: '80px', rw: '48px', rh: '5px' },
+{ nome: 'tablet em pé', w: '820px', h: '1180px', f: '128px', rw: '76px', rh: '7px' },
+{ nome: 'tablet deitado', w: '1180px', h: '820px', f: '128px', rw: '76px', rh: '7px' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

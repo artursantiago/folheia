@@ -5,7 +5,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'coverage', 'docs/prototipo', 'playwright-report', 'test-results', '.claude'],
+    ignores: [
+      'dist',
+      'coverage',
+      'docs/prototipo',
+      'docs/prototipo-v2',
+      'playwright-report',
+      'test-results',
+      '.claude',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

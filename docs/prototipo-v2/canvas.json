@@ -1,0 +1,386 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-20T21:00:00Z"
+  },
+  "title": "Folheia v2 — protótipo da biblioteca",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2608,
+      "h": 800,
+      "title": "Acervo vazio · desktop · claro e escuro"
+    },
+    "Acervo-vazio-tablet.dc.html": {
+      "x": 2688,
+      "y": 0,
+      "w": 1688,
+      "h": 1180,
+      "title": "Acervo vazio · tablet · claro e escuro"
+    },
+    "Acervo-vazio-celular.dc.html": {
+      "x": 4456,
+      "y": 0,
+      "w": 828,
+      "h": 844,
+      "title": "Acervo vazio · celular · claro e escuro"
+    },
+    "Acervo-desktop.dc.html": {
+      "x": 0,
+      "y": 1520,
+      "w": 2608,
+      "h": 800,
+      "title": "Acervo com capas · desktop · claro e escuro"
+    },
+    "Acervo-tablet.dc.html": {
+      "x": 2688,
+      "y": 1520,
+      "w": 1688,
+      "h": 1180,
+      "title": "Acervo com capas · tablet · claro e escuro"
+    },
+    "Acervo-celular.dc.html": {
+      "x": 4456,
+      "y": 1520,
+      "w": 828,
+      "h": 844,
+      "title": "Acervo com capas · celular · claro e escuro"
+    },
+    "Leitor-desktop.dc.html": {
+      "x": 0,
+      "y": 4560,
+      "w": 2608,
+      "h": 800,
+      "title": "Leitor · página dupla · desktop"
+    },
+    "Leitor-tablet.dc.html": {
+      "x": 2688,
+      "y": 4560,
+      "w": 1688,
+      "h": 1180,
+      "title": "Leitor · página simples · tablet · livro aberto por endereço"
+    },
+    "Leitor-celular.dc.html": {
+      "x": 4456,
+      "y": 4560,
+      "w": 828,
+      "h": 844,
+      "title": "Leitor · celular"
+    },
+    "Leitor-menu-celular.dc.html": {
+      "x": 5364,
+      "y": 4560,
+      "w": 828,
+      "h": 844,
+      "title": "Leitor · celular · menu ⋯"
+    },
+    "Indice-desktop.dc.html": {
+      "x": 0,
+      "y": 6080,
+      "w": 2608,
+      "h": 800,
+      "title": "Gaveta do índice · desktop"
+    },
+    "Indice-tablet.dc.html": {
+      "x": 2688,
+      "y": 6080,
+      "w": 1688,
+      "h": 1180,
+      "title": "Gaveta do índice · tablet"
+    },
+    "Indice-celular.dc.html": {
+      "x": 4456,
+      "y": 6080,
+      "w": 828,
+      "h": 844,
+      "title": "Gaveta do índice · celular"
+    },
+    "Ajustes-desktop.dc.html": {
+      "x": 5364,
+      "y": 6080,
+      "w": 2608,
+      "h": 800,
+      "title": "Ajustes de leitura · desktop"
+    },
+    "Ajustes-tablet.dc.html": {
+      "x": 8052,
+      "y": 6080,
+      "w": 1688,
+      "h": 1180,
+      "title": "Ajustes de leitura · tablet"
+    },
+    "Ajustes-celular.dc.html": {
+      "x": 9820,
+      "y": 6080,
+      "w": 828,
+      "h": 844,
+      "title": "Ajustes de leitura · celular"
+    },
+    "Dica-desktop.dc.html": {
+      "x": 0,
+      "y": 7600,
+      "w": 2608,
+      "h": 800,
+      "title": "Dica das zonas de toque · desktop, com as teclas"
+    },
+    "Dica-tablet.dc.html": {
+      "x": 2688,
+      "y": 7600,
+      "w": 1688,
+      "h": 1180,
+      "title": "Dica das zonas de toque · tablet · direita → esquerda"
+    },
+    "Dica-celular.dc.html": {
+      "x": 4456,
+      "y": 7600,
+      "w": 828,
+      "h": 844,
+      "title": "Dica das zonas de toque · celular"
+    },
+    "Arrastando-desktop.dc.html": {
+      "x": 5364,
+      "y": 0,
+      "w": 2608,
+      "h": 800,
+      "title": "Acervo vazio · arrastando um arquivo · desktop"
+    },
+    "Arrastando-tablet.dc.html": {
+      "x": 8052,
+      "y": 0,
+      "w": 1688,
+      "h": 1180,
+      "title": "Acervo vazio · arrastando um arquivo · tablet"
+    },
+    "Adicionar-desktop.dc.html": {
+      "x": 5364,
+      "y": 1520,
+      "w": 2608,
+      "h": 800,
+      "title": "Adicionar · diálogo · desktop"
+    },
+    "Adicionar-tablet.dc.html": {
+      "x": 8052,
+      "y": 1520,
+      "w": 1688,
+      "h": 1180,
+      "title": "Adicionar · diálogo · tablet"
+    },
+    "Adicionar-celular.dc.html": {
+      "x": 9820,
+      "y": 1520,
+      "w": 828,
+      "h": 844,
+      "title": "Adicionar · gaveta de baixo · celular"
+    },
+    "Ficha-desktop.dc.html": {
+      "x": 0,
+      "y": 3040,
+      "w": 2608,
+      "h": 800,
+      "title": "Ficha do livro como página · desktop"
+    },
+    "Ficha-tablet.dc.html": {
+      "x": 2688,
+      "y": 3040,
+      "w": 1688,
+      "h": 1180,
+      "title": "Ficha do livro como página · tablet"
+    },
+    "Ficha-celular.dc.html": {
+      "x": 4456,
+      "y": 3040,
+      "w": 828,
+      "h": 844,
+      "title": "Ficha do livro como página · celular"
+    },
+    "Ficha-leitor-desktop.dc.html": {
+      "x": 5364,
+      "y": 3040,
+      "w": 2608,
+      "h": 800,
+      "title": "Ficha no leitor · livro aberto por endereço · desktop"
+    },
+    "Ficha-leitor-tablet.dc.html": {
+      "x": 8052,
+      "y": 3040,
+      "w": 1688,
+      "h": 1180,
+      "title": "Ficha no leitor · livro aberto por endereço · tablet"
+    },
+    "Ficha-leitor-celular.dc.html": {
+      "x": 9820,
+      "y": 3040,
+      "w": 828,
+      "h": 844,
+      "title": "Ficha no leitor · livro aberto por endereço · celular"
+    },
+    "Mais-desktop.dc.html": {
+      "x": 0,
+      "y": 9120,
+      "w": 2608,
+      "h": 800,
+      "title": "Mais · desktop · navegação da etapa 2"
+    },
+    "Mais-tablet.dc.html": {
+      "x": 2688,
+      "y": 9120,
+      "w": 1688,
+      "h": 1180,
+      "title": "Mais · tablet · navegação da etapa 2"
+    },
+    "Mais-celular.dc.html": {
+      "x": 4456,
+      "y": 9120,
+      "w": 828,
+      "h": 844,
+      "title": "Mais · celular · navegação da etapa 2"
+    },
+    "Sobre-celular.dc.html": {
+      "x": 5364,
+      "y": 9120,
+      "w": 828,
+      "h": 844,
+      "title": "Sobre · celular"
+    },
+    "Estados-desktop.dc.html": {
+      "x": 0,
+      "y": 10640,
+      "w": 2608,
+      "h": 3344,
+      "title": "Estados · desktop · ausente, outro exemplar, desfazer, sem espaço"
+    },
+    "Estados-tablet.dc.html": {
+      "x": 2688,
+      "y": 10640,
+      "w": 1688,
+      "h": 4864,
+      "title": "Estados · tablet"
+    },
+    "Estados-celular.dc.html": {
+      "x": 4456,
+      "y": 10640,
+      "w": 828,
+      "h": 3520,
+      "title": "Estados · celular"
+    },
+    "Splash.dc.html": {
+      "x": 0,
+      "y": 15840,
+      "w": 3378,
+      "h": 2408,
+      "title": "Splash · celular e tablet, em pé e deitado"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Acervo-vazio-tablet.dc.html",
+    "Acervo-vazio-celular.dc.html",
+    "Arrastando-desktop.dc.html",
+    "Arrastando-tablet.dc.html",
+    "Acervo-desktop.dc.html",
+    "Acervo-tablet.dc.html",
+    "Acervo-celular.dc.html",
+    "Adicionar-desktop.dc.html",
+    "Adicionar-tablet.dc.html",
+    "Adicionar-celular.dc.html",
+    "Ficha-desktop.dc.html",
+    "Ficha-tablet.dc.html",
+    "Ficha-celular.dc.html",
+    "Ficha-leitor-desktop.dc.html",
+    "Ficha-leitor-tablet.dc.html",
+    "Ficha-leitor-celular.dc.html",
+    "Leitor-desktop.dc.html",
+    "Leitor-tablet.dc.html",
+    "Leitor-celular.dc.html",
+    "Leitor-menu-celular.dc.html",
+    "Indice-desktop.dc.html",
+    "Indice-tablet.dc.html",
+    "Indice-celular.dc.html",
+    "Ajustes-desktop.dc.html",
+    "Ajustes-tablet.dc.html",
+    "Ajustes-celular.dc.html",
+    "Dica-desktop.dc.html",
+    "Dica-tablet.dc.html",
+    "Dica-celular.dc.html",
+    "Mais-desktop.dc.html",
+    "Mais-tablet.dc.html",
+    "Mais-celular.dc.html",
+    "Sobre-celular.dc.html",
+    "Estados-desktop.dc.html",
+    "Estados-tablet.dc.html",
+    "Estados-celular.dc.html",
+    "Splash.dc.html"
+  ],
+  "notes": {
+    "row1": {
+      "x": 0,
+      "y": -300,
+      "text": "Acervo vazio · Nova entrada",
+      "kind": "title1",
+      "maxW": 9740
+    },
+    "row2": {
+      "x": 0,
+      "y": 1220,
+      "text": "Acervo com capas, sem estantes · Adicionar",
+      "kind": "title1",
+      "maxW": 10648
+    },
+    "row3": {
+      "x": 0,
+      "y": 2740,
+      "text": "Ficha do livro · como página e no leitor",
+      "kind": "title1",
+      "maxW": 10648
+    },
+    "row4": {
+      "x": 0,
+      "y": 4260,
+      "text": "Leitor · a moldura nova",
+      "kind": "title1",
+      "maxW": 6192
+    },
+    "row5": {
+      "x": 0,
+      "y": 5780,
+      "text": "Gaveta do índice e ajustes de leitura",
+      "kind": "title1",
+      "maxW": 10648
+    },
+    "row6": {
+      "x": 0,
+      "y": 7300,
+      "text": "Dica das zonas de toque",
+      "kind": "title1",
+      "maxW": 5284
+    },
+    "row7": {
+      "x": 0,
+      "y": 8820,
+      "text": "Mais e Sobre · navegação da etapa 2 (só Acervo e Mais)",
+      "kind": "title1",
+      "maxW": 6192
+    },
+    "row8": {
+      "x": 0,
+      "y": 10340,
+      "text": "Estados",
+      "kind": "title1",
+      "maxW": 5284
+    },
+    "row9": {
+      "x": 0,
+      "y": 15540,
+      "text": "Splash",
+      "kind": "title1",
+      "maxW": 3378
+    }
+  },
+  "designSystems": []
+}

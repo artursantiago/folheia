@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · acervo vazio, desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 2608px; height: 800px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 30px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px;"></div>
+  <div class="edge" style="left: 124px;"></div>
+  <nav class="abas" aria-label="Seções">
+    <a class="aba on" href="Main.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px;">
+    <header class="front-h">
+      <div class="row" style="gap: 16px; align-items: baseline;">
+        <span class="wordmark">Folheia</span>
+        <span class="tag">Biblioteca de bolso</span>
+      </div>
+    </header>
+
+    <section class="row" style="gap: 56px; align-items: center; justify-content: center; height: 690px; padding: 0 40px 24px;">
+      <div class="col" style="width: 440px; gap: 18px;">
+        <span class="tag">Seu acervo</span>
+        <h1 class="serif" style="margin: 0; font-size: 48px; line-height: 1.06;">Para folhear tudo o que você lê.</h1>
+        <p class="muted" style="margin: 0; font-size: 17px; max-width: 380px;">Leia seus livros, quadrinhos e mangás folheando, como no papel.</p>
+      </div>
+
+      <div class="ficha picote" style="width: 540px;">
+        <div class="ficha-h"><span class="tag">Nova entrada</span><span class="tombo" style="color: var(--accent);">Nº 0001</span></div>
+        <div class="ficha-b" style="padding: 14px 34px 46px;">
+          <p class="serif" style="margin: 6px 0 0; font-size: 26px; line-height: 56px;">Comece o seu acervo.</p>
+          <p class="muted" style="margin: 0;">Arraste um arquivo até aqui, ou escolha no seu aparelho.</p>
+          <div class="col" style="gap: 6px; margin-top: 22px; align-items: flex-start;">
+            <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>Escolher arquivo</button>
+            <span class="tombo" style="font-size: 11.5px; letter-spacing: .12em;">PDF · CBZ · ZIP</span>
+          </div>
+          <div class="row" style="gap: 12px; margin-top: 18px;">
+            <label style="flex: 1;"><span class="lbl">ou cole um endereço</span><input class="field" placeholder="https://…/livro.pdf"></label>
+            <button class="btn" style="align-self: flex-end;">Adicionar</button>
+          </div>
+        </div>
+        <div class="furo"></div>
+      </div>
+    </section>
+  </main>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2608,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+return { temas: [{ cls: '' }, { cls: 'dark' }] };
+}
+}
+</script>
+</body>
+</html>

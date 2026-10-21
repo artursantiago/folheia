@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · estados do acervo, desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="col" style="width: 2608px; height: 3344px; gap: 48px;">
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 30px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px;"></div>
+  <div class="edge" style="left: 124px;"></div>
+  <nav class="abas" aria-label="Seções">
+    <a class="aba on" href="Acervo-desktop.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">12 obras</span>
+      </div>
+      <div class="row" style="gap: 16px;">
+        <label class="busca" style="width: 300px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+        <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+      </div>
+    </header>
+
+    <div class="row" style="justify-content: space-between; padding: 10px 26px 0 22px;">
+      <div class="row" style="gap: 4px;">
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+      </div>
+      <div class="exib" role="group" aria-label="Exibição">
+        <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+        <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+        <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+        <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 30px; row-gap: 28px; padding: 18px 40px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 214px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 15px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-ficha" aria-label="Ficha: {{b.titulo}}"><span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"></rect><path d="M7 9h10M7 13h6"></path></svg></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+  <div class="veu" style="z-index: 4;"></div>
+  <div class="dialogo" role="dialog" aria-label="Exemplar ausente" style="z-index: 5; width: 540px;">
+    <div class="ficha" style="padding-bottom: 46px;">
+        <div class="ficha-h"><span class="tag">Exemplar ausente</span><div class="row" style="gap: 8px;"><span class="tombo">Nº 0005</span><button class="btn ib" aria-label="Fechar" style="margin-right: -12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></div>
+        <div style="padding: 20px 28px 0; position: relative;">
+          <p class="serif" style="margin: 0; font-size: 24px; max-width: 330px;">Traga este exemplar de volta.</p>
+          <p class="muted" style="margin: 8px 0 0;">O arquivo de Krazy Kat não está mais neste aparelho. Escolha o arquivo de novo e a leitura continua da pág. 23.</p>
+          <div class="row" style="gap: 10px; margin-top: 18px;"><button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>Escolher arquivo</button><button class="btn ghost">Agora não</button></div>
+          <span class="carimbo ink" style="position: absolute; right: 26px; top: 14px; transform: rotate(-7deg);">Ausente</span>
+        </div>
+      <div class="furo"></div>
+    </div>
+  </div>
+</div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 30px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px;"></div>
+  <div class="edge" style="left: 124px;"></div>
+  <nav class="abas" aria-label="Seções">
+    <a class="aba on" href="Acervo-desktop.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">12 obras</span>
+      </div>
+      <div class="row" style="gap: 16px;">
+        <label class="busca" style="width: 300px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+        <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+      </div>
+    </header>
+
+    <div class="row" style="justify-content: space-between; padding: 10px 26px 0 22px;">
+      <div class="row" style="gap: 4px;">
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+      </div>
+      <div class="exib" role="group" aria-label="Exibição">
+        <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+        <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+        <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+        <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 30px; row-gap: 28px; padding: 18px 40px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 214px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 15px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-ficha" aria-label="Ficha: {{b.titulo}}"><span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"></rect><path d="M7 9h10M7 13h6"></path></svg></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+  <div class="veu" style="z-index: 4;"></div>
+  <div class="dialogo" role="dialog" aria-label="Exemplar ausente" style="z-index: 5; width: 540px;">
+    <div class="ficha" style="padding-bottom: 46px;">
+        <div class="ficha-h"><span class="tag">Exemplar ausente</span><div class="row" style="gap: 8px;"><span class="tombo">Nº 0005</span><button class="btn ib" aria-label="Fechar" style="margin-right: -12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></div>
+        <div style="padding: 20px 28px 0;">
+          <p class="serif" style="margin: 0; font-size: 24px;">Este não é o mesmo exemplar.</p>
+          <p class="muted" style="margin: 8px 0 0;">O arquivo que você escolheu é diferente do Krazy Kat que está no acervo.</p>
+          <div class="row" style="gap: 10px; margin-top: 18px;"><button class="btn">Abrir só desta vez</button><button class="btn pri">Adicionar como livro novo</button></div>
+        </div>
+      <div class="furo"></div>
+    </div>
+  </div>
+</div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 30px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px;"></div>
+  <div class="edge" style="left: 124px;"></div>
+  <nav class="abas" aria-label="Seções">
+    <a class="aba on" href="Acervo-desktop.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">11 obras</span>
+      </div>
+      <div class="row" style="gap: 16px;">
+        <label class="busca" style="width: 300px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+        <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+      </div>
+    </header>
+
+    <div class="row" style="justify-content: space-between; padding: 10px 26px 0 22px;">
+      <div class="row" style="gap: 4px;">
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+      </div>
+      <div class="exib" role="group" aria-label="Exibição">
+        <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+        <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+        <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+        <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 30px; row-gap: 28px; padding: 18px 40px 0;">
+      <sc-for list="{{livros2}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 214px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 15px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-ficha" aria-label="Ficha: {{b.titulo}}"><span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"></rect><path d="M7 9h10M7 13h6"></path></svg></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+  <div class="aviso" role="status" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: 34px; z-index: 5;"><span class="mono">Dom Casmurro saiu do acervo</span><button class="btn">Desfazer</button></div>
+</div>
+</sc-for>
+</div>
+<div class="par">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 30px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px;"></div>
+  <div class="edge" style="left: 124px;"></div>
+  <nav class="abas" aria-label="Seções">
+    <a class="aba on" href="Acervo-desktop.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="left: 128px; display: flex; flex-direction: column;">
+    <header class="front-h">
+      <div class="row" style="gap: 14px; align-items: baseline;">
+        <h1 class="serif" style="margin: 0; font-size: 26px;">Acervo</h1>
+        <span class="tombo">12 obras</span>
+      </div>
+      <div class="row" style="gap: 16px;">
+        <label class="busca" style="width: 300px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg><input placeholder="Buscar título, autor, série…" aria-label="Buscar no acervo"></label>
+        <button class="btn pri"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Adicionar</button>
+      </div>
+    </header>
+
+    <div class="row" style="justify-content: space-between; padding: 10px 26px 0 22px;">
+      <div class="row" style="gap: 4px;">
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 11h5M14 16h3"></path></svg><span class="mono">Ordem</span>Última leitura</button>
+        <button class="chip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></svg>Filtrar</button>
+      </div>
+      <div class="exib" role="group" aria-label="Exibição">
+        <button class="btn ib on" aria-label="Capas" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6v8H4zM14 3h6v8h-6zM4 13h6v8H4zM14 13h6v8h-6z"></path></svg></button>
+        <button class="btn ib" aria-label="Lista" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v6H4zM4 14h4v6H4zM11 6h9M11 9h6M11 16h9M11 19h6"></path></svg></button>
+        <button class="btn ib" aria-label="Fichário" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3zM5 6h14M7 3h10M7 13h6M7 16h10"></path></svg></button>
+        <button class="btn ib" aria-label="Lombadas" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h3v16H4zM9 6h3v14H9zM14.2 5.6l2.9-.8 3.6 14.4-2.9.8zM2 21h20"></path></svg></button>
+      </div>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 30px; row-gap: 28px; padding: 18px 40px 0;">
+      <sc-for list="{{livros}}" as="b" hint-placeholder-count="12">
+        <div class="cel">
+          <div class="capa-box {{b.cls}}">
+            <a class="capa" href="#" aria-label="Continuar {{b.titulo}}" style="height: 214px; background: {{b.bg}}; color: {{b.ink}};">
+              <span class="t" style="font-size: 15px;">{{b.titulo}}</span>
+              <span class="a">{{b.autor}}</span>
+            </a>
+            <sc-if value="{{b.prog}}" hint-placeholder-val="{{false}}"><div class="fita"><i style="width: {{b.pct}};"></i></div></sc-if>
+            <sc-if value="{{b.novo}}" hint-placeholder-val="{{false}}"><span class="selo-novo">novo</span></sc-if>
+            <sc-if value="{{b.lido}}" hint-placeholder-val="{{false}}"><span class="carimbo capa-carimbo">Lido</span></sc-if>
+            <sc-if value="{{b.ausente}}" hint-placeholder-val="{{false}}"><span class="carimbo ink">Exemplar ausente</span></sc-if>
+            <button class="capa-ficha" aria-label="Ficha: {{b.titulo}}"><span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"></rect><path d="M7 9h10M7 13h6"></path></svg></span></button>
+          </div>
+          <div>
+            <div class="cel-t">{{b.titulo}}</div>
+            <div class="cel-m">{{b.meta}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+  <div class="aviso" role="status" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: 34px; z-index: 5;"><span class="mono">Sem espaço no aparelho: Fon-Fon! entrou no acervo sem o arquivo.</span><button class="btn">Ver espaço</button></div>
+</div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2608,"height":3344}}'>
+class Component extends DCLogic {
+renderVals() {
+const L = (o) => Object.assign({ ink: '#F6EFE2', cls: '', prog: false, novo: false, lido: false, ausente: false }, o);
+const r = {
+temas: [{ cls: '' }, { cls: 'dark' }],
+livros: [
+L({ titulo: 'Little Nemo in Slumberland, v. 1', autor: 'Winsor McCay', bg: '#2E4A5A', prog: true, pct: '22%', meta: 'pág. 45/200 · CBZ' }),
+L({ titulo: 'Alice’s Adventures in Wonderland', autor: 'Lewis Carroll', bg: '#6F5585', prog: true, pct: '44%', meta: 'pág. 87/196 · PDF' }),
+L({ titulo: 'Hokusai Manga, v. 1', autor: 'Katsushika Hokusai', bg: '#D8C59B', ink: '#2B2420', prog: true, pct: '12%', meta: 'pág. 12/96 · CBZ' }),
+L({ titulo: 'O Tico-Tico, nº 1', autor: 'Revista · 1905', bg: '#B4532A', lido: true, meta: 'PDF' }),
+L({ titulo: 'Krazy Kat', autor: 'George Herriman', bg: '#3E5641', cls: 'ausente', ausente: true, meta: 'CBZ' }),
+L({ titulo: 'Memórias Póstumas de Brás Cubas', autor: 'Machado de Assis', bg: '#1F3B4D', lido: true, meta: 'PDF' }),
+L({ titulo: 'Little Nemo in Slumberland, v. 2', autor: 'Winsor McCay', bg: '#355B6E', novo: true, meta: 'CBZ' }),
+L({ titulo: 'Dom Casmurro', autor: 'Machado de Assis', bg: '#6B2D2A', novo: true, meta: 'PDF' }),
+L({ titulo: 'Fon-Fon!, nº 12', autor: 'Revista · 1913', bg: '#8A6A2F', meta: 'PDF' }),
+L({ titulo: 'Flatland', autor: 'Edwin A. Abbott', bg: '#45403A', meta: 'PDF' }),
+L({ titulo: 'The Wonderful Wizard of Oz', autor: 'L. Frank Baum', bg: '#3E6B4A', meta: 'PDF' }),
+L({ titulo: 'A Menina do Narizinho Arrebitado', autor: 'Monteiro Lobato', bg: '#9C4A2E', meta: 'PDF' })
+]
+};
+r.livros2 = r.livros.filter((b) => b.titulo !== 'Dom Casmurro');
+return r;
+}
+}
+</script>
+</body>
+</html>

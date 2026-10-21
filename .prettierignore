@@ -1,6 +1,7 @@
 dist
 coverage
 docs/prototipo
+docs/prototipo-v2
 package-lock.json
 playwright-report
 test-results

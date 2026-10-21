@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · dica das zonas de toque, desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 2608px; height: 800px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <sc-if value="{{t.escuro}}" hint-placeholder-val="{{false}}"><div class="lamp"></div></sc-if>
+  <header class="topo2" style="padding: 0 20px;">
+    <span class="btn ghost" style="padding: 0 12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Devolver à estante</span>
+    <div class="row" style="gap: 10px; align-items: baseline;"><span class="serif" style="font-size: 17px;">Dom Casmurro</span><span class="tombo">Nº 0008</span></div>
+    <span style="width: 132px;"></span>
+  </header>
+  <div class="livro" style="left: 215px; top: 74px;">
+    <div style="width: 425px; height: 610px;"></div>
+    <div class="pag dir" style="width: 425px; height: 610px; padding: 150px 60px 0;">
+      <div class="cap" style="font-size: 30px; text-align: center; margin-bottom: 14px;">Dom Casmurro</div>
+      <div class="mono" style="font-size: 11px; text-align: center; color: #6B5F52; letter-spacing: .12em; margin-bottom: 200px;">MACHADO DE ASSIS</div>
+      <div class="mono" style="font-size: 10px; text-align: center; color: #6B5F52;">RIO DE JANEIRO · 1899</div>
+    </div>
+  </div>
+  <nav class="barra2" aria-label="Controles de leitura" style="width: 920px;">
+    <button class="btn ib" aria-label="Primeira página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6l-6 6 6 6M7 6v12"></path></svg></button>
+    <button class="btn ib" aria-label="Página anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+    <button class="pg" style="font: inherit; font-family: 'IBM Plex Mono'; font-size: 14px; cursor: pointer;">1 <span class="muted">/ 256</span></button>
+    <div class="slider" role="slider" aria-label="Posição no livro" aria-valuemin="1" aria-valuemax="256" aria-valuenow="1" tabindex="0">
+      <div class="tr"></div>
+      <span class="mk" style="left: 1%;"></span><span class="mk" style="left: 9%;"></span><span class="mk" style="left: 17%;"></span><span class="mk" style="left: 25%;"></span><span class="mk" style="left: 31%;"></span><span class="mk" style="left: 40%;"></span><span class="mk" style="left: 49%;"></span><span class="mk" style="left: 57%;"></span><span class="mk" style="left: 66%;"></span><span class="mk" style="left: 76%;"></span><span class="mk" style="left: 84%;"></span><span class="mk" style="left: 93%;"></span>
+      <span class="kn" style="left: 0%;"></span>
+    </div>
+    <button class="btn ib" aria-label="Próxima página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+    <button class="btn ib" aria-label="Última página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6l6 6-6 6M17 6v12"></path></svg></button>
+    <span class="sep"></span>
+    <a class="btn ib" href="Indice-desktop.dc.html" aria-label="Índice"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg></a>
+    <span class="sep"></span>
+    <button class="btn ib" aria-label="Diminuir zoom"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5M8 11h6"></path></svg></button>
+    <span class="mono" style="font-size: 13px; width: 46px; text-align: center;">100%</span>
+    <button class="btn ib" aria-label="Aumentar zoom"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"></path></svg></button>
+    <span class="sep"></span>
+    <a class="btn ib" href="Ajustes-desktop.dc.html" aria-label="Ajustes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></a>
+  </nav>
+
+  <div class="veu" style="z-index: 3;"></div>
+  <div class="zonas" role="note" aria-label="Como virar as páginas" style="background: transparent; top: 64px; bottom: 84px;">
+    <div class="zona"><span class="carimbo ink"><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Anterior · <span class="kbd">←</span></span></div>
+    <div class="zona"><span class="carimbo ink" style="transform: rotate(-2deg);">Clique duplo aproxima</span></div>
+    <div class="zona"><span class="carimbo">Próxima · <span class="kbd">→</span><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></div>
+  </div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2608,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+return { temas: [{ cls: '', escuro: false }, { cls: 'dark', escuro: true }] };
+}
+}
+</script>
+</body>
+</html>

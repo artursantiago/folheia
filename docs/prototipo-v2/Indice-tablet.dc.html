@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · gaveta do índice, tablet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 1688px; height: 1180px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <sc-if value="{{t.escuro}}" hint-placeholder-val="{{false}}"><div class="lamp"></div></sc-if>
+  <div class="livro" style="left: 85px; top: 104px;">
+    <div class="pag dir" style="width: 650px; height: 928px; padding: 60px 56px;">
+      <div style="border-bottom: 3px double #3A322B; height: 50px; margin-bottom: 26px;"></div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px;">
+        <div class="col" style="gap: 18px;"><div style="height: 300px; background: #D9C9A8;"></div><div class="txt" style="height: 352px;"></div></div>
+        <div class="col" style="gap: 18px;"><div class="txt" style="height: 440px;"></div><div style="height: 210px; border: 1.5px solid #3A322B;"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="veu" style="z-index: 2;"></div>
+
+  <aside class="col" aria-label="Índice" style="position: absolute; left: 0; top: 0; bottom: 0; width: 392px; background: var(--card); border-right: 1.5px dashed var(--perf); padding: 38px 26px 24px; z-index: 3; box-shadow: 24px 0 48px -30px var(--shadow);">
+    <div class="row" style="justify-content: space-between;">
+      <span class="serif" style="font-size: 22px;">Índice</span>
+      <a class="btn ib" href="Leitor-tablet.dc.html" aria-label="Fechar índice" style="margin-right: -10px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    </div>
+    <div class="itabs" role="tablist" style="margin-top: 8px;">
+      <button class="itab" role="tab" aria-selected="false">Sumário</button>
+      <button class="itab on" role="tab" aria-selected="true">Páginas</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; margin-top: 20px; justify-items: center;">
+      <sc-for list="{{pares}}" as="p" hint-placeholder-count="12">
+        <button class="par2 {{p.on}}" style="border: 0; background: transparent; cursor: pointer; font: inherit; color: inherit;" aria-label="Páginas {{p.lab}}">
+          <span class="row" style="justify-content: center; min-width: 104px;"><span class="th2 {{p.a}}"></span><sc-if value="{{p.b}}" hint-placeholder-val="{{true}}"><span class="th2 {{p.b}}"></span></sc-if></span>
+          <span class="tombo">{{p.lab}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1688,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+temas: [{ cls: '', escuro: false }, { cls: 'dark', escuro: true }],
+pares: [
+{ lab: '1', a: 'c', b: '', on: '' },
+{ lab: '2–3', a: '', b: 'p', on: '' },
+{ lab: '4–5', a: 'p', b: ' ', on: '' },
+{ lab: '6–7', a: '', b: ' ', on: '' },
+{ lab: '8–9', a: 'p', b: 'p', on: '' },
+{ lab: '10–11', a: '', b: ' ', on: '' },
+{ lab: '12–13', a: '', b: 'p', on: '' },
+{ lab: '14–15 · aqui', a: 'p', b: ' ', on: 'on' },
+{ lab: '16–17', a: '', b: ' ', on: '' },
+{ lab: '18–19', a: 'p', b: ' ', on: '' },
+{ lab: '20–21', a: '', b: 'p', on: '' },
+{ lab: '22–23', a: '', b: ' ', on: '' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

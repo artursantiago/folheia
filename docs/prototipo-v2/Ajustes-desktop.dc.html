@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · menu de ajustes do leitor, desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 2608px; height: 800px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 1280px; height: 800px; flex: none;">
+  <sc-if value="{{t.escuro}}" hint-placeholder-val="{{false}}"><div class="lamp"></div></sc-if>
+  <header class="topo2" style="padding: 0 20px; opacity: .45;">
+    <span class="btn ghost" style="padding: 0 12px;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Devolver à estante</span>
+    <div class="row" style="gap: 10px; align-items: baseline;"><span class="serif" style="font-size: 17px;">Alice’s Adventures in Wonderland</span><span class="tombo">Nº 0002</span></div>
+    <span style="width: 132px;"></span>
+  </header>
+  <div class="livro" style="left: 215px; top: 74px; opacity: .45;">
+    <div class="pag esq" style="width: 425px; height: 610px; padding: 64px 52px;"><div class="cap" style="font-size: 24px; margin-bottom: 36px;">VIII</div><div class="txt" style="height: 386px;"></div></div>
+    <div class="pag dir" style="width: 425px; height: 610px; padding: 64px 52px;"><div style="height: 210px; background: #CFD8C6; margin-bottom: 30px;"></div><div class="txt" style="height: 233px;"></div></div>
+  </div>
+
+  <nav class="barra2" aria-label="Controles de leitura" style="width: 920px;">
+    <button class="btn ib" aria-label="Primeira página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6l-6 6 6 6M7 6v12"></path></svg></button>
+    <button class="btn ib" aria-label="Página anterior"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+    <button class="pg" style="font: inherit; font-family: 'IBM Plex Mono'; font-size: 14px;">86–87 <span class="muted">/ 196</span></button>
+    <div class="slider" aria-hidden="true"><div class="tr"></div><div class="fe" style="width: 44%;"></div><span class="mk" style="left: 9%;"></span><span class="mk" style="left: 25%;"></span><span class="mk" style="left: 40%;"></span><span class="mk" style="left: 57%;"></span><span class="mk" style="left: 76%;"></span><span class="mk" style="left: 93%;"></span><span class="kn" style="left: 44%;"></span></div>
+    <button class="btn ib" aria-label="Próxima página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+    <button class="btn ib" aria-label="Última página"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6l6 6-6 6M17 6v12"></path></svg></button>
+    <span class="sep"></span>
+    <button class="btn ib" aria-label="Índice"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg></button>
+    <span class="sep"></span>
+    <button class="btn ib" aria-label="Diminuir zoom"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5M8 11h6"></path></svg></button>
+    <span class="mono" style="font-size: 13px; width: 46px; text-align: center;">100%</span>
+    <button class="btn ib" aria-label="Aumentar zoom"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"></path></svg></button>
+    <span class="sep"></span>
+    <a class="btn ib on" href="Leitor-desktop.dc.html" aria-label="Ajustes" aria-expanded="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></a>
+  </nav>
+
+  <div class="pop" role="dialog" aria-label="Ajustes de leitura" style="right: 180px; bottom: 90px; width: 470px; z-index: 4;">
+    <div class="ficha-h"><span class="serif" style="font-size: 19px;">Ajustes de leitura</span><span class="tombo">Nº 0002</span></div>
+    <div class="item"><span>Páginas</span><div class="seg"><span class="on">Auto</span><span>Uma</span><span>Duas</span></div></div>
+    <div class="item"><div class="col"><span>Capa sozinha</span><span class="muted" style="font-size: 13px;">Como num livro fechado</span></div><span class="sw on" role="switch" aria-checked="true"></span></div>
+    <div class="item"><span>Sentido da leitura</span><div class="seg"><span class="on">Esq. → dir.</span><span>Dir. → esq.</span></div></div>
+    <div class="item"><span>Barra no modo imersivo</span><div class="seg"><span class="on">Fixa</span><span>Some sozinha</span></div></div>
+    <div class="item"><span>Tema</span><div class="seg"><span class="on">Sistema</span><span>Claro</span><span>Escuro</span></div></div>
+    <div class="item"><span>Sons</span><span class="sw on" role="switch" aria-checked="true"></span></div>
+    <div class="item" style="background: var(--paper); border-radius: 0 0 4px 4px;"><span class="muted" style="font-size: 13px;">Algo deu errado?</span><button class="btn ghost" style="height: 44px; padding: 0 8px; text-decoration: underline;">Copiar diagnóstico</button></div>
+  </div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2608,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+return { temas: [{ cls: '', escuro: false }, { cls: 'dark', escuro: true }] };
+}
+}
+</script>
+</body>
+</html>

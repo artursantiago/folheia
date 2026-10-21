@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · Mais, celular, navegação da etapa 2</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 828px; height: 844px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 390px; height: 844px; flex: none;">
+  <main class="m-front">
+    <header class="front-h"><h1 class="serif" style="margin: 0; font-size: 24px;">Mais</h1></header>
+    <div class="col" style="gap: 16px; padding: 16px 16px 0;">
+        <section>
+          <h2 class="sec-t">Ajustes</h2>
+          <div class="grupo">
+            <div class="item" style="padding: 0 14px;"><span>Tema</span><div class="seg"><span class="on">Sistema</span><span>Claro</span><span>Escuro</span></div></div>
+            <div class="item" style="padding: 0 14px;"><span>Idioma</span><div class="seg"><span class="on">PT</span><span>EN</span></div></div>
+            <div class="item" style="padding: 0 14px;"><span>Sons</span><span class="sw on" role="switch" aria-checked="true" aria-label="Sons"></span></div>
+          </div>
+        </section>
+        <section>
+          <h2 class="sec-t">Leitura</h2>
+          <div class="grupo">
+            <div class="item" style="padding: 8px 14px; min-height: 58px; gap: 12px;"><div class="col"><span>Qualidade máxima</span><span class="muted" style="font-size: 13px;">Páginas sem perda, com traços mais nítidos. Usa mais memória</span></div><span class="sw" role="switch" aria-checked="false" aria-label="Qualidade máxima"></span></div>
+            <div class="item" style="padding: 8px 14px; min-height: 58px; gap: 12px;"><div class="col"><span>Ponta no canto</span><span class="muted" style="font-size: 13px;">Levanta a ponta quando o mouse ou o dedo chega perto</span></div><span class="sw on" role="switch" aria-checked="true" aria-label="Ponta no canto"></span></div>
+          </div>
+        </section>
+        <section>
+          <h2 class="sec-t">Arquivos</h2>
+          <div class="grupo">
+            <div class="item" style="padding: 8px 14px; min-height: 58px; gap: 12px;"><div class="col"><span>Guardar uma cópia de cada livro</span><span class="muted" style="font-size: 13px;">Os livros abrem mesmo se o arquivo original sumir</span></div><span class="sw on" role="switch" aria-checked="true" aria-label="Guardar uma cópia de cada livro"></span></div>
+            <div class="item" style="padding: 0 14px; min-height: 64px; flex-direction: column; align-items: stretch; justify-content: center; gap: 8px;">
+              <div class="row" style="justify-content: space-between;"><span>Espaço usado</span><span class="mono" style="font-size: 13px;">1,4 GB <span class="muted">de 18 GB</span></span></div>
+              <div style="height: 4px; background: var(--rule); border-radius: 2px;"><div style="width: 8%; height: 4px; background: var(--ink); border-radius: 2px;"></div></div>
+            </div>
+            <div class="item" style="padding: 0 14px;"><span>Acervo</span><div class="row" style="gap: 4px; margin-right: -10px;"><button class="btn ghost" style="padding: 0 10px;">Exportar</button><button class="btn ghost" style="padding: 0 10px;">Importar</button></div></div>
+          </div>
+        </section>
+        <section>
+          <div class="grupo">
+            <a class="item" href="Sobre-celular.dc.html" style="padding: 0 14px; color: inherit; text-decoration: none;"><span class="row" style="gap: 12px;"><span class="monof" style="gap: 2px;"><b style="font-size: 20px;">F</b><i style="width: 12px; height: 2px;"></i></span>Sobre o Folheia</span><span class="row" style="gap: 6px;"><span class="tombo">0.3.0</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></a>
+          </div>
+        </section>
+    </div>
+  </main>
+
+  <div class="m-edge" style="bottom: 88px;"></div>
+  <div class="m-edge" style="bottom: 85px;"></div>
+  <nav class="m-abas" aria-label="Seções">
+    <a class="m-aba" href="Acervo-celular.dc.html">Acervo</a>
+    <a class="m-aba on" href="Mais-celular.dc.html" aria-current="page"><span>Mais</span></a>
+  </nav>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":828,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return { temas: [{ cls: '' }, { cls: 'dark' }] };
+}
+}
+</script>
+</body>
+</html>

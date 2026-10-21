@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folheia · acervo vazio arrastando um arquivo, tablet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="folheia.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="par" style="width: 1688px; height: 1180px;">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="2">
+<div class="fx {{t.cls}}" style="width: 820px; height: 1180px; flex: none;">
+  <div class="monof" style="position: absolute; left: 16px; top: 54px; width: 104px;"><b>F</b><i></i></div>
+  <div class="edge" style="left: 120px; top: 38px;"></div>
+  <div class="edge" style="left: 124px; top: 38px;"></div>
+  <nav class="abas" aria-label="Seções" style="top: 140px;">
+    <a class="aba on" href="Main.dc.html" aria-current="page"><span>Acervo</span></a>
+    <a class="aba" href="#">Leituras</a>
+    <a class="aba" href="#">Catálogos</a>
+    <a class="aba" href="#">Mais</a>
+  </nav>
+
+  <main class="front" style="outline: 2px dashed var(--accent); outline-offset: -6px; left: 128px; top: 38px; bottom: 24px;">
+    <header class="front-h">
+      <div class="row" style="gap: 16px; align-items: baseline;">
+        <span class="wordmark">Folheia</span>
+        <span class="tag">Biblioteca de bolso</span>
+      </div>
+    </header>
+
+    <section class="col" style="gap: 44px; justify-content: center; height: 1000px; padding: 0 48px 40px;">
+      <div class="col" style="gap: 16px; max-width: 520px;">
+        <span class="tag">Seu acervo</span>
+        <h1 class="serif" style="margin: 0; font-size: 46px; line-height: 1.06;">Para folhear tudo o que você lê.</h1>
+        <p class="muted" style="margin: 0; font-size: 17px; max-width: 420px;">Leia seus livros, quadrinhos e mangás folheando, como no papel.</p>
+      </div>
+
+      <div class="ficha" style="outline: 2px dashed var(--accent); outline-offset: -8px; transform: rotate(-1deg);">
+        <div class="ficha-h"><span class="tag">Nova entrada</span><span class="tombo" style="color: var(--accent);">Nº 0001</span></div>
+        <div class="ficha-b col" style="height: 330px; align-items: center; justify-content: center; text-align: center; gap: 6px;">
+          <svg class="ic" viewBox="0 0 24 24" style="width: 40px; height: 40px; color: var(--accent);" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"></path></svg>
+          <p class="serif" style="margin: 8px 0 0; font-size: 26px;">Solte para guardar no acervo</p>
+          <p class="mono" style="margin: 0; font-size: 14px; color: var(--accent);">little-nemo-v1.cbz · 212 MB</p>
+        </div>
+        <div class="furo"></div>
+      </div>
+    </section>
+  </main>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1688,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+return { temas: [{ cls: '' }, { cls: 'dark' }] };
+}
+}
+</script>
+</body>
+</html>
