@@ -6,6 +6,10 @@ The stable version is live at <https://folheia-app.github.io/folheia/>; what's i
 
 ## [Unreleased]
 
+### Added
+
+- The Back button (or gesture) now works inside Folheia: it closes the open dialog or panel first, then the book, instead of leaving the app. Book addresses now look like `#/ler?p=42`; older links with `?file=` and `#p=` still open where they pointed.
+
 ### Changed
 
 - Outside the immersive mode, the reader's bottom bar now stays on screen instead of fading out after a few seconds, so the page number is always in view. It never covered the book.

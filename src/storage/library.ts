@@ -104,6 +104,14 @@ export class Library {
     return this.serial((db) => db.get<BookRecord>('books', id));
   }
 
+  /** The library book with this accession number. */
+  byAccession(accession: number): Promise<BookRecord | undefined> {
+    return this.serial(
+      async (db) =>
+        (await db.getAll<BookRecord>('books', { index: 'accession', value: accession }))[0],
+    );
+  }
+
   all(): Promise<BookRecord[]> {
     return this.serial((db) => db.getAll<BookRecord>('books'));
   }

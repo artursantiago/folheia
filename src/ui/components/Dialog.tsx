@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Card } from './Card';
+import { useBackLayer } from '../hooks/useBackLayer';
 import { IconButton } from './IconButton';
 import styles from './Dialog.module.css';
 
@@ -14,6 +15,8 @@ export interface DialogProps {
   onClose: () => void;
   punched?: boolean;
   width?: 'sm' | 'md' | 'lg';
+  /** The system Back closes it (default). Off for dialogs Back should go past. */
+  closeOnBack?: boolean;
   children: ReactNode;
 }
 
@@ -27,9 +30,11 @@ export function Dialog({
   onClose,
   punched = false,
   width = 'md',
+  closeOnBack = true,
   children,
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  useBackLayer(open && closeOnBack, onClose);
 
   useEffect(() => {
     const dialog = ref.current;

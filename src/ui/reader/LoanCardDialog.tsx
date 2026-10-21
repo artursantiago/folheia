@@ -20,7 +20,15 @@ export function LoanCardDialog({ title, record, onContinue, onRestart }: LoanCar
   });
   const rows = record.history.slice(-4);
   return (
-    <Dialog open title={t('loan.label')} label={t('loan.label')} onClose={onRestart} punched>
+    <Dialog
+      open
+      title={t('loan.label')}
+      label={t('loan.label')}
+      onClose={onRestart}
+      punched
+      // Back from the loan card closes the book, as it would without it.
+      closeOnBack={false}
+    >
       <p className={styles.title}>{title}</p>
       <p className={styles.question}>{t('loan.question')}</p>
       <table className={styles.table} aria-label={t('loan.history')}>

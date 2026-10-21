@@ -24,6 +24,7 @@ import {
   ReaderBarSeparator,
   TextField,
 } from '../components';
+import { useBackLayer } from '../hooks/useBackLayer';
 import { useI18n } from '../hooks/useI18n';
 import { useStore } from '../hooks/useStore';
 import { BookCardDialog } from '../reader/BookCardDialog';
@@ -31,6 +32,7 @@ import { diagnostics } from '../reader/diagnostics';
 import { IndexDrawer } from '../reader/IndexDrawer';
 import { LoanCardDialog } from '../reader/LoanCardDialog';
 import { SettingsMenu } from '../reader/SettingsMenu';
+import { formatHash, parseHash, showReaderPage } from '../router';
 import type { OpenRequest } from '../session';
 import styles from './ReaderScreen.module.css';
 
@@ -41,8 +43,8 @@ const TOAST_MS = 3500;
 const emptyState = createStore<ReaderState | undefined>(undefined);
 
 export function initialPageFromHash(hash = window.location.hash): number | undefined {
-  const match = hash.match(/(?:^#|&)p=(\d+)/);
-  return match ? Number(match[1]) : undefined;
+  const current = parseHash(hash);
+  return current.name === 'reader' ? current.page : undefined;
 }
 
 export interface ReaderScreenProps {
@@ -87,6 +89,7 @@ export function ReaderScreen({
     tRef.current = t;
   }, [t]);
 
+  const accession = memory?.record.accession;
   // What we remember about this book, read once when it opened.
   const [record] = useState(() =>
     memory ? { ...memory.record, history: memory.loans } : undefined,
@@ -177,9 +180,7 @@ export function ReaderScreen({
   const atEnd = state?.atEnd;
   useEffect(() => {
     if (page === undefined || total === undefined) return;
-    const url = new URL(window.location.href);
-    url.hash = `p=${page}`;
-    if (url.href !== window.location.href) history.replaceState(history.state, '', url);
+    showReaderPage(accession, page);
     if (sessionStart.current !== undefined)
       progressSaver.schedule({
         fromPage: sessionStart.current,
@@ -187,7 +188,7 @@ export function ReaderScreen({
         pageCount: total,
         finished: atEnd ?? false,
       });
-  }, [page, total, atEnd, progressSaver]);
+  }, [page, total, atEnd, progressSaver, accession]);
 
   // The book card shows the latest loan stamps.
   useEffect(() => {
@@ -344,9 +345,14 @@ export function ReaderScreen({
   };
 
   const share = async () => {
+    // Only books by URL can be opened elsewhere; a local file shares the app.
     const url = new URL(window.location.href);
     url.search = '';
-    if (request.kind === 'url') url.searchParams.set('file', request.url);
+    url.hash = '';
+    if (request.kind === 'url') {
+      url.searchParams.set('file', request.url);
+      url.hash = formatHash({ name: 'reader', page: state?.page });
+    }
     const result = await shareLink(url.href, title);
     if (result === 'copied') notify(t('reader.linkCopied'));
   };
@@ -362,6 +368,9 @@ export function ReaderScreen({
 
   const closeSettings = useCallback(() => setPanel((p) => (p === 'settings' ? 'none' : p)), []);
   const closeIndex = useCallback(() => setPanel('none'), []);
+  // The index drawer and the settings menu close with the system Back (the
+  // book card is a Dialog, which does it itself).
+  useBackLayer(panel === 'index' || panel === 'settings', closeIndex);
 
   return (
     <div

@@ -4,6 +4,7 @@ import type { ExampleBook } from '../examples';
 import { SourceError, type BookMetadata, type PageSource } from '../sources/types';
 import { copier, files, library } from '../storage/db';
 import type { BookEntry } from '../storage/library';
+import { enterReader, leaveReader } from './router';
 
 export type OpenRequest =
   { kind: 'file'; file: File } | { kind: 'url'; url: string; example?: ExampleBook | undefined };
@@ -83,6 +84,7 @@ async function remember(
 export async function openBook(request: OpenRequest) {
   const token = ++openToken;
   const name = nameOf(request);
+  enterReader(request.kind === 'url' ? request.url : undefined);
   await closeBook();
   session.set({ status: 'opening', name });
   const input: SourceInput =
@@ -124,12 +126,28 @@ export async function openBook(request: OpenRequest) {
     passwordRequest.set(undefined);
     if (error instanceof SourceError && error.code === 'password-cancelled') {
       session.set({ status: 'idle' });
+      leaveReader();
       return;
     }
     const sourceError =
       error instanceof SourceError ? error : new SourceError('invalid', String(error), error);
     session.set({ status: 'error', error: sourceError, name, request });
   }
+}
+
+/**
+ * Opens the library book with this accession number from the library's own
+ * copy. False when there is none (the copy is off, or it was never made).
+ */
+export async function reopenFromLibrary(accession: number): Promise<boolean> {
+  const record = await withPatience(library.byAccession(accession));
+  if (record?.origin?.type !== 'file' || record.origin.copy?.status !== 'stored') return false;
+  const stored = await files.open(record.id).catch(() => undefined);
+  if (!stored) return false;
+  // Same bytes, under the name it was brought with.
+  const file = new File([stored], record.origin.name, { type: stored.type });
+  void openBook({ kind: 'file', file });
+  return true;
 }
 
 export async function closeBook() {

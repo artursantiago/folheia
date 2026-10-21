@@ -6,8 +6,8 @@ import { preferences } from '../storage/preferences';
 import { applyTheme } from '../theme/applyTheme';
 import { useI18n } from './hooks/useI18n';
 import { useStore } from './hooks/useStore';
-import { route } from './router';
-import { closeBook, openBook, session } from './session';
+import { fileInAddress, leaveReader, route } from './router';
+import { closeBook, openBook, reopenFromLibrary, session } from './session';
 import { HomeScreen, isAcceptableUrl } from './screens/HomeScreen';
 import { PasswordDialog } from './screens/PasswordDialog';
 import { ReaderScreen } from './screens/ReaderScreen';
@@ -18,18 +18,18 @@ import styles from './App.module.css';
 const StyleGuide = lazy(() => import('./pages/StyleGuide'));
 const Lab = lazy(() => import('./pages/Lab'));
 
-/** Opens ?file=https://… once on startup. */
-function openFromQuery() {
-  const file = new URLSearchParams(window.location.search).get('file');
-  if (file && isAcceptableUrl(file))
+/** Opens the book in the address: `?file=https://…`, or `#/ler/<accession>` from the library's copy. */
+function openFromAddress(accession: number | undefined) {
+  const file = fileInAddress();
+  if (file && isAcceptableUrl(file)) {
     void openBook({ kind: 'url', url: file, example: exampleForUrl(file) });
-}
-
-function clearBookFromAddress() {
-  const url = new URL(window.location.href);
-  url.searchParams.delete('file');
-  url.hash = '';
-  history.replaceState(history.state, '', url);
+    return;
+  }
+  if (accession === undefined) return;
+  void reopenFromLibrary(accession).then((opened) => {
+    // No copy to open (stage 2 will ask for the file): back to home.
+    if (!opened && session.get().status === 'idle') leaveReader();
+  });
 }
 
 export function App() {
@@ -39,7 +39,17 @@ export function App() {
   const state = useStore(session);
 
   useEffect(() => applyTheme(theme), [theme]);
-  useEffect(openFromQuery, []);
+  // The address leads: leaving the reader route (Back) closes the book, and
+  // arriving at one with nothing open (a link, a reload, Forward) opens it.
+  const inReader = current.name === 'reader';
+  const accession = current.name === 'reader' ? current.accession : undefined;
+  useEffect(() => {
+    if (!inReader) {
+      if (session.get().status !== 'idle') void closeBook();
+      return;
+    }
+    if (session.get().status === 'idle') openFromAddress(accession);
+  }, [inReader, accession]);
   useEffect(() => {
     void registerServiceWorker();
     fileOpener.onLaunch((file) => void openBook({ kind: 'file', file }));
@@ -59,8 +69,9 @@ export function App() {
     state.status === 'open' && state.request.kind === 'url' ? state.request.example : undefined;
 
   const back = () => {
-    clearBookFromAddress();
-    void closeBook();
+    leaveReader();
+    // Without a reader route (a book opened before the address caught up), close here.
+    if (route.get().name !== 'reader' && session.get().status !== 'idle') void closeBook();
   };
 
   return (

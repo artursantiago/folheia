@@ -16,7 +16,7 @@ test('opens a PDF from the home screen and leafs through it', async ({ page, isM
 
   await page.keyboard.press('ArrowRight');
   await expect(counter).toHaveText(isMobile ? /^2\s*\// : /^2–3\s*\//, { timeout: 5_000 });
-  await expect(page).toHaveURL(/#p=2$/);
+  await expect(page).toHaveURL(/#\/ler\/\d+\?p=2$/);
 
   // Dragging the free corner across the spine turns the page.
   if (!isMobile) {

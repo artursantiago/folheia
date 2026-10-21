@@ -31,8 +31,8 @@ test('immersive mode: just the book, a slider, and it is remembered', async ({ p
   await page.keyboard.press('End');
   await expect(counter).toHaveText(/^(\d+–)?(\d+)\s*\/\s*\2$/, { timeout: 5_000 });
 
-  // Remembered for the next book.
-  await page.reload();
+  // Remembered for the next book (a reload of the reader would reopen this one).
+  await page.goto('./');
   await open(page);
   await expect(back).toBeHidden();
 
