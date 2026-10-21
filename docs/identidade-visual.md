@@ -49,9 +49,11 @@ A fonte mono **nunca** é usada em frases longas de interface. A serifada **nunc
 
 1. **Ficha:** cartão com cabeçalho separado por um filete na cor de destaque, corpo com pauta horizontal e, quando representa um "cartão" físico, o furo central embaixo.
 2. **Picote:** borda tracejada interna (área de soltar arquivo, barra de controles, gaveta lateral).
-3. **Carimbo:** rótulo em mono, caixa alta, borda dupla, levemente girado (−3° a −8°). Marca estados e selos: "Domínio público", "Pág. 87", "Acesso negado", "Seu arquivo não sai deste aparelho".
+3. **Carimbo:** rótulo em mono, caixa alta, borda dupla, levemente girado (−3° a −8°). Marca estados e selos: "Lido", "Exemplar ausente", "Pág. 87", "Acesso negado".
 4. **Tombo:** número `Nº 0001` em mono, como identificador de cada livro e de cada ficha.
 5. **Luz de abajur** (só no escuro): um halo radial suave atrás do livro.
+6. **Divisória de fichário** (decidida em 20/10/2026): a aba de papel da navegação (fichário vertical) e das estantes do acervo. A aba atual fica "na frente", colada ao conteúdo, com o filete na cor de destaque.
+7. **Lombada** (decidida em 20/10/2026): na exibição de lombadas, cada livro aparece de lado sobre uma tábua, com a lombada gerada a partir da capa.
 
 ## Componentes
 
@@ -93,24 +95,24 @@ Decididos em 20/10/2026 (D4). O app é um acervo de leitura, não um "conversor 
   - apoio "Leia seus livros, quadrinhos e mangás folheando, como no papel.".
 - **Instrução de soltar:** "Arraste um arquivo até aqui, ou escolha no seu aparelho.", sem formato. Logo abaixo, em mono e discreto, como metadado: `PDF · CBZ · ZIP`. É o único lugar do app que cita formatos.
 - **A antiga "ficha de empréstimo"** não encaixa: empréstimo é pegar de uma biblioteca, e aqui você põe algo no seu acervo.
-  - **Direção a validar no protótipo v2:** a ficha vira **"Nova entrada"**, mostrando o próximo tombo.
-  - **Títulos candidatos:** "Comece o seu acervo." (acervo vazio), "O que vamos ler hoje?", "Escolha o que folhear." e "Traga algo para ler.".
-- **O carimbo de privacidade** vai para o "Sobre", em Mais.
+  - **Decidido em 20/10/2026** (sabatina do pedido do protótipo v2): a ficha vira **"Nova entrada"**, com o próximo tombo no cabeçalho. Ela aparece no acervo vazio e no "Adicionar", e traz também o campo "ou cole um endereço".
+  - **Frases:** "Comece o seu acervo." dentro da ficha, no acervo vazio, e "O que vamos ler hoje?" no "Adicionar". O título da página vazia continua o slogan.
+- **Nenhum carimbo de privacidade aparece no app.** O "Sobre", em Mais, é a ficha catalográfica do próprio Folheia (edição, licença e créditos). O carimbo "Domínio público" vai para a landing page, com os exemplos.
 
 ## Voz
 
 A interface fala como uma bibliotecária gentil: clara antes de criativa.
 
-| Em vez de                   | Escrevemos                                                 |
-| --------------------------- | ---------------------------------------------------------- |
-| Fechar livro                | Devolver à estante                                         |
-| Informações                 | Ficha do livro                                             |
-| Exemplos                    | Catálogos (antes "Do acervo"; o Acervo agora é o seu)      |
-| Área de upload              | Nova entrada (a validar no protótipo v2; ver acima)        |
-| Carregando…                 | Catalogando                                                |
-| Retomar leitura             | "Retomado da pág. 87 · Do início" (o cartão saiu)          |
-| Nova versão                 | Nova edição do Folheia disponível                          |
-| Erro: formato não suportado | "Ainda não lemos arquivos CBR." · carimbo "Não catalogado" |
+| Em vez de                   | Escrevemos                                                        |
+| --------------------------- | ----------------------------------------------------------------- |
+| Fechar livro                | Devolver à estante                                                |
+| Informações                 | Ficha do livro                                                    |
+| Exemplos                    | Ficam na landing page (antes "Do acervo"; o Acervo agora é o seu) |
+| Área de upload              | Nova entrada                                                      |
+| Carregando…                 | Catalogando                                                       |
+| Retomar leitura             | "Retomado da pág. 87 · Do início" (o cartão saiu)                 |
+| Nova versão                 | Nova edição do Folheia disponível                                 |
+| Erro: formato não suportado | "Ainda não lemos arquivos CBR." · carimbo "Não catalogado"        |
 
 Erros dizem **o que aconteceu** e **o que fazer**, sem jargão: "Esse endereço não deixou a gente entrar. Baixe o arquivo e abra daqui." Em inglês, a mesma metáfora com vocabulário natural (_Return to shelf_, _Book card_, _From the collection_).
 
